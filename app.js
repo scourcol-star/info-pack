@@ -2,8 +2,11 @@
    TFB — Info Pack · base packaging
    Structure : fiche Notion (5 onglets), champ pour champ.
    Liste     : Inpulse › Ingrédients fournisseurs › catégorie PACKAGING
-   Live      : /api/proxy (function Netlify) → /public/v2/supplier-products
-   Clé de rapprochement : identification.intitule_inpulse == supplier-product.name
+   Trois couches, dans cet ordre de priorité :
+     1. data/packaging.json  — socle versionné dans le repo
+     2. /api/store           — saisies TFB (Netlify Blobs), se superposent
+     3. /api/packaging|proxy — Inpulse, écrase ses propres champs
+   Un champ badgé INPULSE n'est jamais saisissable : il serait écrasé.
    ============================================================ */
 
 const TABS = [
@@ -14,144 +17,274 @@ const TABS = [
   {k:'photos',  t:'Photos',                        i:'ti-camera'}
 ];
 
-let DB=null, ROWS=[], view='list', sortK='nom', sortD=1, activeTab='general', current=null;
+let DB=null, OVR={records:{}}, ROWS=[], view='list', sortK='nom', sortD=1, activeTab='general', current=null;
+let storeOk=false;
+const FREE={};   // champs "Autre…" ouverts en saisie libre
 const F={q:'',fam:'',four:'',marq:'',comp:''};
 
-const eur = n => (n==null||isNaN(n))?'—':n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
-const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const isEmpty = v => v===''||v==null||v===false||(Array.isArray(v)&&!v.length);
-
-/* ---- complétude : uniquement les champs que TFB doit saisir ---- */
-const FILLABLE = [
-  r=>r.dimensions.longueur_cm, r=>r.dimensions.largeur_cm, r=>r.dimensions.hauteur_cm,
-  r=>r.dimensions.dimensions_a_plat_cm, r=>r.dimensions.tolerance_mm,
-  r=>r.matiere.matiere, r=>r.matiere.grammage_g_m2, r=>r.matiere.epaisseur_um, r=>r.matiere.poids_unitaire_g,
-  r=>r.design.design_valide_tfb, r=>r.design.gabarit_fournisseur,
-  r=>r.design.couleurs.pantone_principal, r=>r.design.couleurs.nb_couleurs_impression,
-  r=>r.design.support_rendu.type_support, r=>r.design.support_rendu.grammage_g_m2, r=>r.design.support_rendu.finition,
-  r=>r.design.bat.valide_par, r=>r.design.bat.date_validation, r=>r.design.bat.fichier,
-  r=>r.logistique.cartons_par_palette,
-  r=>r.logistique.conditions_stockage, r=>r.logistique.moq, r=>r.logistique.delai_reappro_jours,
-  r=>r.deploiement.points_de_vente.length, r=>r.deploiement.date_mise_en_service, r=>r.deploiement.points_de_vigilance,
-  r=>r.usage_tfb.recettes_concernees.length, r=>r.usage_tfb.usage, r=>r.usage_tfb.quantite_par_emballage,
-  r=>r.photos.filter(p=>p).length
-];
-const comp = r => Math.round(100*FILLABLE.filter(f=>!isEmpty(f(r))&&f(r)!==0).length/FILLABLE.length);
-
-/* ---- complétude par onglet, pour les puces des tabs ---- */
-const TABFIELDS = {
-  general: r=>[r.dimensions.longueur_cm,r.dimensions.largeur_cm,
-               r.dimensions.hauteur_cm,r.dimensions.dimensions_a_plat_cm,r.dimensions.tolerance_mm,
-               r.matiere.matiere,r.matiere.grammage_g_m2,r.matiere.epaisseur_um,r.matiere.poids_unitaire_g],
-  design:  r=>[r.design.design_valide_tfb,r.design.gabarit_fournisseur,r.design.couleurs.pantone_principal,
-               r.design.couleurs.nb_couleurs_impression,r.design.support_rendu.type_support,
-               r.design.support_rendu.grammage_g_m2,r.design.support_rendu.finition,
-               r.design.bat.valide_par,r.design.bat.date_validation,r.design.bat.fichier],
-  logi:    r=>[r.logistique.cartons_par_palette,r.logistique.conditions_stockage,
-               r.logistique.moq,r.logistique.delai_reappro_jours,r.deploiement.points_de_vente.length,
-               r.deploiement.date_mise_en_service,r.deploiement.points_de_vigilance],
-  usage:   r=>[r.usage_tfb.recettes_concernees.length,r.usage_tfb.usage,r.usage_tfb.quantite_par_emballage],
-  photos:  r=>r.photos
-};
-const tabComp = (r,k) => { const a=TABFIELDS[k](r); return {n:a.filter(v=>!isEmpty(v)&&v!==0).length, t:a.length}; };
-
-/* ---- chargement ---- */
-async function load(){
-  setConn('spin','Chargement du référentiel…','');
-  let doc = (typeof EMBEDDED!=='undefined') ? EMBEDDED : null;
-  try{ const r = await fetch('data/packaging.json',{cache:'no-store'}); if(r.ok) doc = await r.json(); }catch(e){}
-  if(!doc){ setConn('err','Référentiel introuvable',''); return; }
-  DB = doc;
-  setConn('ok','<strong>'+DB.packagings.length+' références</strong> chargées depuis le référentiel',
-          'liste extraite d’Inpulse le '+DB.meta.extrait_le);
-  buildFilters(); render(); syncInpulse();
-}
-
-/* ---- Inpulse live : /api/packaging agrege les 9 pages cote serveur ---- */
+const eur  = n => (n==null||isNaN(n))?'—':n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
 const eur4 = n => (n==null||isNaN(n))?'—':n.toLocaleString('fr-FR',{minimumFractionDigits:3,maximumFractionDigits:4})+' €';
+const esc  = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const isEmpty = v => v===''||v==null||(Array.isArray(v)&&!v.length);
 const uniteCommande = n => { const u=(n||'').toUpperCase();
   return u.indexOf('CARTON')===0?'Carton':u.indexOf('BOITE')===0?'Boîte':u.indexOf('ROULEAU')===0?'Rouleau'
     :(u.indexOf("L'UNITE")>=0||u.indexOf('L UNITE')>=0)?'Unité':(n||''); };
 
+/* ---- accès par chemin pointé ---- */
+function getPath(o,p){ return p.split('.').reduce((a,k)=>(a==null?a:a[k]), o); }
+function setPath(o,p,v){
+  const ks=p.split('.'); let a=o;
+  for(let i=0;i<ks.length-1;i++){ const k=ks[i]; if(a[k]==null) a[k]= /^\d+$/.test(ks[i+1])?[]:{}; a=a[k]; }
+  a[ks[ks.length-1]]=v;
+}
+
+/* ============================================================
+   Registre des champs — une seule source de vérité :
+   la fiche, l'export, la complétude et l'édition en découlent.
+   src : 'inp' = piloté par Inpulse (lecture seule) · 'tfb' = saisi ici
+   ============================================================ */
+const R = ref => (DB && DB.referentiels[ref]) || [];
+const FIELDS = [
+  // ---------- 1. Informations générales ----------
+  {tab:'general', grp:'Identification', path:'identification.intitule_inpulse', lb:'Intitulé Inpulse', src:'inp', wide:1},
+  {tab:'general', grp:'Identification', path:'identification.sku_fournisseur',  lb:'SKU fournisseur',  src:'inp'},
+  {tab:'general', grp:'Identification', path:'inpulse.fournisseur',             lb:'Fournisseur',      src:'inp'},
+  {tab:'general', grp:'Identification', path:'app.famille',   lb:'Famille',  src:'tfb', type:'select', opt:()=>R('famille')},
+  {tab:'general', grp:'Identification', path:'app.marquage',  lb:'Marquage', src:'tfb', type:'select', opt:()=>R('marquage')},
+  {tab:'general', grp:'Identification', path:'app.statut',    lb:'Statut',   src:'tfb', type:'select', opt:()=>R('statut')},
+  {tab:'general', grp:'Identification', path:'app.sous_famille', lb:'Sous-famille', src:'tfb', type:'text'},
+
+  {tab:'general', grp:'Achat', path:'inpulse.prix_ht',   lb:'Prix HT',        src:'inp', fmt:eur},
+  {tab:'general', grp:'Achat', path:'inpulse.unite_achat', lb:'Unité d’achat', src:'inp'},
+  {tab:'general', grp:'Achat', path:'logistique.prix_unitaire_ht', lb:'Prix unitaire HT', src:'inp', fmt:eur4},
+  {tab:'general', grp:'Achat', path:'inpulse.dispo',     lb:'Disponibilité boutiques', src:'inp'},
+
+  {tab:'general', grp:'Dimensions', path:'dimensions.longueur_cm',           lb:'Longueur',              src:'tfb', type:'num', u:'cm', step:'0.1'},
+  {tab:'general', grp:'Dimensions', path:'dimensions.largeur_cm',            lb:'Largeur',               src:'tfb', type:'num', u:'cm', step:'0.1'},
+  {tab:'general', grp:'Dimensions', path:'dimensions.profondeur_soufflet_cm',lb:'Profondeur (soufflet)', src:'tfb', type:'num', u:'cm', step:'0.1'},
+  {tab:'general', grp:'Dimensions', path:'dimensions.hauteur_cm',            lb:'Hauteur',               src:'tfb', type:'num', u:'cm', step:'0.1'},
+  {tab:'general', grp:'Dimensions', path:'dimensions.dimensions_a_plat_cm',  lb:'Dimensions à plat (L × H)', src:'tfb', type:'text', u:'cm'},
+  {tab:'general', grp:'Dimensions', path:'dimensions.tolerance_mm',          lb:'Tolérance dimensionnelle',  src:'tfb', type:'num', u:'mm', step:'0.5'},
+
+  {tab:'general', grp:'Matière', path:'matiere.matiere',             lb:'Matière',            src:'tfb', type:'select', opt:()=>R('type_support'), free:1},
+  {tab:'general', grp:'Matière', path:'matiere.grammage_g_m2',       lb:'Grammage',           src:'tfb', type:'num', u:'g/m²'},
+  {tab:'general', grp:'Matière', path:'matiere.epaisseur_um',        lb:'Épaisseur',          src:'tfb', type:'num', u:'µm'},
+  {tab:'general', grp:'Matière', path:'matiere.poids_unitaire_g',    lb:'Poids unitaire',     src:'tfb', type:'num', u:'g', step:'0.1'},
+  {tab:'general', grp:'Matière', path:'matiere.contact_alimentaire', lb:'Contact alimentaire',src:'tfb', type:'bool'},
+
+  // ---------- 2. Design & gabarit ----------
+  {tab:'design', grp:'Fichiers', path:'design.design_valide_tfb',   lb:'Design validé (TFB)',   src:'tfb', type:'link', wide:1},
+  {tab:'design', grp:'Fichiers', path:'design.gabarit_fournisseur', lb:'Gabarit (fournisseur)', src:'tfb', type:'link', wide:1},
+  {tab:'design', grp:'Fichiers', path:'design.logo',                lb:'Logo (si nécessaire)',  src:'tfb', type:'link', wide:1},
+
+  {tab:'design', grp:'Couleurs & pantones', path:'design.couleurs.pantone_principal',      lb:'Pantone principal',  src:'tfb', type:'text'},
+  {tab:'design', grp:'Couleurs & pantones', path:'design.couleurs.pantone_secondaire',     lb:'Pantone secondaire', src:'tfb', type:'text'},
+  {tab:'design', grp:'Couleurs & pantones', path:'design.couleurs.pantone_tertiaire',      lb:'Pantone tertiaire',  src:'tfb', type:'text'},
+  {tab:'design', grp:'Couleurs & pantones', path:'design.couleurs.nb_couleurs_impression', lb:'Nombre de couleurs d’impression', src:'tfb', type:'num'},
+
+  {tab:'design', grp:'Support et rendu', path:'design.support_rendu.type_support',  lb:'Type de support', src:'tfb', type:'select', opt:()=>R('type_support'), free:1},
+  {tab:'design', grp:'Support et rendu', path:'design.support_rendu.grammage_g_m2', lb:'Grammage',       src:'tfb', type:'num', u:'g/m²'},
+  {tab:'design', grp:'Support et rendu', path:'design.support_rendu.finition',       lb:'Finition',      src:'tfb', type:'select', opt:()=>R('finition')},
+
+  {tab:'design', grp:'BAT', path:'design.bat.valide_par',      lb:'BAT validé par',     src:'tfb', type:'text'},
+  {tab:'design', grp:'BAT', path:'design.bat.date_validation', lb:'Date de validation', src:'tfb', type:'date'},
+  {tab:'design', grp:'BAT', path:'design.bat.fichier',         lb:'Fichier BAT joint',  src:'tfb', type:'link', wide:1},
+
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.denomination_produit',   lb:'Dénomination du produit',  src:'tfb', type:'text'},
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.poids_contenance',       lb:'Poids / contenance',       src:'tfb', type:'text'},
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.allergenes',             lb:'Allergènes',               src:'tfb', type:'text'},
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.ddm_dlc',                lb:'DDM / DLC',                src:'tfb', type:'text'},
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.adresse_raison_sociale', lb:'Adresse et raison sociale',src:'tfb', type:'text'},
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.logo_tri_recyclabilite', lb:'Logo tri / recyclabilité', src:'tfb', type:'text'},
+
+  // ---------- 3. Conditionnement & logistique ----------
+  {tab:'logi', grp:'Logistique', path:'logistique.nombre_par_carton',    lb:'Nombre par carton',   src:'inp', u:'pièces'},
+  {tab:'logi', grp:'Logistique', path:'logistique.unite_commande',       lb:'Unité de commande',   src:'inp'},
+  {tab:'logi', grp:'Logistique', path:'logistique.cartons_par_palette',  lb:'Cartons par palette', src:'tfb', type:'num', u:'cartons'},
+  {tab:'logi', grp:'Logistique', path:'logistique.conditions_stockage',  lb:'Conditions de stockage', src:'tfb', type:'select', opt:()=>R('conditions_stockage'), free:1, wide:1},
+  {tab:'logi', grp:'Logistique', path:'logistique.moq',                  lb:'MOQ',                 src:'tfb', type:'num', u:'pièces'},
+  {tab:'logi', grp:'Logistique', path:'logistique.delai_reappro_jours',  lb:'Délai de réapprovisionnement', src:'tfb', type:'num', u:'jours'},
+
+  {tab:'logi', grp:'Déploiement', path:'deploiement.points_de_vente',       lb:'Points de vente concernés', src:'tfb', type:'multi', opt:()=>R('points_de_vente'), wide:1},
+  {tab:'logi', grp:'Déploiement', path:'deploiement.date_mise_en_service',  lb:'Date de mise en service',   src:'tfb', type:'date'},
+  {tab:'logi', grp:'Déploiement', path:'deploiement.points_de_vigilance',   lb:'Points de vigilance',       src:'tfb', type:'area', wide:1},
+
+  // ---------- 4. Usage TFB ----------
+  {tab:'usage', grp:'Recettes concernées', path:'usage_tfb.recettes_concernees',    lb:'Recettes concernées',   src:'tfb', type:'tags', wide:1},
+  {tab:'usage', grp:'Recettes concernées', path:'usage_tfb.usage',                  lb:'Usage',                 src:'tfb', type:'area', wide:1},
+  {tab:'usage', grp:'Recettes concernées', path:'usage_tfb.quantite_par_emballage', lb:'Quantité par emballage', src:'tfb', type:'num', u:'pièces'},
+
+  // ---------- 5. Photos ----------
+  {tab:'photos', grp:'Galerie', path:'photos.0', lb:'Produit nu',                  src:'tfb', type:'photo'},
+  {tab:'photos', grp:'Galerie', path:'photos.1', lb:'Produit garni',               src:'tfb', type:'photo'},
+  {tab:'photos', grp:'Galerie', path:'photos.2', lb:'Mise en situation boutique',  src:'tfb', type:'photo'},
+  {tab:'photos', grp:'Galerie', path:'photos.3', lb:'Gabarit à plat',              src:'tfb', type:'photo'}
+];
+const TFB_FIELDS = FIELDS.filter(f=>f.src==='tfb');
+const byTab = k => FIELDS.filter(f=>f.tab===k);
+
+/* ---- complétude : part des champs TFB renseignés ---- */
+const comp = r => Math.round(100*TFB_FIELDS.filter(f=>!isEmpty(getPath(r,f.path))).length/TFB_FIELDS.length);
+const tabComp = (r,k) => { const a=byTab(k).filter(f=>f.src==='tfb');
+  return {n:a.filter(f=>!isEmpty(getPath(r,f.path))).length, t:a.length}; };
+
+/* ============================================================
+   Chargement
+   ============================================================ */
+async function load(){
+  setConn('spin','Chargement du référentiel…','');
+  let doc = (typeof EMBEDDED!=='undefined') ? EMBEDDED : null;
+  try{ const r=await fetch('data/packaging.json',{cache:'no-store'}); if(r.ok) doc=await r.json(); }catch(e){}
+  if(!doc){ setConn('err','Référentiel introuvable',''); return; }
+  DB=doc;
+  await loadOverrides();
+  buildFilters(); render(); syncInpulse();
+}
+
+async function loadOverrides(){
+  try{
+    const r=await fetch('/api/store',{cache:'no-store'});
+    if(!r.ok) throw new Error((await r.json().catch(()=>({}))).error||('HTTP '+r.status));
+    OVR = await r.json(); if(!OVR.records) OVR.records={};
+    storeOk=true;
+    applyOverrides();
+    setSave('ok', OVR.updated_at ? 'Dernière saisie ' + new Date(OVR.updated_at).toLocaleString('fr-FR') : 'Aucune saisie enregistrée');
+  }catch(e){
+    storeOk=false; OVR={records:{}};
+    setSave('err','Saisie non enregistrée — ' + e.message);
+  }
+}
+function applyOverrides(){
+  DB.packagings.forEach(p=>{
+    const o=OVR.records[p.id]; if(!o) return;
+    Object.keys(o).forEach(path=>setPath(p,path,o[path]));
+  });
+}
+
+/* ---- Inpulse : /api/packaging si dispo, sinon pagination via /api/proxy ---- */
 async function syncInpulse(){
   setConn('spin','Interrogation d’Inpulse…','');
   try{
-    let list = null, via = '';
-    // Chemin rapide : la function d'agregation, si elle est deployee.
+    let list=null, via='';
     try{
-      const r = await fetch('/api/packaging',{cache:'no-store'});
-      if(r.ok){ const d = await r.json(); if(d.data && d.data.length){ list = d.data; via = 'via /api/packaging'; } }
+      const r=await fetch('/api/packaging',{cache:'no-store'});
+      if(r.ok){ const d=await r.json(); if(d.data&&d.data.length){ list=d.data; via='via /api/packaging'; } }
     }catch(e){}
-    // Repli : on pagine nous-memes a travers le proxy generique.
-    // L'API Inpulse plafonne a 100 par page et ne filtre pas par categorie.
-    if(!list){ list = await scanViaProxy(); via = 'via /api/proxy, ' + Math.ceil(list.length/1) + ' réf. PACKAGING'; }
+    if(!list){ list=await scanViaProxy(); via='via /api/proxy'; }
     if(!list.length) throw new Error('aucune référence PACKAGING renvoyée');
 
     const by={}; list.forEach(x=>{ if(x.name) by[String(x.name).trim().toUpperCase()]=x; });
     let hit=0; const orphans=[];
     DB.packagings.forEach(p=>{
-      const m = by[p.identification.intitule_inpulse.trim().toUpperCase()];
+      const m=by[p.identification.intitule_inpulse.trim().toUpperCase()];
       if(!m){ orphans.push(p.nom); return; }
       hit++;
-      p.inpulse.live = true;
-      if(m.price!=null) p.inpulse.prix_ht = Number(m.price);
-      if(m.supplier) p.inpulse.fournisseur = m.supplier;
-      if(m.subCategory) p.inpulse.sous_categorie = m.subCategory;
-      p.inpulse.unite_achat = m.packaging.name;
-      p.inpulse.actif = m.active;
-      p.identification.sku_fournisseur = (m.sku && m.sku !== '?') ? m.sku : '';
-      const q = m.packaging.quantity;
-      p.logistique.nombre_par_carton = (q && q>1) ? q : null;
-      p.logistique.unite_commande = uniteCommande(m.packaging.name);
-      p.logistique.prix_unitaire_ht = (q && q>1 && m.price) ? m.price/q : null;
+      p.inpulse.live=true;
+      if(m.price!=null) p.inpulse.prix_ht=Number(m.price);
+      if(m.supplier) p.inpulse.fournisseur=m.supplier;
+      if(m.subCategory) p.inpulse.sous_categorie=m.subCategory;
+      p.inpulse.unite_achat=m.packaging.name;
+      p.inpulse.actif=m.active;
+      p.identification.sku_fournisseur=(m.sku&&m.sku!=='?')?m.sku:'';
+      const q=m.packaging.quantity;
+      p.logistique.nombre_par_carton=(q&&q>1)?q:null;
+      p.logistique.unite_commande=uniteCommande(m.packaging.name);
+      p.logistique.prix_unitaire_ht=(q&&q>1&&m.price)?m.price/q:null;
     });
     const known={}; DB.packagings.forEach(p=>known[p.identification.intitule_inpulse.trim().toUpperCase()]=1);
-    const nouvelles = list.filter(x=>!known[String(x.name).trim().toUpperCase()]).map(x=>x.name);
-    let note = 'prix, SKU et conditionnements à jour — ' + via;
-    if(nouvelles.length) note += ' · ' + nouvelles.length + ' nouvelle(s) réf. dans Inpulse : ' + nouvelles.join(', ');
-    if(orphans.length)   note += ' · non retrouvée(s) : ' + orphans.join(', ');
-    setConn((hit===DB.packagings.length && !nouvelles.length) ? 'ok' : 'warn',
+    const nouvelles=list.filter(x=>!known[String(x.name).trim().toUpperCase()]).map(x=>x.name);
+    let note='prix, SKU et conditionnements à jour — '+via;
+    if(nouvelles.length) note+=' · '+nouvelles.length+' nouvelle(s) réf. dans Inpulse : '+nouvelles.join(', ');
+    if(orphans.length)   note+=' · non retrouvée(s) : '+orphans.join(', ');
+    setConn((hit===DB.packagings.length&&!nouvelles.length)?'ok':'warn',
       '<strong>Inpulse connecté</strong> — '+hit+' / '+DB.packagings.length+' références rapprochées', note);
+    if(current) openDrawer(current.id);
     render();
   }catch(e){
     setConn('err','<strong>Inpulse non joignable</strong> — affichage du dernier extrait','('+e.message+')');
   }
 }
-
-// Parcourt les pages de /public/v2/supplier-products via le proxy et ne garde
-// que le PACKAGING, remis a la forme que renvoie /api/packaging.
 async function scanViaProxy(){
-  const PAGE = 100, MAX = 30;
-  let rows = [];
-  for(let page=0; page<MAX; page++){
-    const r = await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},
+  const PAGE=100, MAX=30; let rows=[];
+  for(let page=0;page<MAX;page++){
+    const r=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({endpoint:'/public/v2/supplier-products?limit='+PAGE+'&skip='+(page*PAGE),method:'GET'})});
     if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error(e.error||('HTTP '+r.status)); }
-    const d = await r.json();
-    const batch = d.data || [];
-    rows = rows.concat(batch);
-    setConn('spin','Interrogation d’Inpulse…', rows.length + ' / ' + (d.total||'?') + ' références lues');
-    if(batch.length < PAGE) break;
+    const d=await r.json(); const batch=d.data||[];
+    rows=rows.concat(batch);
+    setConn('spin','Interrogation d’Inpulse…', rows.length+' / '+(d.total||'?')+' références lues');
+    if(batch.length<PAGE) break;
   }
-  return rows.filter(x=>x && x.category==='PACKAGING').map(x=>{
-    const p = (x.packagings||[]).find(q=>q.isUsedInOrder) || (x.packagings||[])[0] || {};
-    return { name:String(x.name||'').trim(), sku:String(x.sku||'').trim(),
-             price:x.price==null?null:Number(x.price), active:!!x.active,
-             category:x.category, subCategory:x.subCategory,
-             supplier:(x.supplier&&x.supplier.name)||'',
-             packaging:{ name:String(p.name||'').trim(),
-                         quantity:p.quantity==null?null:Number(p.quantity), unit:p.unit||'' } };
+  return rows.filter(x=>x&&x.category==='PACKAGING').map(x=>{
+    const p=(x.packagings||[]).find(q=>q.isUsedInOrder)||(x.packagings||[])[0]||{};
+    return {name:String(x.name||'').trim(), sku:String(x.sku||'').trim(),
+            price:x.price==null?null:Number(x.price), active:!!x.active,
+            category:x.category, subCategory:x.subCategory,
+            supplier:(x.supplier&&x.supplier.name)||'',
+            packaging:{name:String(p.name||'').trim(), quantity:p.quantity==null?null:Number(p.quantity), unit:p.unit||''}};
   });
 }
-
 function setConn(s,t,d){ document.getElementById('dot').className='dot '+s;
   document.getElementById('conn-t').innerHTML=t; document.getElementById('conn-d').textContent=d||''; }
+function setSave(s,t){ const el=document.getElementById('save'); if(!el) return;
+  el.className='savebadge '+s; el.innerHTML='<i class="ti '+(s==='ok'?'ti-cloud-check':s==='wait'?'ti-cloud-upload':'ti-cloud-off')+'"></i>'+esc(t); }
 
-/* ---- filtres ---- */
+/* ============================================================
+   Enregistrement des saisies — file d'attente, envoi groupé
+   ============================================================ */
+const QUEUE=[]; let flushT=null, inflight=false;
+function saveField(id,path,value){
+  const rec=DB.packagings.find(p=>p.id===id); if(rec) setPath(rec,path,value);
+  const o=OVR.records[id]||(OVR.records[id]={});
+  if(isEmpty(value)) delete o[path]; else o[path]=value;
+  if(!Object.keys(o).length) delete OVR.records[id];
+  if(!storeOk){ setSave('err','Saisie gardée en mémoire seulement — stockage indisponible'); refreshHeader(); render(); return; }
+  const i=QUEUE.findIndex(q=>q.id===id&&q.path===path);
+  const op={id,path,value:isEmpty(value)?null:value};
+  if(i>=0) QUEUE[i]=op; else QUEUE.push(op);
+  setSave('wait','Enregistrement…');
+  clearTimeout(flushT); flushT=setTimeout(flush,600);
+  refreshHeader(); render();
+}
+
+/* Rafraichit les compteurs de la fiche sans re-rendre le corps :
+   sinon on perdrait le focus du champ en cours de saisie. */
+function refreshHeader(){
+  if(!current) return;
+  const r=current; r._comp=comp(r);
+  const pill=document.querySelector('#d-sub .pill:last-child');
+  if(pill){ pill.textContent='fiche '+r._comp+' %';
+    pill.className='pill '+(r._comp<25?'p-warn':r._comp<60?'p-todo':'p-ok'); }
+  document.querySelectorAll('#d-tabs [data-tab]').forEach(el=>{
+    const c=tabComp(r,el.dataset.tab), sp=el.querySelector('.tcount');
+    if(sp){ sp.textContent=c.n+'/'+c.t;
+      sp.className='tcount'+(c.n===0?' zero':c.n===c.t?' full':''); }
+  });
+}
+async function flush(){
+  if(inflight||!QUEUE.length) return;
+  const ops=QUEUE.splice(0,QUEUE.length); inflight=true;
+  try{
+    const r=await fetch('/api/store',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ops})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
+    OVR.updated_at=d.updated_at;
+    setSave('ok','Enregistré à '+new Date(d.updated_at).toLocaleTimeString('fr-FR')+' · '+d.fiches_modifiees+' fiche(s) saisie(s)');
+  }catch(e){
+    ops.forEach(o=>QUEUE.push(o));
+    setSave('err','Échec de l’enregistrement — '+e.message+' (nouvelle tentative dans 10 s)');
+    setTimeout(flush,10000);
+  }finally{ inflight=false; if(QUEUE.length){ clearTimeout(flushT); flushT=setTimeout(flush,800); } }
+}
+window.addEventListener('beforeunload', e=>{ if(QUEUE.length){ e.preventDefault(); e.returnValue=''; } });
+
+/* ============================================================
+   Filtres, liste, grille
+   ============================================================ */
 function buildFilters(){
   const fam=document.getElementById('f-fam');
   fam.innerHTML='<button class="fgb active" data-fam="">Toutes familles</button>'+
-    DB.referentiels.famille.map(f=>'<button class="fgb" data-fam="'+esc(f)+'">'+esc(f)+'</button>').join('');
+    R('famille').map(f=>'<button class="fgb" data-fam="'+esc(f)+'">'+esc(f)+'</button>').join('');
   fam.onclick=e=>{const b=e.target.closest('[data-fam]');if(!b)return;
     F.fam=b.dataset.fam;[...fam.children].forEach(c=>c.classList.toggle('active',c===b));render();};
   const four=document.getElementById('f-four');
@@ -165,11 +298,12 @@ function buildFilters(){
     document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));render();});
   document.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{
     if(sortK===th.dataset.k)sortD=-sortD;else{sortK=th.dataset.k;sortD=1;}render();});
-  document.getElementById('btn-sync').onclick=syncInpulse;
+  document.getElementById('btn-sync').onclick=()=>{loadOverrides().then(syncInpulse);};
   document.getElementById('btn-xls').onclick=exportXls;
   document.getElementById('d-close').onclick=closeDrawer;
   document.getElementById('ov').onclick=closeDrawer;
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape' && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName||''))) closeDrawer();});
 }
 
 function filtered(){
@@ -180,14 +314,14 @@ function filtered(){
     if(F.comp==='lt50'&&p._comp>=50)return false;
     if(F.comp==='lt80'&&p._comp>=80)return false;
     if(F.comp==='eq100'&&p._comp<100)return false;
+    if(F.comp==='saisies'&&!OVR.records[p.id])return false;
     if(F.q){const h=(p.nom+' '+p.app.famille+' '+p.inpulse.fournisseur+' '+p.app.marquage+' '+
-      p.usage_tfb.usage+' '+p.usage_tfb.recettes_concernees.join(' ')).toLowerCase();
+      (p.usage_tfb.usage||'')+' '+(p.usage_tfb.recettes_concernees||[]).join(' ')).toLowerCase();
       if(h.indexOf(F.q)<0)return false;}
     return true;
   });
 }
 
-/* ---- rendu ---- */
 function render(){
   DB.packagings.forEach(p=>p._comp=comp(p));
   ROWS=filtered();
@@ -209,16 +343,16 @@ function renderMetrics(){
   const tfb=a.filter(p=>p.app.marquage==='TFB').length;
   const moy=Math.round(a.reduce((s,p)=>s+p._comp,0)/n);
   const px0=a.filter(p=>!p.inpulse.prix_ht).length;
-  const pxu=a.filter(p=>p.logistique.nombre_par_carton>1 && p.inpulse.prix_ht>0 && p.inpulse.prix_ht<1).length;
-  const four=new Set(a.map(p=>p.inpulse.fournisseur)).size;
+  const pxu=a.filter(p=>p.logistique.nombre_par_carton>1&&p.inpulse.prix_ht>0&&p.inpulse.prix_ht<1).length;
   const gab=a.filter(p=>p.design.gabarit_fournisseur).length;
+  const sai=Object.keys(OVR.records).length;
   document.getElementById('metrics').innerHTML=[
-    ['Références',n,DB.referentiels.famille.length+' familles',''],
+    ['Références',n,R('famille').length+' familles',''],
     ['Marquées TFB',tfb,Math.round(100*tfb/n)+' % du parc',''],
-    ['Fournisseurs',four,'WELLEMBAL majoritaire',''],
-    ['Fiches remplies',moy+' %','moyenne sur '+FILLABLE.length+' champs','accent'],
+    ['Fiches remplies',moy+' %','moyenne sur '+TFB_FIELDS.length+' champs','accent'],
+    ['Fiches saisies',sai+' / '+n,'au moins un champ renseigné',''],
     ['Gabarits joints',gab+' / '+n,'fichier fournisseur',''],
-    ['Prix à 0,00 €',px0,'dans Inpulse','' ],
+    ['Prix à 0,00 €',px0,'dans Inpulse',''],
     ['Prix incohérents',pxu,'prix unitaire saisi sur un carton','']
   ].map(([l,v,s,c])=>'<div class="metric '+c+'"><div class="ml">'+l+'</div><div class="mv">'+v+
      '</div><div class="msub">'+s+'</div></div>').join('');
@@ -234,7 +368,8 @@ function renderList(){
     '<p>Aucun packaging ne correspond aux filtres.</p></div></td></tr>';return;}
   tb.innerHTML=ROWS.map(p=>{
     const ok=(p.inpulse.dispo||'').split('/')[0]!=='0';
-    return '<tr data-id="'+p.id+'"><td class="tb">'+esc(p.nom)+'</td>'
+    return '<tr data-id="'+p.id+'"><td class="tb">'+esc(p.nom)+
+        (OVR.records[p.id]?' <i class="ti ti-pencil edited" title="fiche saisie"></i>':'')+'</td>'
       +'<td class="tm">'+esc(p.app.famille)+'</td><td>'+pillMarq(p.app.marquage)+'</td>'
       +'<td class="tm">'+esc(p.inpulse.fournisseur)+'</td>'
       +'<td class="num">'+eur(p.inpulse.prix_ht)+'</td>'
@@ -243,7 +378,6 @@ function renderList(){
   }).join('');
   tb.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>openDrawer(tr.dataset.id));
 }
-
 function renderGrid(){
   const g=document.getElementById('view-grid');
   g.innerHTML=ROWS.map(p=>'<div class="card" data-id="'+p.id+'">'
@@ -254,114 +388,87 @@ function renderGrid(){
   g.querySelectorAll('[data-id]').forEach(c=>c.onclick=()=>openDrawer(c.dataset.id));
 }
 
-/* ---- fiche ---- */
-const SRC_INP='<span class="src src-inp">Inpulse</span>', SRC_TFB='<span class="src src-tfb">TFB</span>';
-function f(label,val,unit,src,wide){
-  const body=isEmpty(val)?'<div class="fv void">à compléter</div>'
-    :Array.isArray(val)?'<div class="chips">'+val.map(v=>'<span class="chip">'+esc(v)+'</span>').join('')+'</div>'
-    :'<div class="fv">'+esc(val)+(unit?' <span class="u">'+esc(unit)+'</span>':'')+'</div>';
-  return '<div class="f'+(wide?' wide':'')+'"><div class="fl">'+esc(label)+(src||'')+'</div>'+body+'</div>';
+/* ============================================================
+   Fiche — champs Inpulse en lecture, champs TFB éditables
+   ============================================================ */
+const SRC_INP='<span class="src src-inp" title="piloté par Inpulse, non modifiable ici">Inpulse</span>';
+const SRC_TFB='<span class="src src-tfb" title="saisi par TFB">TFB</span>';
+
+function control(r,f){
+  const v=getPath(r,f.path), id=r.id, P=f.path;
+  const a='data-id="'+id+'" data-path="'+P+'"';
+  if(f.src==='inp'){
+    const txt=f.fmt?f.fmt(v):(v===true?'oui':v===false?'non':v);
+    return isEmpty(txt)||txt==='—'?'<div class="fv void">—</div>'
+      :'<div class="fv">'+esc(txt)+(f.u?' <span class="u">'+esc(f.u)+'</span>':'')+'</div>';
+  }
+  switch(f.type){
+    case 'num':
+      return '<div class="ctl"><input class="ed" type="number" step="'+(f.step||'1')+'" '+a+
+        ' value="'+(v==null?'':esc(v))+'" placeholder="—">'+(f.u?'<span class="u">'+esc(f.u)+'</span>':'')+'</div>';
+    case 'area':
+      return '<textarea class="ed" rows="3" '+a+' placeholder="à compléter">'+esc(v||'')+'</textarea>';
+    case 'select': {
+      const opts=(f.opt?f.opt():[]);
+      const fk=id+'|'+P, known=opts.indexOf(v)>=0, libre=FREE[fk]||(!known&&!isEmpty(v));
+      return '<div class="ctl"><select class="ed" '+a+'><option value="">— à compléter —</option>'
+        +opts.map(o=>'<option'+(o===v?' selected':'')+'>'+esc(o)+'</option>').join('')
+        +(f.free?'<option value="__autre"'+(libre?' selected':'')+'>Autre…</option>':'')
+        +'</select>'+(f.free&&libre?'<input class="ed free" type="text" '+a+' value="'+esc(known?'':(v||''))+'" placeholder="valeur libre">':'')+'</div>';
+    }
+    case 'bool':
+      return '<select class="ed" '+a+'><option value="">—</option>'
+        +'<option value="1"'+(v===true?' selected':'')+'>oui</option>'
+        +'<option value="0"'+(v===false?' selected':'')+'>non</option></select>';
+    case 'date':
+      return '<input class="ed" type="date" '+a+' value="'+esc(v||'')+'">';
+    case 'multi': {
+      const sel=Array.isArray(v)?v:[];
+      return '<div class="multi">'+(f.opt?f.opt():[]).map(o=>
+        '<label class="chk'+(sel.indexOf(o)>=0?' on':'')+'"><input type="checkbox" class="ed-multi" '+a+
+        ' value="'+esc(o)+'"'+(sel.indexOf(o)>=0?' checked':'')+'>'+esc(o)+'</label>').join('')+'</div>';
+    }
+    case 'tags': {
+      const t=Array.isArray(v)?v:[];
+      return '<div class="tags">'+t.map((x,i)=>'<span class="chip">'+esc(x)+
+          '<button class="chip-x ed-tagdel" '+a+' data-i="'+i+'" title="retirer">×</button></span>').join('')
+        +'<input class="ed-tagadd taginput" '+a+' placeholder="ajouter puis Entrée"></div>';
+    }
+    case 'link': case 'photo': {
+      const isImg=/\.(png|jpe?g|webp|gif|svg)(\?|$)/i.test(v||'');
+      let head='';
+      if(v) head='<div class="linkrow"><a href="'+esc(v)+'" target="_blank" rel="noopener"><i class="ti ti-external-link"></i> ouvrir</a></div>';
+      const prev=(f.type==='photo')
+        ? (v&&isImg?'<img class="thumb" src="'+esc(v)+'" alt="">':'<div class="slot sm"><i class="ti ti-photo-plus"></i>'+esc(f.lb)+'</div>')
+        : (v?'':'<div class="filedrop"><i class="ti ti-link"></i> Coller le lien du fichier (Drive, Dropbox…)</div>');
+      return prev+head+'<input class="ed" type="url" '+a+' value="'+esc(v||'')+'" placeholder="https://…">';
+    }
+    default: {
+      const inp='<input class="ed" type="text" '+a+' value="'+esc(v||'')+'" placeholder="à compléter">';
+      return f.u ? '<div class="ctl">'+inp+'<span class="u">'+esc(f.u)+'</span></div>' : inp;
+    }
+  }
 }
-function file(label,val){
-  return '<div class="f wide"><div class="fl">'+esc(label)+SRC_TFB+'</div>'+
-    (val?'<div class="fv"><a href="'+esc(val)+'" target="_blank" rel="noopener"><i class="ti ti-paperclip"></i> '+esc(val)+'</a></div>'
-        :'<div class="filedrop"><i class="ti ti-file-plus"></i> Aucun fichier joint</div>')+'</div>';
+
+function fieldHTML(r,f){
+  const filled=!isEmpty(getPath(r,f.path));
+  const ovr=OVR.records[r.id]&&OVR.records[r.id][f.path]!==undefined;
+  return '<div class="f'+(f.wide?' wide':'')+(f.src==='tfb'?' ed-f':'')+(filled?'':' vide')+'">'
+    +'<div class="fl">'+esc(f.lb)+(f.src==='inp'?SRC_INP:SRC_TFB)
+    +(ovr?'<i class="ti ti-point-filled dotsaved" title="saisi dans l’app"></i>':'')+'</div>'
+    +control(r,f)+'</div>';
 }
-const gh=t=>'<div class="gh">'+t+'</div>';
-const oui=v=>v===null||v===undefined?'':(v?'oui':'non');
 
-const BODY={
- general: r =>
-   gh('Identification')+'<div class="fields">'
-   + f('Intitulé Inpulse', r.identification.intitule_inpulse, '', SRC_INP, 1)
-   + f('SKU fournisseur', r.identification.sku_fournisseur, '', SRC_INP)
-   + f('Fournisseur', r.inpulse.fournisseur, '', SRC_INP)
-   + f('Prix HT', r.inpulse.prix_ht?eur(r.inpulse.prix_ht):'', '', SRC_INP)
-   + f('Unité d’achat', r.inpulse.unite_achat, '', SRC_INP)
-   + f('Prix unitaire HT', r.logistique.prix_unitaire_ht!=null?eur4(r.logistique.prix_unitaire_ht):'', '', SRC_INP)
-   + f('Disponibilité boutiques', r.inpulse.dispo, '', SRC_INP)
-   + '</div>'
-   + gh('Dimensions')+'<div class="fields">'
-   + f('Longueur', r.dimensions.longueur_cm, 'cm', SRC_TFB)
-   + f('Largeur', r.dimensions.largeur_cm, 'cm', SRC_TFB)
-   + f('Profondeur (soufflet)', r.dimensions.profondeur_soufflet_cm, 'cm', SRC_TFB)
-   + f('Hauteur', r.dimensions.hauteur_cm, 'cm', SRC_TFB)
-   + f('Dimensions à plat (L × H)', r.dimensions.dimensions_a_plat_cm, 'cm', SRC_TFB)
-   + f('Tolérance dimensionnelle', r.dimensions.tolerance_mm, 'mm', SRC_TFB)
-   + '</div>'
-   + gh('Matière')+'<div class="fields">'
-   + f('Matière', r.matiere.matiere, '', SRC_TFB)
-   + f('Grammage', r.matiere.grammage_g_m2, 'g/m²', SRC_TFB)
-   + f('Épaisseur', r.matiere.epaisseur_um, 'µm', SRC_TFB)
-   + f('Poids unitaire', r.matiere.poids_unitaire_g, 'g', SRC_TFB)
-   + f('Contact alimentaire', oui(r.matiere.contact_alimentaire), '', SRC_TFB)
-   + '</div>',
-
- design: r =>
-   '<div class="note"><i class="ti ti-info-circle"></i><div>Deux fichiers font foi : le <strong>design validé TFB</strong> '
-   +'et le <strong>gabarit fournisseur</strong>. Tant qu’ils ne sont pas joints, la référence ne peut pas être relancée en production.</div></div>'
-   + gh('Fichiers')+'<div class="fields">'
-   + file('Design validé (TFB)', r.design.design_valide_tfb)
-   + file('Gabarit (fournisseur)', r.design.gabarit_fournisseur)
-   + file('Logo (si nécessaire)', r.design.logo)
-   + '</div>'
-   + gh('Couleurs & pantones')+'<div class="fields">'
-   + f('Pantone principal', r.design.couleurs.pantone_principal, '', SRC_TFB)
-   + f('Pantone secondaire', r.design.couleurs.pantone_secondaire, '', SRC_TFB)
-   + f('Pantone tertiaire', r.design.couleurs.pantone_tertiaire, '', SRC_TFB)
-   + f('Nombre de couleurs d’impression', r.design.couleurs.nb_couleurs_impression, '', SRC_TFB)
-   + '</div>'
-   + gh('Support et rendu')+'<div class="fields">'
-   + f('Type de support', r.design.support_rendu.type_support, '', SRC_TFB)
-   + f('Grammage', r.design.support_rendu.grammage_g_m2, 'g/m²', SRC_TFB)
-   + f('Finition', r.design.support_rendu.finition, '', SRC_TFB)
-   + '</div>'
-   + gh('BAT')+'<div class="fields">'
-   + f('BAT validé par', r.design.bat.valide_par, '', SRC_TFB)
-   + f('Date de validation', r.design.bat.date_validation, '', SRC_TFB)
-   + file('Fichier BAT joint', r.design.bat.fichier)
-   + '</div>'
-   + gh('Mentions obligatoires (si nécessaire)')+'<div class="fields">'
-   + f('Dénomination du produit', r.design.mentions_obligatoires.denomination_produit, '', SRC_TFB)
-   + f('Poids / contenance', r.design.mentions_obligatoires.poids_contenance, '', SRC_TFB)
-   + f('Allergènes', r.design.mentions_obligatoires.allergenes, '', SRC_TFB)
-   + f('DDM / DLC', r.design.mentions_obligatoires.ddm_dlc, '', SRC_TFB)
-   + f('Adresse et raison sociale', r.design.mentions_obligatoires.adresse_raison_sociale, '', SRC_TFB)
-   + f('Logo tri / recyclabilité', r.design.mentions_obligatoires.logo_tri_recyclabilite, '', SRC_TFB)
-   + '</div>',
-
- logi: r =>
-   gh('Logistique')+'<div class="fields">'
-   + f('Nombre par carton', r.logistique.nombre_par_carton, 'pièces', SRC_INP)
-   + f('Unité de commande', r.logistique.unite_commande, '', SRC_INP)
-   + f('Prix unitaire HT', r.logistique.prix_unitaire_ht!=null?eur4(r.logistique.prix_unitaire_ht):'', '', SRC_INP)
-   + f('Cartons par palette', r.logistique.cartons_par_palette, 'cartons', SRC_TFB)
-   + f('Conditions de stockage', r.logistique.conditions_stockage, '', SRC_TFB)
-   + f('MOQ', r.logistique.moq, 'pièces', SRC_TFB)
-   + f('Délai de réapprovisionnement', r.logistique.delai_reappro_jours, 'jours', SRC_TFB)
-   + '</div>'
-   + gh('Déploiement')+'<div class="fields">'
-   + f('Points de vente concernés', r.deploiement.points_de_vente, '', SRC_TFB, 1)
-   + f('Date de mise en service', r.deploiement.date_mise_en_service, '', SRC_TFB)
-   + f('Points de vigilance', r.deploiement.points_de_vigilance, '', SRC_TFB, 1)
-   + '</div>',
-
- usage: r =>
-   gh('Recettes concernées')+'<div class="fields">'
-   + f('Recettes concernées', r.usage_tfb.recettes_concernees, '', SRC_TFB, 1)
-   + f('Usage', r.usage_tfb.usage, '', SRC_TFB, 1)
-   + f('Quantité par emballage', r.usage_tfb.quantite_par_emballage, 'pièces', SRC_TFB)
-   + '</div>',
-
- photos: r =>
-   '<div class="note"><i class="ti ti-camera"></i><div>Quatre prises par référence. Les fichiers vivent dans '
-   +'<code>assets/photos/'+esc(r.id)+'/</code> et sont référencés par le tableau <code>photos</code>.</div></div>'
-   + gh('Galerie')+'<div class="photogrid">'
-   + DB.referentiels.photos_attendues.map((t,i)=> r.photos[i]
-       ? '<figure><img src="'+esc(r.photos[i])+'" alt="'+esc(t)+'"><figcaption>'+esc(t)+'</figcaption></figure>'
-       : '<div class="slot"><i class="ti ti-photo-plus"></i>'+esc(t)+'</div>').join('')
-   + '</div>'
-};
+function tabBody(r,k){
+  const fs=byTab(k); const groups=[];
+  fs.forEach(f=>{ const g=groups.find(x=>x.g===f.grp); (g?g.f:(groups.push({g:f.grp,f:[]}),groups[groups.length-1].f)).push(f); });
+  let html='';
+  if(k==='design') html+='<div class="note"><i class="ti ti-info-circle"></i><div>Les fichiers se renseignent par <strong>lien</strong> (Drive, Dropbox) : collez l’URL, l’app garde le lien et affiche un aperçu pour les images. Le téléversement direct viendra dans un second temps.</div></div>';
+  if(k==='photos') html+='<div class="note"><i class="ti ti-camera"></i><div>Quatre prises par référence, dans cet ordre. Collez l’URL de chaque image — un aperçu s’affiche dès que le lien est valide.</div></div>';
+  groups.forEach(g=>{ html+='<div class="gh">'+esc(g.g)+'</div><div class="fields'+(k==='photos'?' photofields':'')+'">'
+    +g.f.map(f=>fieldHTML(r,f)).join('')+'</div>'; });
+  return html;
+}
 
 function openDrawer(id){
   current=DB.packagings.find(p=>p.id===id); if(!current) return;
@@ -378,39 +485,81 @@ function openDrawer(id){
   }).join('');
   document.getElementById('d-tabs').querySelectorAll('[data-tab]')
     .forEach(el=>el.onclick=()=>{activeTab=el.dataset.tab;openDrawer(id);});
-  const b=document.getElementById('d-body'); b.innerHTML=BODY[activeTab](r); b.scrollTop=0;
+  const b=document.getElementById('d-body');
+  b.innerHTML=tabBody(r,activeTab);
+  b.scrollTop=0;
+  wire(b);
   document.getElementById('ov').classList.add('on');
   document.getElementById('drawer').classList.add('on');
 }
-function closeDrawer(){document.getElementById('ov').classList.remove('on');
-  document.getElementById('drawer').classList.remove('on');}
+function closeDrawer(){ if(QUEUE.length) flush();
+  document.getElementById('ov').classList.remove('on');
+  document.getElementById('drawer').classList.remove('on'); current=null; }
 
-/* ---- export ---- */
-function exportXls(){
-  const rows=ROWS.map(p=>({
-    'Intitulé Inpulse':p.identification.intitule_inpulse,'SKU fournisseur':p.identification.sku_fournisseur,
-    Famille:p.app.famille,Marquage:p.app.marquage,Statut:p.app.statut,
-    Fournisseur:p.inpulse.fournisseur,'Prix HT':p.inpulse.prix_ht,'Unité d\u2019achat':p.inpulse.unite_achat,
-    'Prix unitaire HT':p.logistique.prix_unitaire_ht,'Dispo.':p.inpulse.dispo,
-    'Longueur (cm)':p.dimensions.longueur_cm,'Largeur (cm)':p.dimensions.largeur_cm,
-    'Soufflet (cm)':p.dimensions.profondeur_soufflet_cm,'Hauteur (cm)':p.dimensions.hauteur_cm,
-    'À plat (cm)':p.dimensions.dimensions_a_plat_cm,'Tolérance (mm)':p.dimensions.tolerance_mm,
-    Matière:p.matiere.matiere,'Grammage (g/m²)':p.matiere.grammage_g_m2,'Épaisseur (µm)':p.matiere.epaisseur_um,
-    'Poids unitaire (g)':p.matiere.poids_unitaire_g,'Contact alimentaire':oui(p.matiere.contact_alimentaire),
-    'Design validé TFB':p.design.design_valide_tfb,'Gabarit fournisseur':p.design.gabarit_fournisseur,
-    'Pantone principal':p.design.couleurs.pantone_principal,'Nb couleurs':p.design.couleurs.nb_couleurs_impression,
-    'Type de support':p.design.support_rendu.type_support,Finition:p.design.support_rendu.finition,
-    'BAT validé par':p.design.bat.valide_par,'Date BAT':p.design.bat.date_validation,
-    'Nombre par carton':p.logistique.nombre_par_carton,'Unité de commande':p.logistique.unite_commande,
-    'Cartons par palette':p.logistique.cartons_par_palette,
-    'Conditions de stockage':p.logistique.conditions_stockage,MOQ:p.logistique.moq,
-    'Délai réappro (j)':p.logistique.delai_reappro_jours,
-    'Points de vente':p.deploiement.points_de_vente.join(', '),
-    'Mise en service':p.deploiement.date_mise_en_service,'Points de vigilance':p.deploiement.points_de_vigilance,
-    'Recettes concernées':p.usage_tfb.recettes_concernees.join(', '),Usage:p.usage_tfb.usage,
-    'Quantité par emballage':p.usage_tfb.quantite_par_emballage,
-    Photos:p.photos.filter(x=>x).length+'/4','Fiche %':p._comp
+/* ---- branchement des contrôles ---- */
+function wire(root){
+  root.querySelectorAll('input.ed, textarea.ed, select.ed').forEach(el=>{
+    const id=el.dataset.id, path=el.dataset.path;
+    const commit=()=>{
+      let v;
+      if(el.tagName==='SELECT'){
+        if(el.value==='__autre'){ FREE[id+'|'+path]=true; openDrawer(id); return; }
+        delete FREE[id+'|'+path];
+        const f=FIELDS.find(x=>x.path===path);
+        v = f&&f.type==='bool' ? (el.value===''?null:el.value==='1') : (el.value||null);
+      } else if(el.type==='number'){
+        v = el.value===''?null:Number(el.value);
+        if(v!==null&&isNaN(v)) return;
+      } else {
+        v = el.value.trim()||null;
+      }
+      const cur=getPath(DB.packagings.find(p=>p.id===id),path);
+      if((cur==null?null:cur)===v) return;
+      saveField(id,path,v);
+      const f=FIELDS.find(x=>x.path===path);
+      if(f&&(f.type==='photo'||f.type==='link'||f.type==='select')) openDrawer(id);
+    };
+    el.addEventListener('change',commit);
+    if(el.tagName==='TEXTAREA'||el.type==='text'||el.type==='url') el.addEventListener('blur',commit);
+    el.addEventListener('keydown',e=>{ if(e.key==='Enter'&&el.tagName!=='TEXTAREA'){ e.preventDefault(); el.blur(); }});
+  });
+  root.querySelectorAll('.ed-multi').forEach(el=>el.addEventListener('change',()=>{
+    const id=el.dataset.id, path=el.dataset.path;
+    const sel=[...root.querySelectorAll('.ed-multi[data-path="'+path+'"]:checked')].map(x=>x.value);
+    el.closest('label').classList.toggle('on',el.checked);
+    saveField(id,path,sel.length?sel:null);
   }));
+  root.querySelectorAll('.ed-tagadd').forEach(el=>el.addEventListener('keydown',e=>{
+    if(e.key!=='Enter') return; e.preventDefault();
+    const val=el.value.trim(); if(!val) return;
+    const id=el.dataset.id, path=el.dataset.path;
+    const cur=getPath(DB.packagings.find(p=>p.id===id),path)||[];
+    if(cur.indexOf(val)<0) saveField(id,path,cur.concat([val]));
+    openDrawer(id);
+  }));
+  root.querySelectorAll('.ed-tagdel').forEach(el=>el.addEventListener('click',()=>{
+    const id=el.dataset.id, path=el.dataset.path, i=+el.dataset.i;
+    const cur=(getPath(DB.packagings.find(p=>p.id===id),path)||[]).slice();
+    cur.splice(i,1); saveField(id,path,cur.length?cur:null); openDrawer(id);
+  }));
+}
+
+/* ============================================================
+   Export
+   ============================================================ */
+function exportXls(){
+  const rows=ROWS.map(p=>{
+    const o={Packaging:p.nom};
+    FIELDS.forEach(f=>{
+      let v=getPath(p,f.path);
+      if(Array.isArray(v)) v=v.join(', ');
+      else if(v===true) v='oui'; else if(v===false) v='non';
+      o[f.lb+(f.u?' ('+f.u+')':'')]=v==null?'':v;
+    });
+    o['Fiche %']=p._comp;
+    o['Saisi dans l’app']=OVR.records[p.id]?'oui':'non';
+    return o;
+  });
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Info Pack');
   XLSX.writeFile(wb,'tfb-info-pack-'+new Date().toISOString().slice(0,10)+'.xlsx');
