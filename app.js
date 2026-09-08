@@ -10,11 +10,11 @@
    ============================================================ */
 
 const TABS = [
-  {k:'general', t:'Informations générales',        i:'ti-pencil'},
-  {k:'design',  t:'Design & gabarit',              i:'ti-palette'},
-  {k:'logi',    t:'Conditionnement & logistique',  i:'ti-package'},
-  {k:'usage',   t:'Usage TFB',                     i:'ti-croissant'},
-  {k:'photos',  t:'Photos',                        i:'ti-camera'}
+  {k:'general', t:'Informations générales',        s:'Général',     i:'ti-pencil'},
+  {k:'design',  t:'Design & gabarit',              s:'Design',      i:'ti-palette'},
+  {k:'logi',    t:'Conditionnement & logistique',  s:'Logistique',  i:'ti-package'},
+  {k:'usage',   t:'Usage TFB',                     s:'Usage',       i:'ti-croissant'},
+  {k:'photos',  t:'Photos',                        s:'Photos',      i:'ti-camera'}
 ];
 
 let DB=null, OVR={records:{}}, ROWS=[], view='list', sortK='nom', sortD=1, activeTab='general', current=null;
@@ -311,6 +311,13 @@ function refreshHeader(){
     if(sp){ sp.textContent=c.n+'/'+c.t;
       sp.className='tcount'+(c.n===0?' zero':c.n===c.t?' full':''); }
   });
+  document.querySelectorAll('#d-body .grp').forEach(el=>{
+    const a=byTab(activeTab).filter(f=>f.src==='tfb'&&f.grp===el.dataset.grp);
+    const sp=el.querySelector('.grp-c'); if(!sp||!a.length) return;
+    const n=a.filter(f=>!isEmpty(getPath(r,f.path))).length;
+    sp.textContent=n+'/'+a.length;
+    sp.className='grp-c'+(n===0?' zero':n===a.length?' full':'');
+  });
 }
 async function flush(){
   if(inflight||!QUEUE.length) return;
@@ -564,8 +571,15 @@ function tabBody(r,k){
   let html='';
   if(k==='design') html+='<div class="note"><i class="ti ti-info-circle"></i><div>Les fichiers se renseignent par <strong>lien</strong> (Drive, Dropbox) : collez l’URL, l’app garde le lien et affiche un aperçu pour les images. Le téléversement direct viendra dans un second temps.</div></div>';
   if(k==='photos') html+='<div class="note"><i class="ti ti-camera"></i><div>Quatre prises par référence, dans cet ordre. Collez l’URL de chaque image — un aperçu s’affiche dès que le lien est valide.</div></div>';
-  groups.forEach(g=>{ html+='<div class="gh">'+esc(g.g)+'</div><div class="fields'+(k==='photos'?' photofields':'')+'">'
-    +g.f.map(f=>fieldHTML(r,f)).join('')+'</div>'; });
+  groups.forEach(g=>{
+    const a=g.f.filter(f=>f.src==='tfb');
+    const n=a.filter(f=>!isEmpty(getPath(r,f.path))).length, tot=a.length;
+    const cnt = tot ? '<span class="grp-c'+(n===0?' zero':n===tot?' full':'')+'">'+n+'/'+tot+'</span>'
+                    : '<span class="grp-c auto">Inpulse</span>';
+    html+='<section class="grp" data-grp="'+esc(g.g)+'">'
+      +'<div class="grp-h"><span class="grp-n">'+esc(g.g)+'</span>'+cnt+'</div>'
+      +'<div class="grp-b"><div class="fields'+(k==='photos'?' photofields':'')+'">'
+      +g.f.map(f=>fieldHTML(r,f)).join('')+'</div></div></section>'; });
   return html;
 }
 
@@ -579,8 +593,9 @@ function openDrawer(id){
     +'<span class="pill '+(r._comp<25?'p-warn':r._comp<60?'p-todo':'p-ok')+'">fiche '+r._comp+' %</span>';
   document.getElementById('d-tabs').innerHTML=TABS.map(t=>{
     const c=tabComp(r,t.k);
-    return '<div class="tab'+(t.k===activeTab?' active':'')+'" data-tab="'+t.k+'"><i class="ti '+t.i+'"></i>'
-      +t.t+'<span class="tcount'+(c.n===0?' zero':c.n===c.t?' full':'')+'">'+c.n+'/'+c.t+'</span></div>';
+    return '<button type="button" class="tab'+(t.k===activeTab?' active':'')+'" data-tab="'+t.k+'"'
+      +' title="'+esc(t.t)+'"><i class="ti '+t.i+'"></i><span class="tl">'+esc(t.s)+'</span>'
+      +'<span class="tcount'+(c.n===0?' zero':c.n===c.t?' full':'')+'">'+c.n+'/'+c.t+'</span></button>';
   }).join('');
   document.getElementById('d-tabs').querySelectorAll('[data-tab]')
     .forEach(el=>el.onclick=()=>{activeTab=el.dataset.tab;openDrawer(id);});
