@@ -3,6 +3,6 @@
   "name": "info-pack",
   "description": "TFB Info Pack — base de donnees packaging",
   "dependencies": {
-    "@netlify/blobs": "^7.0.0"
+    "@netlify/blobs": "^8.1.0"
   }
 }
