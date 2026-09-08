@@ -26,7 +26,7 @@ a{color:var(--gdark)}
 .main{max-width:1400px;margin:0 auto;padding:24px}
 .conn{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);margin-bottom:20px}
 .dot{width:8px;height:8px;border-radius:50%;background:#d1d5db;flex-shrink:0}
-.dot.ok{background:var(--green)}.dot.err{background:var(--red)}.dot.spin{background:var(--amber);animation:pulse 1s infinite}
+.dot.ok{background:var(--green)}.dot.err{background:var(--red)}.dot.warn{background:var(--amber)}.dot.spin{background:var(--amber);animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .conn-t{flex:1;font-size:13px;color:var(--tx2)}.conn-t strong{color:var(--tx)}
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
@@ -110,6 +110,45 @@ tr:last-child td{border-bottom:none}tbody tr{cursor:pointer}tbody tr:hover td{ba
 .note{display:flex;gap:9px;align-items:flex-start;padding:11px 13px;border:1px solid #fde68a;background:#fef9ec;border-radius:8px;font-size:12.5px;color:#92400e;line-height:1.5;margin-bottom:18px}
 .note i{font-size:16px;flex-shrink:0}
 .note code{background:rgba(0,0,0,.06);padding:1px 4px;border-radius:3px;font-size:11.5px}
+
+/* ---------- saisie ---------- */
+.savebadge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:500;padding:5px 10px;border-radius:999px;border:1px solid var(--bor);background:var(--sur2);color:var(--tx2);max-width:340px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.savebadge i{font-size:14px;flex-shrink:0}
+.savebadge.ok{border-color:#bbf7d0;background:#f0fdf4;color:#166534}
+.savebadge.wait{border-color:#fed7aa;background:#fff7ed;color:#c2410c}
+.savebadge.err{border-color:#fecaca;background:#fef2f2;color:#b91c1c}
+.edited{font-size:12px;color:var(--gold);vertical-align:middle;margin-left:3px}
+.dotsaved{font-size:13px;color:var(--green);margin-left:auto}
+.f.ed-f{background:var(--sur)}
+.f.ed-f.vide{background:#fffdf8;border-style:dashed}
+.ctl{display:flex;align-items:center;gap:7px}
+.ctl select,.ctl input{min-width:0}
+input.ed,textarea.ed,select.ed{width:100%;font-family:inherit;font-size:13px;font-weight:500;color:var(--tx);
+  background:var(--sur2);border:1px solid var(--bor);border-radius:var(--rs);padding:6px 8px;transition:.12s}
+input.ed:hover,textarea.ed:hover,select.ed:hover{border-color:var(--bor2)}
+input.ed:focus,textarea.ed:focus,select.ed:focus{outline:none;border-color:var(--amber);background:var(--sur);box-shadow:0 0 0 3px rgba(217,119,6,.12)}
+input.ed::placeholder,textarea.ed::placeholder{color:var(--tx3);font-style:italic;font-weight:400}
+textarea.ed{resize:vertical;line-height:1.5}
+.ctl .u{font-size:11px;color:var(--tx3);white-space:nowrap;flex-shrink:0}
+.multi{display:flex;gap:5px;flex-wrap:wrap}
+.chk{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:999px;
+  border:1px solid var(--bor);background:var(--sur2);color:var(--tx2);cursor:pointer;user-select:none;transition:.12s}
+.chk:hover{border-color:var(--amber)}
+.chk.on{background:var(--amber);border-color:var(--amber);color:#fff}
+.chk input{margin:0;width:11px;height:11px;accent-color:#fff;cursor:pointer}
+.tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.tags .chip{display:inline-flex;align-items:center;gap:4px;padding-right:3px}
+.chip-x{border:none;background:none;cursor:pointer;color:var(--tx3);font-size:14px;line-height:1;padding:0 3px;font-family:inherit}
+.chip-x:hover{color:var(--red)}
+.taginput{flex:1;min-width:150px;font-family:inherit;font-size:12px;background:var(--sur2);border:1px dashed var(--bor2);
+  border-radius:var(--rs);padding:5px 8px;color:var(--tx)}
+.taginput:focus{outline:none;border-color:var(--amber);border-style:solid;background:var(--sur)}
+.linkrow{margin:5px 0 6px;font-size:12px}
+.linkrow a{display:inline-flex;align-items:center;gap:4px;text-decoration:none;font-weight:500}
+.linkrow a:hover{text-decoration:underline}
+.thumb{width:100%;border-radius:var(--r);border:1px solid var(--bor);display:block;margin-bottom:7px}
+.slot.sm{aspect-ratio:4/3;margin-bottom:7px}
+.photofields{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
 @media(max-width:720px){.main{padding:14px}.topbar{padding:0 12px}.pagenav{display:none}}
 </style>
 </head><body>
@@ -121,6 +160,7 @@ tr:last-child td{border-bottom:none}tbody tr{cursor:pointer}tbody tr:hover td{ba
     <nav class="pagenav"><a class="active">Packagings</a><a>Fournisseurs</a><a>Référentiels</a></nav>
   </div>
   <div class="topbar-r">
+    <span class="savebadge" id="save"><i class="ti ti-cloud"></i>—</span>
     <button class="btn btn-sm" id="btn-xls"><i class="ti ti-file-spreadsheet"></i>Export</button>
     <button class="btn btn-sm btn-primary" id="btn-sync"><i class="ti ti-refresh"></i>Synchroniser Inpulse</button>
   </div>
@@ -140,7 +180,7 @@ tr:last-child td{border-bottom:none}tbody tr{cursor:pointer}tbody tr:hover td{ba
     <div class="fg" id="f-fam"></div>
     <select id="f-four"><option value="">Tous fournisseurs</option></select>
     <select id="f-marq"><option value="">Tout marquage</option><option>TFB</option><option>Neutre</option><option>Co-branding</option></select>
-    <select id="f-comp"><option value="">Complétude : toutes</option><option value="lt50">&lt; 50 %</option><option value="lt80">&lt; 80 %</option><option value="eq100">100 %</option></select>
+    <select id="f-comp"><option value="">Complétude : toutes</option><option value="lt50">&lt; 50 %</option><option value="lt80">&lt; 80 %</option><option value="eq100">100 %</option><option value="saisies">Fiches saisies ici</option></select>
     <div class="spacer"></div>
     <div class="fg">
       <button class="fgb active" data-view="list"><i class="ti ti-list"></i> Liste</button>
