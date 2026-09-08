@@ -149,6 +149,46 @@ textarea.ed{resize:vertical;line-height:1.5}
 .thumb{width:100%;border-radius:var(--r);border:1px solid var(--bor);display:block;margin-bottom:7px}
 .slot.sm{aspect-ratio:4/3;margin-bottom:7px}
 .photofields{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+
+/* ---------- ligne depliable + historique de commandes ---------- */
+th.nosort{cursor:default}
+tbody tr.mainrow{cursor:default}
+tbody tr.mainrow:hover td{background:var(--sur2)}
+tbody tr.mainrow.open td{background:var(--gbg)}
+.namecell{cursor:pointer;user-select:none;white-space:normal;min-width:260px}
+.chev{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-right:5px;
+  color:var(--tx3);transition:transform .15s;vertical-align:-2px}
+.chev.on{transform:rotate(90deg);color:var(--amber)}
+.namecell:hover .chev{color:var(--amber)}
+.ordline{font-size:11px;font-weight:400;margin-top:3px}
+.ordsum{color:var(--tx3)}
+.ordnil{color:var(--bor2);font-style:italic}
+.btn-fiche{white-space:nowrap;font-size:11.5px;padding:4px 9px}
+.btn-fiche:hover{border-color:var(--amber);color:var(--gdark)}
+tbody tr.subrow td{background:var(--sur2);padding:0;border-bottom:2px solid var(--bor)}
+.ordwrap{padding:14px 16px;overflow-x:auto}
+.ordempty{padding:16px;font-size:12.5px;color:var(--tx3);display:flex;align-items:center;gap:8px}
+.ordtab{width:auto;min-width:100%;border-collapse:collapse;font-size:12px;background:var(--sur);
+  border:1px solid var(--bor);border-radius:var(--rs);overflow:hidden}
+.ordtab thead th{background:var(--sur2);font-size:10px;letter-spacing:.04em;padding:6px 10px;text-align:right;
+  cursor:default;border-bottom:1px solid var(--bor);white-space:nowrap;color:var(--tx3)}
+.ordtab thead th:first-child{text-align:left;min-width:132px}
+.ordtab thead th.off{color:var(--bor2)}
+.ordtab tbody th{text-align:left;font-size:11.5px;font-weight:600;color:var(--tx2);padding:6px 10px;
+  border-bottom:1px solid var(--bor);white-space:nowrap;text-transform:none;letter-spacing:0;cursor:default}
+.ordtab td{text-align:right;padding:6px 10px;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--bor);
+  white-space:nowrap;font-weight:500}
+.ordtab tbody tr:last-child th,.ordtab tbody tr:last-child td{border-bottom:none}
+.ordtab td.void{color:var(--bor2);font-weight:400}
+.ordtab td.tot,.ordtab th.tot{background:var(--sur2);font-weight:700}
+.ordtab tr.ecart td{font-weight:600}
+.ordtab tr.ecart td.neg{color:var(--red)}
+.ordtab tr.ecart td.pos{color:var(--amber)}
+.ordtab tr.unit th,.ordtab tr.unit td{color:var(--tx2);font-weight:500;background:#fcfbf8}
+.ordnote{font-size:11px;color:var(--tx3);margin-top:8px;display:flex;gap:6px;align-items:flex-start;line-height:1.5}
+.ordnote i{flex-shrink:0;font-size:13px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.savebadge .ti-loader-2{animation:spin 1s linear infinite}
 @media(max-width:720px){.main{padding:14px}.topbar{padding:0 12px}.pagenav{display:none}}
 </style>
 </head><body>
@@ -160,6 +200,7 @@ textarea.ed{resize:vertical;line-height:1.5}
     <nav class="pagenav"><a class="active">Packagings</a><a>Fournisseurs</a><a>Référentiels</a></nav>
   </div>
   <div class="topbar-r">
+    <span class="savebadge" id="ordbadge" style="display:none"></span>
     <span class="savebadge" id="save"><i class="ti ti-cloud"></i>—</span>
     <button class="btn btn-sm" id="btn-xls"><i class="ti ti-file-spreadsheet"></i>Export</button>
     <button class="btn btn-sm btn-primary" id="btn-sync"><i class="ti ti-refresh"></i>Synchroniser Inpulse</button>
@@ -192,6 +233,7 @@ textarea.ed{resize:vertical;line-height:1.5}
     <div class="sh"><div class="st">Base packaging</div><div class="sm" id="count"></div></div>
     <div id="view-list" class="tw"><table><thead><tr>
       <th data-k="nom">Packaging<span class="si2"></span></th>
+      <th class="nosort"></th>
       <th data-k="famille">Famille<span class="si2"></span></th>
       <th data-k="marquage">Marquage<span class="si2"></span></th>
       <th data-k="four">Fournisseur<span class="si2"></span></th>
