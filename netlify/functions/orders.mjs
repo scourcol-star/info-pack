@@ -29,7 +29,7 @@ const json = (s, b) => new Response(JSON.stringify(b), { status: s, headers: H }
 function blank() {
   return {
     version: 1, from: FROM,
-    stores: null, packagingIds: null, names: {}, packagingSuppliers: null, packagingSuppliers: null, packagingSuppliers: null, packagingSuppliers: null, packagingSuppliers: null,
+    stores: null, packagingIds: null, names: {}, packagingSuppliers: null,
     headerSkip: 0, headerTotal: null, headersDone: false,
     queue: [], seen: {}, agg: {},
     updated_at: null, full_built_at: null
@@ -111,7 +111,7 @@ export default async (req) => {
         });
         if (rows.length < PAGE) break;
       }
-      st.packagingIds = ids; st.names = names; st.packagingSuppliers = sups; st.packagingSuppliers = sups; st.packagingSuppliers = sups; st.packagingSuppliers = sups; st.packagingSuppliers = sups;
+      st.packagingIds = ids; st.names = names; st.packagingSuppliers = sups;
     }
 
     // --- 3. Balayage des entetes de commandes, reprenable ---
@@ -124,36 +124,21 @@ export default async (req) => {
         if (SKIP_STATUS[o.statusName]) return;
         if (st.seen[o.id]) return;
         // seules les commandes des fournisseurs de packaging portent des lignes
-        // packaging : inutile d ouvrir les 4400 autres
+        // packaging : inutile d'ouvrir les 4400 autres
         const sup = ((o.supplier && o.supplier.name) || o.supplier || "").trim().toUpperCase();
         if (!st.packagingSuppliers || !st.packagingSuppliers[sup]) return;
-        // seules les commandes des fournisseurs de packaging portent des lignes
-        // packaging : inutile d ouvrir les 4400 autres
-        const sup = ((o.supplier && o.supplier.name) || o.supplier || "").trim().toUpperCase();
-        if (!st.packagingSuppliers || !st.packagingSuppliers[sup]) return;
-        // seules les commandes des fournisseurs de packaging portent des lignes
-        // packaging : inutile d ouvrir les 4400 autres
-        const sup = ((o.supplier && o.supplier.name) || o.supplier || "").trim().toUpperCase();
-        if (!st.packagingSuppliers || !st.packagingSuppliers[sup]) return;
-        // seules les commandes des fournisseurs de packaging portent des lignes
-        // packaging : inutile d ouvrir les 4400 autres
-        const sup = ((o.supplier && o.supplier.name) || o.supplier || "").trim().toUpperCase();
-        if (!st.packagingSuppliers || !st.packagingSuppliers[sup]) return;
-        // seules les commandes des fournisseurs de packaging portent des lignes
-        // packaging : inutile d ouvrir les 4400 autres
-        const sup = ((o.supplier && o.supplier.name) || o.supplier || "").trim().toUpperCase();
-        if (!st.packagingSuppliers || !st.packagingSuppliers[sup]) return;
-        // le filtre packaging se fait sur les lignes : une commande peut
-        // melanger du packaging et autre chose
-        st.queue.push({ id: o.id, m: String(o.orderDate || o.deliveryDate || "").slice(0, 7) });
+        // on garde la commande pour inspection : le filtre fournisseur est fait
+        // sur les lignes (une commande peut melanger packaging et autre chose)
+        st.queue.push({ id: o.id, m: String(o.orderDate || o.deliveryDate || "").slice(0, 7), sup });
       });
       st.headerSkip += rows.length;
       if (rows.length < PAGE || st.headerSkip >= st.headerTotal) { st.headersDone = true; break; }
     }
 
     // --- 4. Detail des commandes en attente ---
-    if (st.queue.length) {
-      await pool(st.queue.slice(0, 5000), async (job) => {
+    if (st.headersDone || st.queue.length) {
+      const batch = st.queue.slice(0, 4000);
+      const res = await pool(batch, async (job) => {
         const d = await inpulse(key, "/public/v2/orders/" + job.id, null, "GET");
         const lines = (d && d.data) || [];
         const touched = {};
@@ -172,6 +157,7 @@ export default async (req) => {
       }, deadline);
       st.queue = st.queue.filter(j => !st.seen[j.id]);
       if (st.headersDone && !st.queue.length) st.full_built_at = new Date().toISOString();
+      void res;
     }
 
     st.updated_at = new Date().toISOString();
