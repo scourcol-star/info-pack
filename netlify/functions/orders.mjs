@@ -91,7 +91,7 @@ export default async (req) => {
   try {
     // --- 1. Boutiques (obligatoire dans le filtre des commandes) ---
     if (!st.stores) {
-      const d = await inpulse(key, "/public/v2/stores?limit=200", null, "GET");
+      const d = await inpulse(key, "/public/v2/stores?limit=100", null, "GET");
       st.stores = ((d.data || d) || []).map(s => s.id);
     }
 
