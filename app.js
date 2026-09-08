@@ -23,7 +23,6 @@ const isEmpty = v => v===''||v==null||v===false||(Array.isArray(v)&&!v.length);
 
 /* ---- complétude : uniquement les champs que TFB doit saisir ---- */
 const FILLABLE = [
-  r=>r.identification.sku_fournisseur,
   r=>r.dimensions.longueur_cm, r=>r.dimensions.largeur_cm, r=>r.dimensions.hauteur_cm,
   r=>r.dimensions.dimensions_a_plat_cm, r=>r.dimensions.tolerance_mm,
   r=>r.matiere.matiere, r=>r.matiere.grammage_g_m2, r=>r.matiere.epaisseur_um, r=>r.matiere.poids_unitaire_g,
@@ -31,7 +30,7 @@ const FILLABLE = [
   r=>r.design.couleurs.pantone_principal, r=>r.design.couleurs.nb_couleurs_impression,
   r=>r.design.support_rendu.type_support, r=>r.design.support_rendu.grammage_g_m2, r=>r.design.support_rendu.finition,
   r=>r.design.bat.valide_par, r=>r.design.bat.date_validation, r=>r.design.bat.fichier,
-  r=>r.logistique.nombre_par_carton, r=>r.logistique.cartons_par_palette,
+  r=>r.logistique.cartons_par_palette,
   r=>r.logistique.conditions_stockage, r=>r.logistique.moq, r=>r.logistique.delai_reappro_jours,
   r=>r.deploiement.points_de_vente.length, r=>r.deploiement.date_mise_en_service, r=>r.deploiement.points_de_vigilance,
   r=>r.usage_tfb.recettes_concernees.length, r=>r.usage_tfb.usage, r=>r.usage_tfb.quantite_par_emballage,
@@ -41,14 +40,14 @@ const comp = r => Math.round(100*FILLABLE.filter(f=>!isEmpty(f(r))&&f(r)!==0).le
 
 /* ---- complétude par onglet, pour les puces des tabs ---- */
 const TABFIELDS = {
-  general: r=>[r.identification.sku_fournisseur,r.dimensions.longueur_cm,r.dimensions.largeur_cm,
+  general: r=>[r.dimensions.longueur_cm,r.dimensions.largeur_cm,
                r.dimensions.hauteur_cm,r.dimensions.dimensions_a_plat_cm,r.dimensions.tolerance_mm,
                r.matiere.matiere,r.matiere.grammage_g_m2,r.matiere.epaisseur_um,r.matiere.poids_unitaire_g],
   design:  r=>[r.design.design_valide_tfb,r.design.gabarit_fournisseur,r.design.couleurs.pantone_principal,
                r.design.couleurs.nb_couleurs_impression,r.design.support_rendu.type_support,
                r.design.support_rendu.grammage_g_m2,r.design.support_rendu.finition,
                r.design.bat.valide_par,r.design.bat.date_validation,r.design.bat.fichier],
-  logi:    r=>[r.logistique.nombre_par_carton,r.logistique.cartons_par_palette,r.logistique.conditions_stockage,
+  logi:    r=>[r.logistique.cartons_par_palette,r.logistique.conditions_stockage,
                r.logistique.moq,r.logistique.delai_reappro_jours,r.deploiement.points_de_vente.length,
                r.deploiement.date_mise_en_service,r.deploiement.points_de_vigilance],
   usage:   r=>[r.usage_tfb.recettes_concernees.length,r.usage_tfb.usage,r.usage_tfb.quantite_par_emballage],
@@ -68,32 +67,83 @@ async function load(){
   buildFilters(); render(); syncInpulse();
 }
 
-/* ---- Inpulse live ---- */
+/* ---- Inpulse live : /api/packaging agrege les 9 pages cote serveur ---- */
+const eur4 = n => (n==null||isNaN(n))?'—':n.toLocaleString('fr-FR',{minimumFractionDigits:3,maximumFractionDigits:4})+' €';
+const uniteCommande = n => { const u=(n||'').toUpperCase();
+  return u.indexOf('CARTON')===0?'Carton':u.indexOf('BOITE')===0?'Boîte':u.indexOf('ROULEAU')===0?'Rouleau'
+    :(u.indexOf("L'UNITE")>=0||u.indexOf('L UNITE')>=0)?'Unité':(n||''); };
+
 async function syncInpulse(){
   setConn('spin','Interrogation d’Inpulse…','');
   try{
-    const r = await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({endpoint:'/public/v2/supplier-products',method:'GET'})});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const d = await r.json();
-    const list = Array.isArray(d)?d:(d.data||d.items||d.results||[]);
-    if(!list.length) throw new Error('réponse vide');
-    const by={}; list.forEach(x=>{ if(x&&x.name) by[String(x.name).trim().toUpperCase()]=x; });
-    let hit=0;
+    let list = null, via = '';
+    // Chemin rapide : la function d'agregation, si elle est deployee.
+    try{
+      const r = await fetch('/api/packaging',{cache:'no-store'});
+      if(r.ok){ const d = await r.json(); if(d.data && d.data.length){ list = d.data; via = 'via /api/packaging'; } }
+    }catch(e){}
+    // Repli : on pagine nous-memes a travers le proxy generique.
+    // L'API Inpulse plafonne a 100 par page et ne filtre pas par categorie.
+    if(!list){ list = await scanViaProxy(); via = 'via /api/proxy, ' + Math.ceil(list.length/1) + ' réf. PACKAGING'; }
+    if(!list.length) throw new Error('aucune référence PACKAGING renvoyée');
+
+    const by={}; list.forEach(x=>{ if(x.name) by[String(x.name).trim().toUpperCase()]=x; });
+    let hit=0; const orphans=[];
     DB.packagings.forEach(p=>{
-      const m = by[p.identification.intitule_inpulse.trim().toUpperCase()]; if(!m) return; hit++;
-      if(m.price!=null) p.inpulse.prix_ht = Number(m.price);
-      if(m.supplier&&m.supplier.name) p.inpulse.fournisseur = m.supplier.name;
+      const m = by[p.identification.intitule_inpulse.trim().toUpperCase()];
+      if(!m){ orphans.push(p.nom); return; }
+      hit++;
       p.inpulse.live = true;
+      if(m.price!=null) p.inpulse.prix_ht = Number(m.price);
+      if(m.supplier) p.inpulse.fournisseur = m.supplier;
+      if(m.subCategory) p.inpulse.sous_categorie = m.subCategory;
+      p.inpulse.unite_achat = m.packaging.name;
+      p.inpulse.actif = m.active;
+      p.identification.sku_fournisseur = (m.sku && m.sku !== '?') ? m.sku : '';
+      const q = m.packaging.quantity;
+      p.logistique.nombre_par_carton = (q && q>1) ? q : null;
+      p.logistique.unite_commande = uniteCommande(m.packaging.name);
+      p.logistique.prix_unitaire_ht = (q && q>1 && m.price) ? m.price/q : null;
     });
-    setConn('ok','<strong>Inpulse connecté</strong> — '+hit+' / '+DB.packagings.length+' références rapprochées',
-            'prix HT et fournisseurs à jour');
+    const known={}; DB.packagings.forEach(p=>known[p.identification.intitule_inpulse.trim().toUpperCase()]=1);
+    const nouvelles = list.filter(x=>!known[String(x.name).trim().toUpperCase()]).map(x=>x.name);
+    let note = 'prix, SKU et conditionnements à jour — ' + via;
+    if(nouvelles.length) note += ' · ' + nouvelles.length + ' nouvelle(s) réf. dans Inpulse : ' + nouvelles.join(', ');
+    if(orphans.length)   note += ' · non retrouvée(s) : ' + orphans.join(', ');
+    setConn((hit===DB.packagings.length && !nouvelles.length) ? 'ok' : 'warn',
+      '<strong>Inpulse connecté</strong> — '+hit+' / '+DB.packagings.length+' références rapprochées', note);
     render();
   }catch(e){
-    setConn('err','<strong>Inpulse non joignable</strong> — affichage du dernier extrait',
-            '('+e.message+')');
+    setConn('err','<strong>Inpulse non joignable</strong> — affichage du dernier extrait','('+e.message+')');
   }
 }
+
+// Parcourt les pages de /public/v2/supplier-products via le proxy et ne garde
+// que le PACKAGING, remis a la forme que renvoie /api/packaging.
+async function scanViaProxy(){
+  const PAGE = 100, MAX = 30;
+  let rows = [];
+  for(let page=0; page<MAX; page++){
+    const r = await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({endpoint:'/public/v2/supplier-products?limit='+PAGE+'&skip='+(page*PAGE),method:'GET'})});
+    if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error(e.error||('HTTP '+r.status)); }
+    const d = await r.json();
+    const batch = d.data || [];
+    rows = rows.concat(batch);
+    setConn('spin','Interrogation d’Inpulse…', rows.length + ' / ' + (d.total||'?') + ' références lues');
+    if(batch.length < PAGE) break;
+  }
+  return rows.filter(x=>x && x.category==='PACKAGING').map(x=>{
+    const p = (x.packagings||[]).find(q=>q.isUsedInOrder) || (x.packagings||[])[0] || {};
+    return { name:String(x.name||'').trim(), sku:String(x.sku||'').trim(),
+             price:x.price==null?null:Number(x.price), active:!!x.active,
+             category:x.category, subCategory:x.subCategory,
+             supplier:(x.supplier&&x.supplier.name)||'',
+             packaging:{ name:String(p.name||'').trim(),
+                         quantity:p.quantity==null?null:Number(p.quantity), unit:p.unit||'' } };
+  });
+}
+
 function setConn(s,t,d){ document.getElementById('dot').className='dot '+s;
   document.getElementById('conn-t').innerHTML=t; document.getElementById('conn-d').textContent=d||''; }
 
@@ -159,6 +209,7 @@ function renderMetrics(){
   const tfb=a.filter(p=>p.app.marquage==='TFB').length;
   const moy=Math.round(a.reduce((s,p)=>s+p._comp,0)/n);
   const px0=a.filter(p=>!p.inpulse.prix_ht).length;
+  const pxu=a.filter(p=>p.logistique.nombre_par_carton>1 && p.inpulse.prix_ht>0 && p.inpulse.prix_ht<1).length;
   const four=new Set(a.map(p=>p.inpulse.fournisseur)).size;
   const gab=a.filter(p=>p.design.gabarit_fournisseur).length;
   document.getElementById('metrics').innerHTML=[
@@ -167,7 +218,8 @@ function renderMetrics(){
     ['Fournisseurs',four,'WELLEMBAL majoritaire',''],
     ['Fiches remplies',moy+' %','moyenne sur '+FILLABLE.length+' champs','accent'],
     ['Gabarits joints',gab+' / '+n,'fichier fournisseur',''],
-    ['Prix à vérifier',px0,'référence à 0,00 € dans Inpulse','']
+    ['Prix à 0,00 €',px0,'dans Inpulse','' ],
+    ['Prix incohérents',pxu,'prix unitaire saisi sur un carton','']
   ].map(([l,v,s,c])=>'<div class="metric '+c+'"><div class="ml">'+l+'</div><div class="mv">'+v+
      '</div><div class="msub">'+s+'</div></div>').join('');
 }
@@ -222,9 +274,11 @@ const BODY={
  general: r =>
    gh('Identification')+'<div class="fields">'
    + f('Intitulé Inpulse', r.identification.intitule_inpulse, '', SRC_INP, 1)
-   + f('SKU fournisseur', r.identification.sku_fournisseur, '', SRC_TFB)
+   + f('SKU fournisseur', r.identification.sku_fournisseur, '', SRC_INP)
    + f('Fournisseur', r.inpulse.fournisseur, '', SRC_INP)
    + f('Prix HT', r.inpulse.prix_ht?eur(r.inpulse.prix_ht):'', '', SRC_INP)
+   + f('Unité d’achat', r.inpulse.unite_achat, '', SRC_INP)
+   + f('Prix unitaire HT', r.logistique.prix_unitaire_ht!=null?eur4(r.logistique.prix_unitaire_ht):'', '', SRC_INP)
    + f('Disponibilité boutiques', r.inpulse.dispo, '', SRC_INP)
    + '</div>'
    + gh('Dimensions')+'<div class="fields">'
@@ -278,7 +332,9 @@ const BODY={
 
  logi: r =>
    gh('Logistique')+'<div class="fields">'
-   + f('Nombre par carton', r.logistique.nombre_par_carton, 'pièces', SRC_TFB)
+   + f('Nombre par carton', r.logistique.nombre_par_carton, 'pièces', SRC_INP)
+   + f('Unité de commande', r.logistique.unite_commande, '', SRC_INP)
+   + f('Prix unitaire HT', r.logistique.prix_unitaire_ht!=null?eur4(r.logistique.prix_unitaire_ht):'', '', SRC_INP)
    + f('Cartons par palette', r.logistique.cartons_par_palette, 'cartons', SRC_TFB)
    + f('Conditions de stockage', r.logistique.conditions_stockage, '', SRC_TFB)
    + f('MOQ', r.logistique.moq, 'pièces', SRC_TFB)
@@ -334,7 +390,8 @@ function exportXls(){
   const rows=ROWS.map(p=>({
     'Intitulé Inpulse':p.identification.intitule_inpulse,'SKU fournisseur':p.identification.sku_fournisseur,
     Famille:p.app.famille,Marquage:p.app.marquage,Statut:p.app.statut,
-    Fournisseur:p.inpulse.fournisseur,'Prix HT':p.inpulse.prix_ht,'Dispo.':p.inpulse.dispo,
+    Fournisseur:p.inpulse.fournisseur,'Prix HT':p.inpulse.prix_ht,'Unité d\u2019achat':p.inpulse.unite_achat,
+    'Prix unitaire HT':p.logistique.prix_unitaire_ht,'Dispo.':p.inpulse.dispo,
     'Longueur (cm)':p.dimensions.longueur_cm,'Largeur (cm)':p.dimensions.largeur_cm,
     'Soufflet (cm)':p.dimensions.profondeur_soufflet_cm,'Hauteur (cm)':p.dimensions.hauteur_cm,
     'À plat (cm)':p.dimensions.dimensions_a_plat_cm,'Tolérance (mm)':p.dimensions.tolerance_mm,
@@ -344,7 +401,8 @@ function exportXls(){
     'Pantone principal':p.design.couleurs.pantone_principal,'Nb couleurs':p.design.couleurs.nb_couleurs_impression,
     'Type de support':p.design.support_rendu.type_support,Finition:p.design.support_rendu.finition,
     'BAT validé par':p.design.bat.valide_par,'Date BAT':p.design.bat.date_validation,
-    'Nombre par carton':p.logistique.nombre_par_carton,'Cartons par palette':p.logistique.cartons_par_palette,
+    'Nombre par carton':p.logistique.nombre_par_carton,'Unité de commande':p.logistique.unite_commande,
+    'Cartons par palette':p.logistique.cartons_par_palette,
     'Conditions de stockage':p.logistique.conditions_stockage,MOQ:p.logistique.moq,
     'Délai réappro (j)':p.logistique.delai_reappro_jours,
     'Points de vente':p.deploiement.points_de_vente.join(', '),
