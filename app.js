@@ -19,6 +19,8 @@ const TABS = [
 
 let DB=null, OVR={records:{}}, ROWS=[], view='list', sortK='nom', sortD=1, activeTab='general', current=null;
 let storeOk=false;
+let ORD=null, ORDINFO=null;          // historique de commandes par packaging
+const EXP=new Set();                 // lignes depliees
 const FREE={};   // champs "Autre…" ouverts en saisie libre
 const F={q:'',fam:'',four:'',marq:'',comp:''};
 
@@ -138,7 +140,7 @@ async function load(){
   if(!doc){ setConn('err','Référentiel introuvable',''); return; }
   DB=doc;
   await loadOverrides();
-  buildFilters(); render(); syncInpulse();
+  buildFilters(); render(); syncInpulse(); loadOrders();
 }
 
 async function loadOverrides(){
@@ -159,6 +161,55 @@ function applyOverrides(){
     const o=OVR.records[p.id]; if(!o) return;
     Object.keys(o).forEach(path=>setPath(p,path,o[path]));
   });
+}
+
+/* ============================================================
+   Historique de commandes (function /api/orders, agregat en cache)
+   ============================================================ */
+const MONTHS = (()=>{ const out=[]; const now=new Date();
+  for(let y=2026,m=1;;m++){ if(m>12){m=1;y++;}
+    out.push(y+'-'+String(m).padStart(2,'0'));
+    if(y>now.getFullYear()||(y===now.getFullYear()&&m>=now.getMonth()+1)) break;
+    if(out.length>60) break; }
+  return out; })();
+const MOISLB=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+const moisCourt = k => { const [y,m]=k.split('-'); return MOISLB[+m-1]+' '+y.slice(2); };
+
+async function loadOrders(force){
+  try{
+    let r = await fetch('/api/orders'+(force?'?reset=1&work=1':'?work=1'),{cache:'no-store'});
+    let d = await r.json();
+    if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
+    let guard=0;
+    while(d.progress && !d.progress.done && guard++ < 40){
+      setOrdInfo('spin', d.progress.headers.done
+        ? ('Historique : '+d.progress.seen+' commandes lues, '+d.progress.queue+' restantes')
+        : ('Historique : balayage '+d.progress.headers.skip+' / '+(d.progress.headers.total||'?')));
+      if(d.data){ ORD=d.data; render(); }
+      r = await fetch('/api/orders?work=1',{cache:'no-store'});
+      d = await r.json();
+      if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
+    }
+    ORD = d.data || {};
+    ORDINFO = {maj:d.full_built_at||d.updated_at, seen:(d.progress&&d.progress.seen)||0};
+    setOrdInfo('ok', ORDINFO.seen+' commandes dépouillées depuis janvier 2026');
+    render();
+  }catch(e){
+    ORD=null; setOrdInfo('err','Historique indisponible — '+e.message); render();
+  }
+}
+function setOrdInfo(s,t){ const el=document.getElementById('ordbadge'); if(!el) return;
+  el.className='savebadge '+(s==='spin'?'wait':s); el.style.display='inline-flex';
+  el.innerHTML='<i class="ti '+(s==='ok'?'ti-history':s==='spin'?'ti-loader-2':'ti-history-off')+'"></i>'+esc(t); }
+
+/* Agregat d\'un packaging : {mois:{n,oq,rq}} + total */
+function ordFor(p){
+  if(!ORD) return null;
+  const a=ORD[p.identification.intitule_inpulse.trim().toUpperCase()];
+  const tot={n:0,oq:0,rq:0};
+  if(!a) return {vide:true, mois:{}, tot};
+  MONTHS.forEach(m=>{ const c=a[m]; if(c){ tot.n+=c.n; tot.oq+=c.oq; tot.rq+=c.rq; } });
+  return {vide:tot.n===0, mois:a, tot};
 }
 
 /* ---- Inpulse : /api/packaging si dispo, sinon pagination via /api/proxy ---- */
@@ -298,7 +349,7 @@ function buildFilters(){
     document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));render();});
   document.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{
     if(sortK===th.dataset.k)sortD=-sortD;else{sortK=th.dataset.k;sortD=1;}render();});
-  document.getElementById('btn-sync').onclick=()=>{loadOverrides().then(syncInpulse);};
+  document.getElementById('btn-sync').onclick=()=>{loadOverrides().then(syncInpulse).then(()=>loadOrders(true));};
   document.getElementById('btn-xls').onclick=exportXls;
   document.getElementById('d-close').onclick=closeDrawer;
   document.getElementById('ov').onclick=closeDrawer;
@@ -364,20 +415,68 @@ const bar=v=>'<div class="bw"><div class="bb"><div class="bf" style="width:'+v+'
 
 function renderList(){
   const tb=document.getElementById('tb');
-  if(!ROWS.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><i class="ti ti-package-off"></i>'+
+  if(!ROWS.length){tb.innerHTML='<tr><td colspan="8"><div class="empty"><i class="ti ti-package-off"></i>'+
     '<p>Aucun packaging ne correspond aux filtres.</p></div></td></tr>';return;}
   tb.innerHTML=ROWS.map(p=>{
     const ok=(p.inpulse.dispo||'').split('/')[0]!=='0';
-    return '<tr data-id="'+p.id+'"><td class="tb">'+esc(p.nom)+
-        (OVR.records[p.id]?' <i class="ti ti-pencil edited" title="fiche saisie"></i>':'')+'</td>'
-      +'<td class="tm">'+esc(p.app.famille)+'</td><td>'+pillMarq(p.app.marquage)+'</td>'
-      +'<td class="tm">'+esc(p.inpulse.fournisseur)+'</td>'
-      +'<td class="num">'+eur(p.inpulse.prix_ht)+'</td>'
-      +'<td><span class="pill '+(ok?'p-ok':'p-warn')+'">'+esc(p.inpulse.dispo)+'</span></td>'
-      +'<td>'+bar(p._comp)+'</td></tr>';
+    const open=EXP.has(p.id);
+    const o=ordFor(p);
+    const resume = !o ? '' : o.vide ? '<span class="ordnil">aucune commande</span>'
+      : '<span class="ordsum">'+o.tot.n+' cmd · '+fmt(o.tot.oq)+' → '+fmt(o.tot.rq)+' cartons</span>';
+    return '<tr class="mainrow'+(open?' open':'')+'" data-id="'+p.id+'">'
+      + '<td class="tb namecell" data-toggle="'+p.id+'">'
+        + '<span class="chev'+(open?' on':'')+'"><i class="ti ti-chevron-right"></i></span>'
+        + esc(p.nom) + (OVR.records[p.id]?' <i class="ti ti-pencil edited" title="fiche saisie"></i>':'')
+        + '<div class="ordline">'+resume+'</div></td>'
+      + '<td><button class="btn btn-sm btn-fiche" data-open="'+p.id+'"><i class="ti ti-layout-sidebar-right-expand"></i>Ouvrir la fiche</button></td>'
+      + '<td class="tm">'+esc(p.app.famille)+'</td><td>'+pillMarq(p.app.marquage)+'</td>'
+      + '<td class="tm">'+esc(p.inpulse.fournisseur)+'</td>'
+      + '<td class="num">'+eur(p.inpulse.prix_ht)+'</td>'
+      + '<td><span class="pill '+(ok?'p-ok':'p-warn')+'">'+esc(p.inpulse.dispo)+'</span></td>'
+      + '<td>'+bar(p._comp)+'</td></tr>'
+      + (open?'<tr class="subrow"><td colspan="8">'+ordTable(p)+'</td></tr>':'');
   }).join('');
-  tb.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>openDrawer(tr.dataset.id));
+  tb.querySelectorAll('[data-toggle]').forEach(el=>el.onclick=e=>{
+    e.stopPropagation(); const id=el.dataset.toggle;
+    if(EXP.has(id)) EXP.delete(id); else EXP.add(id);
+    renderList();
+  });
+  tb.querySelectorAll('[data-open]').forEach(el=>el.onclick=e=>{
+    e.stopPropagation(); openDrawer(el.dataset.open);
+  });
 }
+
+const fmt = n => (n==null||isNaN(n))?'—':(Math.round(n*100)/100).toLocaleString('fr-FR');
+
+/* Tableau mois par mois : commandes, cartons commandes / recus, ecart, unites */
+function ordTable(p){
+  if(!ORD) return '<div class="ordempty"><i class="ti ti-loader-2"></i> Historique de commandes en cours de chargement…</div>';
+  const o=ordFor(p);
+  if(o.vide) return '<div class="ordempty"><i class="ti ti-info-circle"></i> Aucune commande de cette référence depuis janvier 2026.</div>';
+  const pcb=p.logistique.nombre_par_carton;
+  const cell=(m,f)=>{ const c=o.mois[m]; return c?f(c):null; };
+  const rows=[
+    {lb:'Commandes',        v:m=>cell(m,c=>c.n),  t:o.tot.n,  cls:'', u:''},
+    {lb:'Cartons commandés',v:m=>cell(m,c=>c.oq), t:o.tot.oq, cls:'', u:''},
+    {lb:'Cartons reçus',    v:m=>cell(m,c=>c.rq), t:o.tot.rq, cls:'', u:''},
+    {lb:'Écart',            v:m=>cell(m,c=>c.rq-c.oq), t:o.tot.rq-o.tot.oq, cls:'ecart', u:''}
+  ];
+  if(pcb) rows.push({lb:'Unités reçues', v:m=>cell(m,c=>c.rq*pcb), t:o.tot.rq*pcb, cls:'unit', u:''});
+  const th=MONTHS.map(m=>'<th'+(o.mois[m]?'':' class="off"')+'>'+moisCourt(m)+'</th>').join('');
+  const body=rows.map(r=>'<tr class="'+r.cls+'"><th>'+r.lb+'</th>'
+    + MONTHS.map(m=>{ const x=r.v(m);
+        if(x==null||x===0&&r.cls!=='ecart') return '<td class="void">'+(x===0?'0':'·')+'</td>';
+        const neg=r.cls==='ecart'&&x<0, pos=r.cls==='ecart'&&x>0;
+        return '<td'+(neg?' class="neg"':pos?' class="pos"':'')+'>'+(pos?'+':'')+fmt(x)+'</td>'; }).join('')
+    + '<td class="tot">'+(r.cls==='ecart'&&r.t>0?'+':'')+fmt(r.t)+'</td></tr>').join('');
+  return '<div class="ordwrap"><table class="ordtab"><thead><tr><th></th>'+th+'<th class="tot">Total</th></tr></thead>'
+    + '<tbody>'+body+'</tbody></table>'
+    + '<div class="ordnote"><i class="ti ti-info-circle"></i> Mois de la <strong>date de commande</strong>. '
+    + 'La quantité reçue est exprimée dans le conditionnement commandé, donc directement comparable. '
+    + (pcb?('Unités = cartons × '+pcb+' (PCB Inpulse). '):'PCB inconnu, unités non calculables. ')
+    + 'Brouillons exclus.</div></div>';
+}
+
 function renderGrid(){
   const g=document.getElementById('view-grid');
   g.innerHTML=ROWS.map(p=>'<div class="card" data-id="'+p.id+'">'
