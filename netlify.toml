@@ -8,6 +8,11 @@
   command = 'pub(){ d=$(ls -1 $1[0-9]*.html 2>/dev/null | LC_ALL=C sort | tail -n 1); if [ -n "$d" ]; then echo "Publie : $d -> $2"; cp "$d" "$2"; fi; }; pub app index.html'
 
 [[redirects]]
+from = "/api/store"
+to = "/.netlify/functions/store"
+status = 200
+
+[[redirects]]
 from = "/api/proxy"
 to = "/.netlify/functions/proxy"
 status = 200
