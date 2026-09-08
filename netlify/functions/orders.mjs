@@ -29,7 +29,7 @@ const json = (s, b) => new Response(JSON.stringify(b), { status: s, headers: H }
 function blank() {
   return {
     version: 1, from: FROM,
-    stores: null, packagingIds: null, names: {},
+    stores: null, packagingIds: null, names: {}, packagingSuppliers: null, packagingSuppliers: null, packagingSuppliers: null, packagingSuppliers: null, packagingSuppliers: null,
     headerSkip: 0, headerTotal: null, headersDone: false,
     queue: [], seen: {}, agg: {},
     updated_at: null, full_built_at: null
@@ -97,16 +97,21 @@ export default async (req) => {
 
     // --- 2. Referentiel : quels supplier-products sont du PACKAGING ---
     if (!st.packagingIds) {
-      const ids = {}, names = {};
+      const ids = {}, names = {}, sups = {};
       for (let p = 0; p < 20; p++) {
         const d = await inpulse(key, "/public/v2/supplier-products?limit=" + PAGE + "&skip=" + p * PAGE, null, "GET");
         const rows = d.data || [];
         rows.forEach(x => {
-          if (x && x.category === "PACKAGING") { ids[x.id] = 1; names[x.id] = String(x.name || "").trim().toUpperCase(); }
+          if (x && x.category === "PACKAGING") {
+            ids[x.id] = 1;
+            names[x.id] = String(x.name || "").trim().toUpperCase();
+            const sn = ((x.supplier && x.supplier.name) || "").trim().toUpperCase();
+            if (sn) sups[sn] = 1;
+          }
         });
         if (rows.length < PAGE) break;
       }
-      st.packagingIds = ids; st.names = names;
+      st.packagingIds = ids; st.names = names; st.packagingSuppliers = sups; st.packagingSuppliers = sups; st.packagingSuppliers = sups; st.packagingSuppliers = sups; st.packagingSuppliers = sups;
     }
 
     // --- 3. Balayage des entetes de commandes, reprenable ---
@@ -118,6 +123,26 @@ export default async (req) => {
       rows.forEach(o => {
         if (SKIP_STATUS[o.statusName]) return;
         if (st.seen[o.id]) return;
+        // seules les commandes des fournisseurs de packaging portent des lignes
+        // packaging : inutile d ouvrir les 4400 autres
+        const sup = ((o.supplier && o.supplier.name) || o.supplier || "").trim().toUpperCase();
+        if (!st.packagingSuppliers || !st.packagingSuppliers[sup]) return;
+        // seules les commandes des fournisseurs de packaging portent des lignes
+        // packaging : inutile d ouvrir les 4400 autres
+        const sup = ((o.supplier && o.supplier.name) || o.supplier || "").trim().toUpperCase();
+        if (!st.packagingSuppliers || !st.packagingSuppliers[sup]) return;
+        // seules les commandes des fournisseurs de packaging portent des lignes
+        // packaging : inutile d ouvrir les 4400 autres
+        const sup = ((o.supplier && o.supplier.name) || o.supplier || "").trim().toUpperCase();
+        if (!st.packagingSuppliers || !st.packagingSuppliers[sup]) return;
+        // seules les commandes des fournisseurs de packaging portent des lignes
+        // packaging : inutile d ouvrir les 4400 autres
+        const sup = ((o.supplier && o.supplier.name) || o.supplier || "").trim().toUpperCase();
+        if (!st.packagingSuppliers || !st.packagingSuppliers[sup]) return;
+        // seules les commandes des fournisseurs de packaging portent des lignes
+        // packaging : inutile d ouvrir les 4400 autres
+        const sup = ((o.supplier && o.supplier.name) || o.supplier || "").trim().toUpperCase();
+        if (!st.packagingSuppliers || !st.packagingSuppliers[sup]) return;
         // le filtre packaging se fait sur les lignes : une commande peut
         // melanger du packaging et autre chose
         st.queue.push({ id: o.id, m: String(o.orderDate || o.deliveryDate || "").slice(0, 7) });
