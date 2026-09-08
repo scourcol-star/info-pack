@@ -1,0 +1,3888 @@
+{
+  "meta": {
+    "titre": "TFB — Info Pack : base packaging",
+    "source_liste": "Inpulse › Ingrédients fournisseurs › catégorie PACKAGING",
+    "source_structure": "Notion — fiche packaging (5 onglets)",
+    "extrait_le": "2026-09-08",
+    "nb_references": 43,
+    "cle_reconciliation": "identification.intitule_inpulse == supplier-product.name",
+    "pilote_par_inpulse": [
+      "inpulse.prix_ht",
+      "inpulse.dispo",
+      "inpulse.fournisseur",
+      "inpulse.categorie",
+      "inpulse.sous_categorie"
+    ]
+  },
+  "referentiels": {
+    "famille": [
+      "Accessoire",
+      "Bague",
+      "Bouteille",
+      "Bowl",
+      "Boîte",
+      "Couvercle",
+      "Couverts",
+      "Gobelet",
+      "Papier",
+      "Sac",
+      "Serviette",
+      "Vaisselle",
+      "Étiquette"
+    ],
+    "marquage": [
+      "TFB",
+      "Neutre",
+      "Co-branding"
+    ],
+    "statut": [
+      "Actif",
+      "En test",
+      "À écouler",
+      "Arrêté",
+      "À compléter"
+    ],
+    "type_support": [
+      "Kraft brun",
+      "Kraft blanc",
+      "Carton compact",
+      "Carton couché",
+      "Papier ingraissable",
+      "Carton + PE",
+      "PS / PP",
+      "PET",
+      "PLA",
+      "Grès / céramique",
+      "Bois",
+      "Coton",
+      "Ouate de cellulose",
+      "Papier adhésif"
+    ],
+    "finition": [
+      "Mat",
+      "Brillant",
+      "Vernis",
+      "Sans"
+    ],
+    "conditions_stockage": [
+      "Sec et tempéré",
+      "À l'abri de l'humidité",
+      "À plat",
+      "Sans empilage",
+      "Empilable",
+      "Hors zone chaude"
+    ],
+    "points_de_vente": [
+      "OB",
+      "SD",
+      "SF",
+      "PG",
+      "SV",
+      "TP",
+      "LBA",
+      "NE",
+      "LV",
+      "LNV",
+      "RB",
+      "LIL3",
+      "LP",
+      "BC",
+      "PP",
+      "BCJ",
+      "BDJ",
+      "BGH"
+    ],
+    "photos_attendues": [
+      "Produit nu",
+      "Produit garni",
+      "Mise en situation boutique",
+      "Gabarit à plat"
+    ]
+  },
+  "packagings": [
+    {
+      "id": "bague-tfb-bowl-900ml",
+      "nom": "BAGUE TFB BOWL 900ML",
+      "app": {
+        "famille": "Bague",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 101.42,
+        "dispo": "2/2",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "BAGUE TFB BOWL 900ML",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "PS / PP",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "PS / PP",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "900 ml",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Bowl salé",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-1x-eclair-tfb",
+      "nom": "BOÎTE 1X ECLAIR TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 98.1,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "BOÎTE 1X ECLAIR TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-1x-patisserie-tfb",
+      "nom": "BOITE 1X PATISSERIE TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 59.5,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 1X PATISSERIE TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-2x-patisserie-tfb",
+      "nom": "BOITE 2X PATISSERIE TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 0.16,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 2X PATISSERIE TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-4x-bmc-tfb",
+      "nom": "BOITE 4X BMC TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 160.0,
+        "dispo": "0/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 4X BMC TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-6x-patisserie-neutre",
+      "nom": "BOITE 6X PATISSERIE NEUTRE",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 14.85,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 6X PATISSERIE NEUTRE",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-6x-patisserie-tfb",
+      "nom": "BOITE 6X PATISSERIE TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 0.44,
+        "dispo": "1/1",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 6X PATISSERIE TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-8x-bmc-tfb",
+      "nom": "BOITE 8X BMC TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 153.4,
+        "dispo": "0/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 8X BMC TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boites-a-cakes-tfb",
+      "nom": "BOITES A CAKES TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 0.57,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "BOITES A CAKES TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "bouteille-pet-25cl-bouchon-noir",
+      "nom": "BOUTEILLE PET 25CL + BOUCHON NOIR",
+      "app": {
+        "famille": "Bouteille",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 14.95,
+        "dispo": "1/1",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": "BOUTEILLE 25CL AVEC BOUCHON NOIR"
+      },
+      "identification": {
+        "intitule_inpulse": "BOUTEILLE PET 25CL + BOUCHON NOIR",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "PET",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "PET",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "25 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson froide",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "bowl-900-ml-kraft-d183",
+      "nom": "BOWL 900 ML KRAFT D183",
+      "app": {
+        "famille": "Bowl",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 36.0,
+        "dispo": "2/2",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "BOWL 900 ML KRAFT D183",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": 18.3,
+        "largeur_cm": 18.3,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "900 ml",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Bowl salé",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "calisto-mug-h10-sable-creme",
+      "nom": "CALISTO MUG H10 SABLE CREME",
+      "app": {
+        "famille": "Vaisselle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 31.5,
+        "dispo": "10/10",
+        "fournisseur": "GOBERLOTE",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "CALISTO MUG H10 SABLE CREME",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": 10.0,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Grès / céramique",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Grès / céramique",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Consommation sur place",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "calisto-tasse-h5-5-sable-creme",
+      "nom": "CALISTO TASSE H5,5 SABLE CREME",
+      "app": {
+        "famille": "Vaisselle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 42.0,
+        "dispo": "10/10",
+        "fournisseur": "GOBERLOTE",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "CALISTO TASSE H5,5 SABLE CREME",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": 5.5,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Grès / céramique",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Grès / céramique",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Consommation sur place",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "couvercle-gobelet-10cl",
+      "nom": "COUVERCLE GOBELET 10CL",
+      "app": {
+        "famille": "Couvercle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 27.97,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "COUVERCLE GOBELET 10CL",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "10 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "couvercle-gobelet-25cl",
+      "nom": "COUVERCLE GOBELET 25CL",
+      "app": {
+        "famille": "Couvercle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 44.56,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "COUVERCLE GOBELET 25CL",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "25 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "couvercle-gobelet-35cl",
+      "nom": "COUVERCLE GOBELET 35CL",
+      "app": {
+        "famille": "Couvercle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 55.0,
+        "dispo": "5/5",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "COUVERCLE GOBELET 35CL",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "35 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "etiquettes-en-rouleau-45x45mm-cake-marbre",
+      "nom": "ETIQUETTES EN ROULEAU 45X45MM CAKE MARBRE",
+      "app": {
+        "famille": "Étiquette",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "ETIQUETTES EN ROULEAU 45X45MM CAKE MARBRE",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": 4.5,
+        "largeur_cm": 4.5,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Étiquetage cake",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "etiquettes-en-rouleau-45x45mm-cake-praline-amande",
+      "nom": "ETIQUETTES EN ROULEAU 45X45MM CAKE PRALINE AMANDE",
+      "app": {
+        "famille": "Étiquette",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "ETIQUETTES EN ROULEAU 45X45MM CAKE PRALINE AMANDE",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": 4.5,
+        "largeur_cm": 4.5,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Étiquetage cake",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "etiquettes-en-rouleau-45x45mm-cake-vanille-caramel",
+      "nom": "ETIQUETTES EN ROULEAU 45X45MM CAKE VANILLE CARAMEL",
+      "app": {
+        "famille": "Étiquette",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "ETIQUETTES EN ROULEAU 45X45MM CAKE VANILLE CARAMEL",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": 4.5,
+        "largeur_cm": 4.5,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Étiquetage cake",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "gobelet-10cl-tfb",
+      "nom": "GOBELET 10CL TFB",
+      "app": {
+        "famille": "Gobelet",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 24.85,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "GOBELET 10CL TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "10 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "gobelet-25cl-tfb",
+      "nom": "GOBELET 25CL TFB",
+      "app": {
+        "famille": "Gobelet",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 46.69,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "GOBELET 25CL TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "25 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "gobelet-35cl-neutre",
+      "nom": "GOBELET 35CL NEUTRE",
+      "app": {
+        "famille": "Gobelet",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 54.0,
+        "dispo": "6/6",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "GOBELET 35CL NEUTRE",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "35 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "grand-sac-pain-tranche-tfb-22x12x40cm",
+      "nom": "GRAND SAC PAIN TRANCHE TFB 22x12x40CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 37.85,
+        "dispo": "14/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "GRAND SAC PAIN TRANCHE TFB 22x12x40CM",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 22,
+        "profondeur_soufflet_cm": 12,
+        "hauteur_cm": 40,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "inventaire-cofanetto-cake-cartoncino",
+      "nom": "INVENTAIRE - COFANETTO CAKE CARTONCINO",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "INVENTAIRE - COFANETTO CAKE CARTONCINO",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "inventaire-cofanetto-cake-fascia",
+      "nom": "INVENTAIRE - COFANETTO CAKE FASCIA",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "INVENTAIRE - COFANETTO CAKE FASCIA",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "inventaire-cofanetto-cake-fondo",
+      "nom": "INVENTAIRE - COFANETTO CAKE FONDO",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "INVENTAIRE - COFANETTO CAKE FONDO",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "kit-2-1-en-bois-fourchette-couteau",
+      "nom": "KIT 2/1 EN BOIS (FOURCHETTE / COUTEAU)",
+      "app": {
+        "famille": "Couverts",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 52.52,
+        "dispo": "0/19",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "KIT 2/1 EN BOIS (FOURCHETTE / COUTEAU)",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Bois",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Bois",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Snacking",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "mug-aube-h10cm",
+      "nom": "MUG AUBE H10CM",
+      "app": {
+        "famille": "Vaisselle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 120.78,
+        "dispo": "10/10",
+        "fournisseur": "GOBERLOTE",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "MUG AUBE H10CM",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": 10.0,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Grès / céramique",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Grès / céramique",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Consommation sur place",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "papier-ingraissable-900x1000-mm-kraft",
+      "nom": "PAPIER INGRAISSABLE 900x1000 MM KRAFT",
+      "app": {
+        "famille": "Papier",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 60.88,
+        "dispo": "14/14",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "PAPIER INGRAISSABLE 900x1000 MM KRAFT",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": 90.0,
+        "largeur_cm": 100.0,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "90.0 × 100.0",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Sandwich / pain",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "papier-sandwich-ingraissable-tfb",
+      "nom": "PAPIER SANDWICH INGRAISSABLE TFB",
+      "app": {
+        "famille": "Papier",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 51.9,
+        "dispo": "18/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "PAPIER SANDWICH INGRAISSABLE TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Papier ingraissable",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Papier ingraissable",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Sandwich / pain",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "petit-sac-pain-tranche-tfb-22x12x25cm",
+      "nom": "PETIT SAC PAIN TRANCHE TFB 22x12x25CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 26.4,
+        "dispo": "15/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "PETIT SAC PAIN TRANCHE TFB 22x12x25CM",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 22,
+        "profondeur_soufflet_cm": 12,
+        "hauteur_cm": 25,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "porte-gobelet",
+      "nom": "PORTE GOBELET",
+      "app": {
+        "famille": "Accessoire",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 51.6,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "PORTE GOBELET",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "rouleau-pain-papier-alimentaire-tfb",
+      "nom": "ROULEAU PAIN PAPIER ALIMENTAIRE TFB",
+      "app": {
+        "famille": "Papier",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 31.95,
+        "dispo": "2/5",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "ROULEAU PAIN PAPIER ALIMENTAIRE TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Sandwich / pain",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sac-cabas-tfb-26x17x29cm",
+      "nom": "SAC CABAS TFB 26X17X29CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 22.25,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "SAC CABAS TFB 26X17X29CM",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 26,
+        "profondeur_soufflet_cm": 17,
+        "hauteur_cm": 29,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sac-croissant-t1-tfb-14x8x22cm",
+      "nom": "SAC CROISSANT T1 TFB 14X8X22CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 16.75,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "SAC CROISSANT T1 TFB 14X8X22CM",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 14,
+        "profondeur_soufflet_cm": 8,
+        "hauteur_cm": 22,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sac-croissant-t2-tfb-18x8x31cm",
+      "nom": "SAC CROISSANT T2 TFB 18X8X31CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 24.17,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "SAC CROISSANT T2 TFB 18X8X31CM",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 18,
+        "profondeur_soufflet_cm": 8,
+        "hauteur_cm": 31,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sac-croissant-t3-tfb-19x8x33cm",
+      "nom": "SAC CROISSANT T3 TFB 19X8X33CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 27.34,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "SAC CROISSANT T3 TFB 19X8X33CM",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 19,
+        "profondeur_soufflet_cm": 8,
+        "hauteur_cm": 33,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sac-grands-gateaux",
+      "nom": "SAC GRANDS GATEAUX",
+      "app": {
+        "famille": "Sac",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 0.54,
+        "dispo": "0/0",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "SAC GRANDS GATEAUX",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sachet-baguette-tfb",
+      "nom": "SACHET BAGUETTE TFB",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 15.9,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "SACHET BAGUETTE TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sachet-galettes-tfb-x-isigny",
+      "nom": "SACHET GALETTES TFB X ISIGNY",
+      "app": {
+        "famille": "Sac",
+        "marquage": "Co-branding",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "SACHET GALETTES TFB X ISIGNY",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "serviette-tfb",
+      "nom": "SERVIETTE TFB",
+      "app": {
+        "famille": "Serviette",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 48.8,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "SERVIETTE TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Ouate de cellulose",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Ouate de cellulose",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Toutes ventes",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "tasse-aube-h7cm",
+      "nom": "TASSE AUBE H7CM",
+      "app": {
+        "famille": "Vaisselle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 78.84,
+        "dispo": "10/10",
+        "fournisseur": "GOBERLOTE",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "TASSE AUBE H7CM",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": 7.0,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Grès / céramique",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Grès / céramique",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Consommation sur place",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "tote-baguette-tfb",
+      "nom": "TOTE BAGUETTE TFB",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 134.5,
+        "dispo": "0/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null
+      },
+      "identification": {
+        "intitule_inpulse": "TOTE BAGUETTE TFB",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "PS / PP",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "PS / PP",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    }
+  ]
+}

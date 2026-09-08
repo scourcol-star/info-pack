@@ -1,0 +1,18 @@
+# TFB — Info Pack
+# Publication : le fichier <page>AAAAMMJJHHMM.html le plus recent est copie sur
+# son nom definitif (meme convention que tfb-achats).
+#   app202609081500.html -> index.html
+[build]
+  publish = "."
+  functions = "netlify/functions"
+  command = 'pub(){ d=$(ls -1 $1[0-9]*.html 2>/dev/null | LC_ALL=C sort | tail -n 1); if [ -n "$d" ]; then echo "Publie : $d -> $2"; cp "$d" "$2"; fi; }; pub app index.html'
+
+[[redirects]]
+from = "/api/proxy"
+to = "/.netlify/functions/proxy"
+status = 200
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

@@ -1,0 +1,130 @@
+# Structure d'une fiche packaging
+
+Une référence = un objet du tableau `packagings` dans `data/packaging.json`.
+Colonne **Source** : <kbd>INP</kbd> = piloté par Inpulse (écrasé à chaque synchro),
+<kbd>TFB</kbd> = saisi par TFB, <kbd>calc</kbd> = déduit à la génération (à vérifier).
+
+## Racine
+
+| Chemin | Type | Source | Notes |
+|---|---|---|---|
+| `id` | slug | calc | dérivé du nom, sert d'identifiant d'URL et de dossier photos |
+| `nom` | texte | INP | libellé Inpulse, affiché partout |
+| `app.famille` | énum | calc | Boîte, Sac, Gobelet, Couvercle, Bague, Bowl, Bouteille, Étiquette, Papier, Vaisselle, Couverts, Serviette, Accessoire — sert aux filtres |
+| `app.marquage` | énum | calc | TFB / Neutre / Co-branding |
+| `app.statut` | énum | TFB | Actif, En test, À écouler, Arrêté, À compléter |
+| `inpulse.prix_ht` | nombre | INP | € HT unité d'achat Inpulse |
+| `inpulse.dispo` | texte | INP | « 17/18 » = points de vente approvisionnables |
+| `inpulse.fournisseur` | texte | INP | |
+| `inpulse.categorie` / `sous_categorie` | texte | INP | PACKAGING / PACKAGING TFB |
+| `inpulse.ingredient` | texte | INP | rattachement ingrédient Inpulse, souvent nul |
+
+`app.*` n'existe pas dans Notion : ces trois champs sont ajoutés pour filtrer,
+regrouper et compter. Ils sont modifiables comme les autres.
+
+## 1 · Informations générales
+
+### Identification
+| Chemin | Type | Source |
+|---|---|---|
+| `identification.intitule_inpulse` | texte | INP — **clé de rapprochement** |
+| `identification.sku_fournisseur` | texte | TFB |
+
+### Dimensions
+| Chemin | Unité | Source |
+|---|---|---|
+| `dimensions.longueur_cm` | cm | calc si présent dans le libellé, sinon TFB |
+| `dimensions.largeur_cm` | cm | idem |
+| `dimensions.profondeur_soufflet_cm` | cm | idem |
+| `dimensions.hauteur_cm` | cm | idem |
+| `dimensions.dimensions_a_plat_cm` | cm | TFB (format libre « L × H ») |
+| `dimensions.tolerance_mm` | mm | TFB |
+
+Convention de lecture appliquée à la génération : pour un **sac**, `22x12x40` se lit
+largeur × soufflet × hauteur ; pour tout le reste, longueur × largeur × hauteur.
+`D183` devient un diamètre reporté en longueur et largeur. **À valider référence par référence.**
+
+### Matière
+| Chemin | Unité | Source |
+|---|---|---|
+| `matiere.matiere` | — | calc (déduit du libellé) puis TFB |
+| `matiere.grammage_g_m2` | g/m² | TFB |
+| `matiere.epaisseur_um` | µm | TFB |
+| `matiere.poids_unitaire_g` | g | TFB |
+| `matiere.contact_alimentaire` | oui/non | calc (non pour tote bag, mug, tasse, étiquette, porte-gobelet) |
+
+## 2 · Design & gabarit
+
+| Chemin | Type | Source |
+|---|---|---|
+| `design.design_valide_tfb` | chemin fichier | TFB |
+| `design.gabarit_fournisseur` | chemin fichier | TFB |
+| `design.logo` | chemin fichier | TFB |
+| `design.couleurs.pantone_principal` | texte | TFB |
+| `design.couleurs.pantone_secondaire` | texte | TFB |
+| `design.couleurs.pantone_tertiaire` | texte | TFB |
+| `design.couleurs.nb_couleurs_impression` | nombre | TFB |
+| `design.support_rendu.type_support` | énum | calc puis TFB — kraft brun/blanc, carton compact, carton couché, papier ingraissable, carton + PE, PS/PP, PET, PLA, grès, bois, coton, ouate, papier adhésif |
+| `design.support_rendu.grammage_g_m2` | g/m² | TFB |
+| `design.support_rendu.finition` | énum | TFB — mat / brillant / vernis / sans |
+| `design.bat.valide_par` | texte | TFB |
+| `design.bat.date_validation` | date | TFB |
+| `design.bat.fichier` | chemin fichier | TFB |
+| `design.mentions_obligatoires.denomination_produit` | texte | TFB |
+| `design.mentions_obligatoires.poids_contenance` | texte | calc si le libellé porte une contenance (10 cl, 900 ml…) |
+| `design.mentions_obligatoires.allergenes` | texte | TFB |
+| `design.mentions_obligatoires.ddm_dlc` | texte | TFB |
+| `design.mentions_obligatoires.adresse_raison_sociale` | texte | TFB |
+| `design.mentions_obligatoires.logo_tri_recyclabilite` | texte | TFB |
+
+## 3 · Conditionnement & logistique
+
+| Chemin | Unité | Source |
+|---|---|---|
+| `logistique.nombre_par_carton` | pièces | TFB |
+| `logistique.cartons_par_palette` | cartons | TFB |
+| `logistique.conditions_stockage` | énum/texte | TFB |
+| `logistique.moq` | pièces | TFB |
+| `logistique.delai_reappro_jours` | jours | TFB |
+| `deploiement.points_de_vente` | liste de codes | TFB — OB, SD, SF, PG, SV, TP, LBA, NE, LV, LNV, RB, LIL3, LP, BC, PP, BCJ, BDJ, BGH |
+| `deploiement.date_mise_en_service` | date | TFB |
+| `deploiement.points_de_vigilance` | texte | TFB |
+
+## 4 · Usage TFB
+
+| Chemin | Unité | Source |
+|---|---|---|
+| `usage_tfb.recettes_concernees` | liste | TFB |
+| `usage_tfb.usage` | texte | calc (proposition par famille) puis TFB |
+| `usage_tfb.quantite_par_emballage` | pièces | TFB |
+
+## 5 · Photos
+
+`photos` est un tableau de 4 chemins, dans un ordre fixe :
+
+| Index | Prise attendue |
+|---|---|
+| 0 | Produit nu |
+| 1 | Produit garni |
+| 2 | Mise en situation boutique |
+| 3 | Gabarit à plat |
+
+Les fichiers vivent dans `assets/photos/<id>/`. Une case vide affiche un emplacement
+en pointillés dans la fiche.
+
+## Complétude
+
+La barre *Fiche remplie* compte 32 champs saisissables par TFB (les champs Inpulse
+ne comptent pas : ils sont toujours remplis). Chaque onglet affiche son propre
+compteur `n/total`, ce qui permet de voir d'un coup d'œil s'il manque le design,
+la logistique ou les photos.
+
+## Trois points à trancher
+
+1. **Dimensions déduites du libellé** : 15 références sur 43 en ont. La convention
+   sac = largeur × soufflet × hauteur est une hypothèse — à confirmer avant de
+   s'appuyer dessus pour commander.
+2. **Six références à 0,00 € dans Inpulse** (étiquettes Litograf, cofanetto, sachet
+   galettes Isigny) : prix réellement nul, offert, ou non renseigné ?
+3. **`INVENTAIRE - COFANETTO CAKE …`** : trois lignes qui ressemblent à des articles
+   d'inventaire plutôt qu'à des packagings vendables. À garder dans la base, ou à sortir ?
