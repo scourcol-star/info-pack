@@ -575,7 +575,7 @@ function loadRecipes(){
   if(RECIPES) return Promise.resolve(RECIPES);
   if(recipesJob) return recipesJob;
   recipesJob = (async()=>{
-    const out=[], PAGE=200;
+    const out=[], PAGE=100;   // l'API Inpulse plafonne a 100 par page
     try{
       for(let p=0;p<20;p++){
         const r=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},
