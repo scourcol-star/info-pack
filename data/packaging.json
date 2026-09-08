@@ -10,9 +10,15 @@
       "inpulse.prix_ht",
       "inpulse.dispo",
       "inpulse.fournisseur",
+      "inpulse.unite_achat",
       "inpulse.categorie",
-      "inpulse.sous_categorie"
-    ]
+      "inpulse.sous_categorie",
+      "identification.sku_fournisseur",
+      "logistique.nombre_par_carton",
+      "logistique.unite_commande",
+      "logistique.prix_unitaire_ht"
+    ],
+    "enrichi_le": "2026-09-08"
   },
   "referentiels": {
     "famille": [
@@ -114,11 +120,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000 UNITES"
       },
       "identification": {
         "intitule_inpulse": "BAGUE TFB BOWL 900ML",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBBAGUEBOL900D183"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -165,11 +172,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 1000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.1014
       },
       "deploiement": {
         "points_de_vente": [],
@@ -202,11 +211,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "BOITE(S) DE 900PCE"
       },
       "identification": {
         "intitule_inpulse": "BOÎTE 1X ECLAIR TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "STARDSBECLAIR1605050"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -253,11 +263,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 900,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Boîte",
+        "prix_unitaire_ht": 0.109
       },
       "deploiement": {
         "points_de_vente": [],
@@ -290,11 +302,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 500PCE"
       },
       "identification": {
         "intitule_inpulse": "BOITE 1X PATISSERIE TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBBPOIGNEE11010560"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -341,11 +354,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 500,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.119
       },
       "deploiement": {
         "points_de_vente": [],
@@ -373,16 +388,17 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 0.16,
+        "prix_ht": 0.159,
         "dispo": "17/17",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 500PCE"
       },
       "identification": {
         "intitule_inpulse": "BOITE 2X PATISSERIE TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBBPOIGNEE18010060"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -429,11 +445,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 500,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0003
       },
       "deploiement": {
         "points_de_vente": [],
@@ -461,16 +479,17 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 160.0,
+        "prix_ht": 160,
         "dispo": "0/18",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "à l'unité"
       },
       "identification": {
         "intitule_inpulse": "BOITE 4X BMC TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBBMAC4BMC"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -521,7 +540,9 @@
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "à l'unité",
+        "prix_unitaire_ht": null
       },
       "deploiement": {
         "points_de_vente": [],
@@ -554,11 +575,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 50"
       },
       "identification": {
         "intitule_inpulse": "BOITE 6X PATISSERIE NEUTRE",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "BPAT252508CB260GRSI"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -605,11 +627,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 50,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.297
       },
       "deploiement": {
         "points_de_vente": [],
@@ -637,16 +661,17 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 0.44,
+        "prix_ht": 0.439,
         "dispo": "1/1",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 100"
       },
       "identification": {
         "intitule_inpulse": "BOITE 6X PATISSERIE TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBBPAT222210"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -693,11 +718,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 100,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0044
       },
       "deploiement": {
         "points_de_vente": [],
@@ -730,11 +757,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 100PCE"
       },
       "identification": {
         "intitule_inpulse": "BOITE 8X BMC TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBBMAC8BMC"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -781,11 +809,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 100,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 1.534
       },
       "deploiement": {
         "points_de_vente": [],
@@ -813,16 +843,17 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 0.57,
+        "prix_ht": 0.568,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 5000 BOITES"
       },
       "identification": {
         "intitule_inpulse": "BOITES A CAKES TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFB+++32251029-00"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -869,11 +900,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 5000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0001
       },
       "deploiement": {
         "points_de_vente": [],
@@ -906,7 +939,8 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": "BOUTEILLE 25CL AVEC BOUCHON NOIR"
+        "ingredient": "BOUTEILLE 25CL AVEC BOUCHON NOIR",
+        "unite_achat": "CARTON(S) DE 270PCE"
       },
       "identification": {
         "intitule_inpulse": "BOUTEILLE PET 25CL + BOUCHON NOIR",
@@ -957,11 +991,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 270,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0554
       },
       "deploiement": {
         "points_de_vente": [],
@@ -989,16 +1025,17 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 36.0,
+        "prix_ht": 35.996,
         "dispo": "2/2",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 300 UNITES"
       },
       "identification": {
         "intitule_inpulse": "BOWL 900 ML KRAFT D183",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "BOL900D183KF"
       },
       "dimensions": {
         "longueur_cm": 18.3,
@@ -1045,11 +1082,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 300,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.12
       },
       "deploiement": {
         "points_de_vente": [],
@@ -1082,17 +1121,18 @@
         "fournisseur": "GOBERLOTE",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 6 UNITES"
       },
       "identification": {
         "intitule_inpulse": "CALISTO MUG H10 SABLE CREME",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "Casacm10"
       },
       "dimensions": {
         "longueur_cm": null,
         "largeur_cm": null,
         "profondeur_soufflet_cm": null,
-        "hauteur_cm": 10.0,
+        "hauteur_cm": 10,
         "dimensions_a_plat_cm": "",
         "tolerance_mm": null
       },
@@ -1133,11 +1173,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 6,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 5.25
       },
       "deploiement": {
         "points_de_vente": [],
@@ -1165,16 +1207,17 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 42.0,
+        "prix_ht": 42,
         "dispo": "10/10",
         "fournisseur": "GOBERLOTE",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 12 UNITES"
       },
       "identification": {
         "intitule_inpulse": "CALISTO TASSE H5,5 SABLE CREME",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "Casact05"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -1221,11 +1264,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 12,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 3.5
       },
       "deploiement": {
         "points_de_vente": [],
@@ -1258,11 +1303,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
       },
       "identification": {
         "intitule_inpulse": "COUVERCLE GOBELET 10CL",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "COUVGOB4OZØ62"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -1309,11 +1355,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 1000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.028
       },
       "deploiement": {
         "points_de_vente": [],
@@ -1346,11 +1394,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
       },
       "identification": {
         "intitule_inpulse": "COUVERCLE GOBELET 25CL",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "COUVGOB8OZØ80"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -1397,11 +1446,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 1000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0446
       },
       "deploiement": {
         "points_de_vente": [],
@@ -1429,16 +1480,17 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 55.0,
+        "prix_ht": 55,
         "dispo": "5/5",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
       },
       "identification": {
         "intitule_inpulse": "COUVERCLE GOBELET 35CL",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "CVGOBD90BLC"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -1485,11 +1537,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 1000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.055
       },
       "deploiement": {
         "points_de_vente": [],
@@ -1517,16 +1571,17 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0.0,
+        "prix_ht": 0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "à l'unité"
       },
       "identification": {
         "intitule_inpulse": "ETIQUETTES EN ROULEAU 45X45MM CAKE MARBRE",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFB+++51260319-00"
       },
       "dimensions": {
         "longueur_cm": 4.5,
@@ -1577,7 +1632,9 @@
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "à l'unité",
+        "prix_unitaire_ht": null
       },
       "deploiement": {
         "points_de_vente": [],
@@ -1605,16 +1662,17 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0.0,
+        "prix_ht": 0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "à l'unité"
       },
       "identification": {
         "intitule_inpulse": "ETIQUETTES EN ROULEAU 45X45MM CAKE PRALINE AMANDE",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFB+++51260319-00"
       },
       "dimensions": {
         "longueur_cm": 4.5,
@@ -1665,7 +1723,9 @@
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "à l'unité",
+        "prix_unitaire_ht": null
       },
       "deploiement": {
         "points_de_vente": [],
@@ -1693,16 +1753,17 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0.0,
+        "prix_ht": 0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "à l'unité"
       },
       "identification": {
         "intitule_inpulse": "ETIQUETTES EN ROULEAU 45X45MM CAKE VANILLE CARAMEL",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFB+++51260319-00"
       },
       "dimensions": {
         "longueur_cm": 4.5,
@@ -1753,7 +1814,9 @@
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "à l'unité",
+        "prix_unitaire_ht": null
       },
       "deploiement": {
         "points_de_vente": [],
@@ -1786,11 +1849,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
       },
       "identification": {
         "intitule_inpulse": "GOBELET 10CL TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBGOB4OZD62"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -1837,11 +1901,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 1000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0249
       },
       "deploiement": {
         "points_de_vente": [],
@@ -1874,11 +1940,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000"
       },
       "identification": {
         "intitule_inpulse": "GOBELET 25CL TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBGOB8OZD80"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -1925,11 +1992,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 1000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0467
       },
       "deploiement": {
         "points_de_vente": [],
@@ -1957,12 +2026,13 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 54.0,
+        "prix_ht": 54,
         "dispo": "6/6",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000"
       },
       "identification": {
         "intitule_inpulse": "GOBELET 35CL NEUTRE",
@@ -2013,11 +2083,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 1000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.054
       },
       "deploiement": {
         "points_de_vente": [],
@@ -2045,16 +2117,17 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 37.85,
+        "prix_ht": 37.855,
         "dispo": "14/17",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 500PCE"
       },
       "identification": {
         "intitule_inpulse": "GRAND SAC PAIN TRANCHE TFB 22x12x40CM",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBSSOS221240"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -2101,11 +2174,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 500,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0757
       },
       "deploiement": {
         "points_de_vente": [],
@@ -2133,16 +2208,17 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0.0,
+        "prix_ht": 0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 2500 CARTONCINO"
       },
       "identification": {
         "intitule_inpulse": "INVENTAIRE - COFANETTO CAKE CARTONCINO",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFB+++32251029-00"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -2189,11 +2265,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 2500,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": null
       },
       "deploiement": {
         "points_de_vente": [],
@@ -2221,16 +2299,17 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0.0,
+        "prix_ht": 0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 250 FASCIA"
       },
       "identification": {
         "intitule_inpulse": "INVENTAIRE - COFANETTO CAKE FASCIA",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFB+++32251029-00"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -2277,11 +2356,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 250,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": null
       },
       "deploiement": {
         "points_de_vente": [],
@@ -2309,16 +2390,17 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0.0,
+        "prix_ht": 0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 300 FONDO"
       },
       "identification": {
         "intitule_inpulse": "INVENTAIRE - COFANETTO CAKE FONDO",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFB+++32251029-00"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -2365,11 +2447,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 300,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": null
       },
       "deploiement": {
         "points_de_vente": [],
@@ -2402,11 +2486,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000 PCS"
       },
       "identification": {
         "intitule_inpulse": "KIT 2/1 EN BOIS (FOURCHETTE / COUTEAU)",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "WEKIT2EN1BOIS"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -2457,7 +2542,9 @@
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": null
       },
       "deploiement": {
         "points_de_vente": [],
@@ -2490,17 +2577,18 @@
         "fournisseur": "GOBERLOTE",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 18PCE"
       },
       "identification": {
         "intitule_inpulse": "MUG AUBE H10CM",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "AUBKAM10"
       },
       "dimensions": {
         "longueur_cm": null,
         "largeur_cm": null,
         "profondeur_soufflet_cm": null,
-        "hauteur_cm": 10.0,
+        "hauteur_cm": 10,
         "dimensions_a_plat_cm": "",
         "tolerance_mm": null
       },
@@ -2541,11 +2629,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 18,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 6.71
       },
       "deploiement": {
         "points_de_vente": [],
@@ -2578,15 +2668,16 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON DE 300 UNITES"
       },
       "identification": {
         "intitule_inpulse": "PAPIER INGRAISSABLE 900x1000 MM KRAFT",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "PAPING9001000KF"
       },
       "dimensions": {
-        "longueur_cm": 90.0,
-        "largeur_cm": 100.0,
+        "longueur_cm": 90,
+        "largeur_cm": 100,
         "profondeur_soufflet_cm": null,
         "hauteur_cm": null,
         "dimensions_a_plat_cm": "90.0 × 100.0",
@@ -2633,7 +2724,9 @@
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": null
       },
       "deploiement": {
         "points_de_vente": [],
@@ -2666,11 +2759,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 10KG"
       },
       "identification": {
         "intitule_inpulse": "PAPIER SANDWICH INGRAISSABLE TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBPAP3040ING"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -2717,11 +2811,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 10,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 5.19
       },
       "deploiement": {
         "points_de_vente": [],
@@ -2754,11 +2850,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 500PCE"
       },
       "identification": {
         "intitule_inpulse": "PETIT SAC PAIN TRANCHE TFB 22x12x25CM",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBSSOS220120250"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -2805,11 +2902,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 500,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0528
       },
       "deploiement": {
         "points_de_vente": [],
@@ -2842,11 +2941,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 400PCE"
       },
       "identification": {
         "intitule_inpulse": "PORTE GOBELET",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "PORTEGOB24"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -2893,11 +2993,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 400,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.129
       },
       "deploiement": {
         "points_de_vente": [],
@@ -2925,16 +3027,17 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 31.95,
+        "prix_ht": 31.945,
         "dispo": "2/5",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "ROULEAU(X)"
       },
       "identification": {
         "intitule_inpulse": "ROULEAU PAIN PAPIER ALIMENTAIRE TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "BASTARDSBOBINE50CM"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -2985,7 +3088,9 @@
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Rouleau",
+        "prix_unitaire_ht": null
       },
       "deploiement": {
         "points_de_vente": [],
@@ -3018,11 +3123,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 250PCE"
       },
       "identification": {
         "intitule_inpulse": "SAC CABAS TFB 26X17X29CM",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBSCAB261729CMYK"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -3069,11 +3175,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 250,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.089
       },
       "deploiement": {
         "points_de_vente": [],
@@ -3106,11 +3214,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
       },
       "identification": {
         "intitule_inpulse": "SAC CROISSANT T1 TFB 14X8X22CM",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBSCRO14080220"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -3157,11 +3266,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 1000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0168
       },
       "deploiement": {
         "points_de_vente": [],
@@ -3194,11 +3305,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
       },
       "identification": {
         "intitule_inpulse": "SAC CROISSANT T2 TFB 18X8X31CM",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBSCRO18080310"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -3245,11 +3357,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 1000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0242
       },
       "deploiement": {
         "points_de_vente": [],
@@ -3282,11 +3396,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
       },
       "identification": {
         "intitule_inpulse": "SAC CROISSANT T3 TFB 19X8X33CM",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBSCRO19080330"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -3333,11 +3448,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 1000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0273
       },
       "deploiement": {
         "points_de_vente": [],
@@ -3365,16 +3482,17 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 0.54,
+        "prix_ht": 0.539,
         "dispo": "0/0",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 100PCE"
       },
       "identification": {
         "intitule_inpulse": "SAC GRANDS GATEAUX",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBSLUX252530"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -3421,11 +3539,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 100,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0054
       },
       "deploiement": {
         "points_de_vente": [],
@@ -3458,11 +3578,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
       },
       "identification": {
         "intitule_inpulse": "SACHET BAGUETTE TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "FRENCHBASTARFDSSBAG"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -3509,11 +3630,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 1000,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0159
       },
       "deploiement": {
         "points_de_vente": [],
@@ -3541,12 +3664,13 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0.0,
+        "prix_ht": 0,
         "dispo": "17/17",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "à l'unité"
       },
       "identification": {
         "intitule_inpulse": "SACHET GALETTES TFB X ISIGNY",
@@ -3601,7 +3725,9 @@
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "à l'unité",
+        "prix_unitaire_ht": null
       },
       "deploiement": {
         "points_de_vente": [],
@@ -3634,11 +3760,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 3200"
       },
       "identification": {
         "intitule_inpulse": "SERVIETTE TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "TFBSERV300300"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -3685,11 +3812,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 3200,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0153
       },
       "deploiement": {
         "points_de_vente": [],
@@ -3722,17 +3851,18 @@
         "fournisseur": "GOBERLOTE",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 18PCE"
       },
       "identification": {
         "intitule_inpulse": "TASSE AUBE H7CM",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "AUBKAT07"
       },
       "dimensions": {
         "longueur_cm": null,
         "largeur_cm": null,
         "profondeur_soufflet_cm": null,
-        "hauteur_cm": 7.0,
+        "hauteur_cm": 7,
         "dimensions_a_plat_cm": "",
         "tolerance_mm": null
       },
@@ -3773,11 +3903,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 18,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 4.38
       },
       "deploiement": {
         "points_de_vente": [],
@@ -3810,11 +3942,12 @@
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
         "sous_categorie": "PACKAGING TFB",
-        "ingredient": null
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 50"
       },
       "identification": {
         "intitule_inpulse": "TOTE BAGUETTE TFB",
-        "sku_fournisseur": ""
+        "sku_fournisseur": "FRENCHBASTARDSSTJ"
       },
       "dimensions": {
         "longueur_cm": null,
@@ -3861,11 +3994,13 @@
         }
       },
       "logistique": {
-        "nombre_par_carton": null,
+        "nombre_par_carton": 50,
         "cartons_par_palette": null,
         "conditions_stockage": "",
         "moq": null,
-        "delai_reappro_jours": null
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 2.69
       },
       "deploiement": {
         "points_de_vente": [],
