@@ -1,0 +1,5302 @@
+<!DOCTYPE html>
+<html lang="fr"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TFB — Info Pack (aperçu)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#f7f5f0;--sur:#fff;--sur2:#f2f0eb;--bor:#e4e0d8;--bor2:#d4cfc5;--tx:#1a1a18;--tx2:#6b6860;--tx3:#9b9890;--gold:#c8a96e;--gdark:#a8893e;--gbg:#faf6ee;--green:#16a34a;--red:#dc2626;--amber:#d97706;--r:10px;--rs:6px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;min-height:100vh}
+a{color:var(--gdark)}
+.topbar{background:var(--sur);border-bottom:1px solid var(--bor);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.logo{font-size:15px;font-weight:600;letter-spacing:-.3px}.logo span{color:var(--gold)}
+.badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--gbg);color:var(--gdark);border:1px solid #e8d9b8}
+.topbar-l,.topbar-r{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--rs);border:1px solid var(--bor2);background:var(--sur);color:var(--tx);font-size:13px;font-weight:500;cursor:pointer;transition:background .15s;white-space:nowrap;font-family:inherit}
+.btn:hover{background:var(--sur2)}
+.btn-primary{background:var(--amber);color:#fff;border-color:var(--amber)}.btn-primary:hover{background:#b45f04}
+.btn-sm{padding:5px 10px;font-size:12px}
+.pagenav{display:flex;gap:2px;background:var(--sur2);border-radius:8px;padding:3px;margin-left:4px}
+.pagenav a{font-size:12px;font-weight:500;padding:5px 12px;border-radius:4px;color:var(--tx2);text-decoration:none;cursor:pointer}
+.pagenav a.active{background:var(--amber);color:#fff}.pagenav a:hover:not(.active){background:#e9e6df;color:var(--tx)}
+.main{max-width:1400px;margin:0 auto;padding:24px}
+.conn{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);margin-bottom:20px}
+.dot{width:8px;height:8px;border-radius:50%;background:#d1d5db;flex-shrink:0}
+.dot.ok{background:var(--green)}.dot.err{background:var(--red)}.dot.warn{background:var(--amber)}.dot.spin{background:var(--amber);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.conn-t{flex:1;font-size:13px;color:var(--tx2)}.conn-t strong{color:var(--tx)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.metric{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:16px;text-align:center;display:flex;flex-direction:column;justify-content:center}
+.ml{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:8px}
+.mv{font-size:22px;font-weight:600;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.msub{font-size:12px;color:var(--tx3);margin-top:3px}
+.metric.accent{border-color:#e8d9b8;background:var(--gbg)}.metric.accent .mv{color:var(--gdark)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+.fg{display:flex;gap:6px;flex-wrap:wrap}
+.fgb{font-size:12.5px;font-weight:500;padding:6px 14px;border-radius:999px;border:1px solid var(--bor);background:var(--sur);color:var(--tx2);cursor:pointer;font-family:inherit;transition:.12s}
+.fgb.active{background:var(--amber);color:#fff;border-color:var(--amber);font-weight:700}
+.fgb:hover:not(.active){border-color:var(--amber);color:var(--tx)}
+select,.si{height:34px;padding:0 10px;border-radius:var(--rs);border:1px solid var(--bor);background:var(--sur);color:var(--tx);font-size:13px;font-family:inherit}
+select:focus,.si:focus{outline:none;border-color:var(--gold)}
+.sw{position:relative}.sw .si{padding-left:30px;min-width:220px}
+.sw i{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:15px;pointer-events:none}
+.spacer{flex:1}
+.section{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.sh{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bor)}
+.st{font-size:13px;font-weight:600}.sm{font-size:12px;color:var(--tx3)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--tx3);border-bottom:1px solid var(--bor);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--tx2)}th .si2{margin-left:4px;font-size:10px;opacity:.5}
+th.asc .si2::after{content:'↑';opacity:1;color:var(--gold)}th.desc .si2::after{content:'↓';opacity:1;color:var(--gold)}
+th .si2::after{content:'↕'}
+td{padding:9px 12px;border-bottom:1px solid var(--bor);vertical-align:middle;white-space:nowrap}
+tr:last-child td{border-bottom:none}tbody tr{cursor:pointer}tbody tr:hover td{background:var(--sur2)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.tm{color:var(--tx2)}.tb{font-weight:600}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.p-tfb{background:#fef3c7;color:#92400e}.p-neutre{background:#f1f0ec;color:#5a5850}.p-cob{background:#ede9fe;color:#5b21b6}
+.p-ok{background:#dcfce7;color:#166534}.p-warn{background:#fee2e2;color:#b91c1c}.p-todo{background:#e0f2fe;color:#075985}
+.bw{display:flex;align-items:center;gap:8px}
+.bb{flex:1;height:5px;background:var(--sur2);border-radius:3px;overflow:hidden;min-width:56px}
+.bf{height:100%;border-radius:3px;background:var(--gold)}
+.bp{font-size:11px;color:var(--tx3);min-width:34px;text-align:right;font-variant-numeric:tabular-nums}
+.empty{padding:48px;text-align:center;color:var(--tx3)}
+.empty i{font-size:32px;display:block;margin-bottom:12px;color:var(--bor2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;padding:16px}
+.card{border:1px solid var(--bor);border-radius:var(--r);overflow:hidden;cursor:pointer;background:var(--sur);transition:.15s}
+.card:hover{border-color:var(--gold);box-shadow:0 6px 18px rgba(0,0,0,.06)}
+.card-ph{height:110px;background:var(--sur2);display:flex;align-items:center;justify-content:center;color:var(--bor2);font-size:26px;border-bottom:1px solid var(--bor);overflow:hidden}
+.card-ph img{width:100%;height:100%;object-fit:cover}
+.card-b{padding:11px 12px}
+.card-t{font-size:12.5px;font-weight:600;line-height:1.35;margin-bottom:6px}
+.card-m{font-size:11.5px;color:var(--tx3);display:flex;justify-content:space-between;gap:8px}
+/* ---------- fiche (drawer) ---------- */
+.ov{position:fixed;inset:0;background:rgba(20,18,14,.42);z-index:80;display:none}.ov.on{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(940px,96vw);background:var(--bg);z-index:81;transform:translateX(102%);transition:transform .22s ease;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(0,0,0,.14)}
+.drawer.on{transform:none}
+.dh{background:var(--sur);border-bottom:1px solid var(--bor);padding:14px 20px;display:flex;align-items:flex-start;gap:14px}
+.dh-t{flex:1}.dh-t h2{font-size:17px;font-weight:600;letter-spacing:-.3px;line-height:1.25}
+.dh-t .sub{font-size:12.5px;color:var(--tx3);margin-top:5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tabs{display:flex;border-bottom:1px solid var(--bor);overflow-x:auto;background:var(--sur);padding:0 8px}
+.tab{font-size:12.5px;font-weight:500;padding:11px 13px;cursor:pointer;color:var(--tx2);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.tab.active{color:var(--amber);font-weight:700;border-bottom-color:var(--amber)}.tab:hover:not(.active){color:var(--tx)}
+.tcount{font-size:10px;font-weight:700;padding:1px 5px;border-radius:20px;background:var(--sur2);color:var(--tx3);font-variant-numeric:tabular-nums}
+.tcount.zero{background:#fee2e2;color:#b91c1c}.tcount.full{background:#dcfce7;color:#166534}
+.dbody{flex:1;overflow-y:auto;padding:20px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.f{background:var(--sur);border:1px solid var(--bor);border-radius:var(--rs);padding:10px 12px}
+.f.wide{grid-column:1/-1}
+.fl{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.fv{font-size:13px;font-weight:500;line-height:1.45;word-break:break-word}
+.fv .u{font-size:11px;font-weight:500;color:var(--tx3)}
+.fv.void{color:var(--tx3);font-weight:400;font-style:italic}
+.filedrop{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--tx3);border:1.5px dashed var(--bor2);border-radius:var(--rs);padding:9px 11px;background:var(--sur2)}
+.src{font-size:9px;font-weight:700;letter-spacing:.04em;padding:1px 5px;border-radius:3px;text-transform:uppercase}
+.src-inp{background:#dcfce7;color:#166534}.src-tfb{background:#e0f2fe;color:#075985}
+.src-calc{background:#ede9fe;color:#5b21b6}.src-man{background:#fef3c7;color:#92400e}
+.gh{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bor)}
+.gh:first-child{margin-top:0}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--sur2);color:var(--tx2);border:1px solid var(--bor)}
+.photogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.photogrid figure{margin:0}.photogrid img{width:100%;border-radius:var(--r);border:1px solid var(--bor);display:block}
+.photogrid figcaption{font-size:11px;color:var(--tx3);margin-top:5px;text-align:center}
+.slot{aspect-ratio:4/3;border:1.5px dashed var(--bor2);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--tx3);font-size:11.5px;text-align:center;padding:8px;background:var(--sur)}
+.slot i{font-size:22px;color:var(--bor2)}
+.note{display:flex;gap:9px;align-items:flex-start;padding:11px 13px;border:1px solid #fde68a;background:#fef9ec;border-radius:8px;font-size:12.5px;color:#92400e;line-height:1.5;margin-bottom:18px}
+.note i{font-size:16px;flex-shrink:0}
+.note code{background:rgba(0,0,0,.06);padding:1px 4px;border-radius:3px;font-size:11.5px}
+
+/* ---------- champs calcules ---------- */
+.calclegend{font-size:11px;color:var(--tx3);margin-top:5px;line-height:1.45}
+.calcbtns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.calcbtns .btn{font-size:11.5px;padding:4px 9px}
+.calcbtns .btn[disabled]{opacity:.45;cursor:not-allowed}
+.calcparams{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed var(--bor)}
+.calcparams label{font-size:11.5px;color:var(--tx2);display:inline-flex;align-items:center;gap:5px}
+.calcparams input.p{width:62px;text-align:right;padding:4px 6px;font-size:12px}
+.calcparams .hint{font-size:10.5px;color:var(--tx3)}
+input.ed.bad{border-color:var(--red);background:#fef2f2}
+.fieldmsg{font-size:11.5px;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--rs);
+  padding:5px 8px;margin-top:7px;line-height:1.4}
+.unitsel{width:auto;min-width:74px;flex-shrink:0;padding:6px 4px}
+
+/* ---------- bandeau hors service ---------- */
+.band{display:flex;align-items:center;gap:10px;padding:9px 20px;background:#fef2f2;border-bottom:1px solid #fecaca;
+  font-size:12.5px;color:#b91c1c;line-height:1.4}
+.band i{font-size:16px;flex-shrink:0}
+.band>div{flex:1}
+.band .btn{font-size:11.5px;padding:4px 9px;background:var(--sur);color:#b91c1c;border-color:#fecaca}
+.band .btn:hover{background:#fff5f5}
+.band .bandok{font-size:11.5px;display:inline-flex;align-items:center;gap:4px;color:#166534}
+.fgb .cnt{font-variant-numeric:tabular-nums}
+
+/* ---------- saisie ---------- */
+.savebadge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:500;padding:5px 10px;border-radius:999px;border:1px solid var(--bor);background:var(--sur2);color:var(--tx2);max-width:340px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.savebadge i{font-size:14px;flex-shrink:0}
+.savebadge.ok{border-color:#bbf7d0;background:#f0fdf4;color:#166534}
+.savebadge.wait{border-color:#fed7aa;background:#fff7ed;color:#c2410c}
+.savebadge.err{border-color:#fecaca;background:#fef2f2;color:#b91c1c}
+.edited{font-size:12px;color:var(--gold);vertical-align:middle;margin-left:3px}
+.dotsaved{font-size:13px;color:var(--green);margin-left:auto}
+.f.ed-f{background:var(--sur)}
+.f.ed-f.vide{background:#fffdf8;border-style:dashed}
+.ctl{display:flex;align-items:center;gap:7px}
+.ctl select,.ctl input{min-width:0}
+input.ed,textarea.ed,select.ed{width:100%;font-family:inherit;font-size:13px;font-weight:500;color:var(--tx);
+  background:var(--sur2);border:1px solid var(--bor);border-radius:var(--rs);padding:6px 8px;transition:.12s}
+input.ed:hover,textarea.ed:hover,select.ed:hover{border-color:var(--bor2)}
+input.ed:focus,textarea.ed:focus,select.ed:focus{outline:none;border-color:var(--amber);background:var(--sur);box-shadow:0 0 0 3px rgba(217,119,6,.12)}
+input.ed::placeholder,textarea.ed::placeholder{color:var(--tx3);font-style:italic;font-weight:400}
+textarea.ed{resize:vertical;line-height:1.5}
+.ctl .u{font-size:11px;color:var(--tx3);white-space:nowrap;flex-shrink:0}
+.multi{display:flex;gap:5px;flex-wrap:wrap}
+.chk{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:999px;
+  border:1px solid var(--bor);background:var(--sur2);color:var(--tx2);cursor:pointer;user-select:none;transition:.12s}
+.chk:hover{border-color:var(--amber)}
+.chk.on{background:var(--amber);border-color:var(--amber);color:#fff}
+.chk input{margin:0;width:11px;height:11px;accent-color:#fff;cursor:pointer}
+.tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.tags .chip{display:inline-flex;align-items:center;gap:4px;padding-right:3px}
+.chip-x{border:none;background:none;cursor:pointer;color:var(--tx3);font-size:14px;line-height:1;padding:0 3px;font-family:inherit}
+.chip-x:hover{color:var(--red)}
+.taginput{flex:1;min-width:150px;font-family:inherit;font-size:12px;background:var(--sur2);border:1px dashed var(--bor2);
+  border-radius:var(--rs);padding:5px 8px;color:var(--tx)}
+.taginput:focus{outline:none;border-color:var(--amber);border-style:solid;background:var(--sur)}
+.linkrow{margin:5px 0 6px;font-size:12px}
+.linkrow a{display:inline-flex;align-items:center;gap:4px;text-decoration:none;font-weight:500}
+.linkrow a:hover{text-decoration:underline}
+.thumb{width:100%;border-radius:var(--r);border:1px solid var(--bor);display:block;margin-bottom:7px}
+.slot.sm{aspect-ratio:4/3;margin-bottom:7px}
+.photofields{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+
+/* ---------- ligne depliable + historique de commandes ---------- */
+th.nosort{cursor:default}
+tbody tr.mainrow{cursor:default}
+tbody tr.mainrow:hover td{background:var(--sur2)}
+tbody tr.mainrow.open td{background:var(--gbg)}
+.namecell{cursor:pointer;user-select:none;white-space:normal;min-width:260px}
+.chev{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-right:5px;
+  color:var(--tx3);transition:transform .15s;vertical-align:-2px}
+.chev.on{transform:rotate(90deg);color:var(--amber)}
+.namecell:hover .chev{color:var(--amber)}
+.ordline{font-size:11px;font-weight:400;margin-top:3px}
+.ordsum{color:var(--tx3)}
+.ordnil{color:var(--bor2);font-style:italic}
+.btn-fiche{white-space:nowrap;font-size:11.5px;padding:4px 9px}
+.btn-fiche:hover{border-color:var(--amber);color:var(--gdark)}
+tbody tr.subrow td{background:var(--sur2);padding:0;border-bottom:2px solid var(--bor)}
+.ordwrap{padding:14px 16px;overflow-x:auto}
+.ordempty{padding:16px;font-size:12.5px;color:var(--tx3);display:flex;align-items:center;gap:8px}
+.ordtab{width:auto;min-width:100%;border-collapse:collapse;font-size:12px;background:var(--sur);
+  border:1px solid var(--bor);border-radius:var(--rs);overflow:hidden}
+.ordtab thead th{background:var(--sur2);font-size:10px;letter-spacing:.04em;padding:6px 10px;text-align:right;
+  cursor:default;border-bottom:1px solid var(--bor);white-space:nowrap;color:var(--tx3)}
+.ordtab thead th:first-child{text-align:left;min-width:132px}
+.ordtab thead th.off{color:var(--bor2)}
+.ordtab tbody th{text-align:left;font-size:11.5px;font-weight:600;color:var(--tx2);padding:6px 10px;
+  border-bottom:1px solid var(--bor);white-space:nowrap;text-transform:none;letter-spacing:0;cursor:default}
+.ordtab td{text-align:right;padding:6px 10px;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--bor);
+  white-space:nowrap;font-weight:500}
+.ordtab tbody tr:last-child th,.ordtab tbody tr:last-child td{border-bottom:none}
+.ordtab td.void{color:var(--bor2);font-weight:400}
+.ordtab td.tot,.ordtab th.tot{background:var(--sur2);font-weight:700}
+.ordtab tr.ecart td{font-weight:600}
+.ordtab tr.ecart td.neg{color:var(--red)}
+.ordtab tr.ecart td.pos{color:var(--amber)}
+.ordtab tr.unit th,.ordtab tr.unit td{color:var(--tx2);font-weight:500;background:#fcfbf8}
+.ordnote{font-size:11px;color:var(--tx3);margin-top:8px;display:flex;gap:6px;align-items:flex-start;line-height:1.5}
+.ordnote i{flex-shrink:0;font-size:13px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.savebadge .ti-loader-2{animation:spin 1s linear infinite}
+@media(max-width:720px){.main{padding:14px}.topbar{padding:0 12px}.pagenav{display:none}}
+</style>
+</head><body>
+
+<div class="topbar">
+  <div class="topbar-l">
+    <div class="logo">TFB <span>info pack</span></div>
+    <span class="badge">Packaging</span>
+    <nav class="pagenav"><a class="active">Packagings</a><a>Fournisseurs</a><a>Référentiels</a></nav>
+  </div>
+  <div class="topbar-r">
+    <span class="savebadge" id="ordbadge" style="display:none"></span>
+    <span class="savebadge" id="save"><i class="ti ti-cloud"></i>—</span>
+    <button class="btn btn-sm" id="btn-xls"><i class="ti ti-file-spreadsheet"></i>Export</button>
+    <button class="btn btn-sm btn-primary" id="btn-sync"><i class="ti ti-refresh"></i>Synchroniser Inpulse</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="conn" id="conn">
+    <span class="dot" id="dot"></span>
+    <div class="conn-t" id="conn-t">Chargement du référentiel…</div>
+    <span class="sm" id="conn-d"></span>
+  </div>
+
+  <div class="metrics" id="metrics"></div>
+
+  <div class="filters">
+    <div class="sw"><i class="ti ti-search"></i><input class="si" id="q" placeholder="Rechercher un packaging…"></div>
+    <div class="fg" id="f-fam"></div>
+    <select id="f-four"><option value="">Tous fournisseurs</option></select>
+    <select id="f-marq"><option value="">Tout marquage</option><option>TFB</option><option>Neutre</option><option>Co-branding</option></select>
+    <select id="f-comp"><option value="">Complétude : toutes</option><option value="lt50">&lt; 50 %</option><option value="lt80">&lt; 80 %</option><option value="eq100">100 %</option><option value="saisies">Fiches saisies ici</option></select>
+    <button class="fgb active" id="f-hs"><i class="ti ti-eye-off"></i> Masquer les références hors service<span class="cnt" id="f-hs-n"></span></button>
+    <div class="spacer"></div>
+    <div class="fg">
+      <button class="fgb active" data-view="list"><i class="ti ti-list"></i> Liste</button>
+      <button class="fgb" data-view="grid"><i class="ti ti-layout-grid"></i> Grille</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sh"><div class="st">Base packaging</div><div class="sm" id="count"></div></div>
+    <div id="view-list" class="tw"><table><thead><tr>
+      <th data-k="nom">Packaging<span class="si2"></span></th>
+      <th class="nosort"></th>
+      <th data-k="famille">Famille<span class="si2"></span></th>
+      <th data-k="marquage">Marquage<span class="si2"></span></th>
+      <th data-k="four">Fournisseur<span class="si2"></span></th>
+      <th data-k="prix" class="num">Prix HT<span class="si2"></span></th>
+      <th data-k="dispo">Dispo.<span class="si2"></span></th>
+      <th data-k="comp">Fiche remplie<span class="si2"></span></th>
+    </tr></thead><tbody id="tb"></tbody></table></div>
+    <div id="view-grid" class="grid" style="display:none"></div>
+  </div>
+</div>
+
+<div class="ov" id="ov"></div>
+<aside class="drawer" id="drawer">
+  <div class="dh">
+    <div class="dh-t"><h2 id="d-title">—</h2><div class="sub" id="d-sub"></div></div>
+    <button class="btn btn-sm" id="d-close"><i class="ti ti-x"></i></button>
+  </div>
+  <div id="d-band"></div>
+  <div class="tabs" id="d-tabs"></div>
+  <div class="dbody" id="d-body"></div>
+</aside>
+
+<script>
+const EMBEDDED = {
+  "meta": {
+    "titre": "TFB — Info Pack : base packaging",
+    "source_liste": "Inpulse › Ingrédients fournisseurs › catégorie PACKAGING",
+    "source_structure": "Notion — fiche packaging (5 onglets)",
+    "extrait_le": "2026-09-08",
+    "nb_references": 43,
+    "cle_reconciliation": "identification.intitule_inpulse == supplier-product.name",
+    "pilote_par_inpulse": [
+      "inpulse.prix_ht",
+      "inpulse.dispo",
+      "inpulse.fournisseur",
+      "inpulse.unite_achat",
+      "inpulse.categorie",
+      "inpulse.sous_categorie",
+      "identification.sku_fournisseur",
+      "logistique.nombre_par_carton",
+      "logistique.unite_commande",
+      "logistique.prix_unitaire_ht"
+    ],
+    "enrichi_le": "2026-09-08"
+  },
+  "referentiels": {
+    "famille": [
+      "Accessoire",
+      "Bague",
+      "Bouteille",
+      "Bowl",
+      "Boîte",
+      "Couvercle",
+      "Couverts",
+      "Gobelet",
+      "Papier",
+      "Sac",
+      "Serviette",
+      "Vaisselle",
+      "Étiquette"
+    ],
+    "marquage": [
+      "TFB",
+      "Neutre",
+      "Co-branding"
+    ],
+    "statut": [
+      "Actif",
+      "En test",
+      "À écouler",
+      "Arrêté",
+      "À compléter"
+    ],
+    "type_support": [
+      "Kraft brun",
+      "Kraft blanc",
+      "Carton compact",
+      "Carton couché",
+      "Papier ingraissable",
+      "Carton + PE",
+      "PS / PP",
+      "PET",
+      "PLA",
+      "Grès / céramique",
+      "Bois",
+      "Coton",
+      "Ouate de cellulose",
+      "Papier adhésif"
+    ],
+    "finition": [
+      "Mat",
+      "Brillant",
+      "Vernis",
+      "Sans"
+    ],
+    "conditions_stockage": [
+      "Sec et tempéré",
+      "À l'abri de l'humidité",
+      "À plat",
+      "Sans empilage",
+      "Empilable",
+      "Hors zone chaude"
+    ],
+    "points_de_vente": [
+      "OB",
+      "SD",
+      "SF",
+      "PG",
+      "SV",
+      "TP",
+      "LBA",
+      "NE",
+      "LV",
+      "LNV",
+      "RB",
+      "LIL3",
+      "LP",
+      "BC",
+      "PP",
+      "BCJ",
+      "BDJ",
+      "BGH"
+    ],
+    "photos_attendues": [
+      "Produit nu",
+      "Produit garni",
+      "Mise en situation boutique",
+      "Gabarit à plat"
+    ]
+  },
+  "packagings": [
+    {
+      "id": "bague-tfb-bowl-900ml",
+      "nom": "BAGUE TFB BOWL 900ML",
+      "app": {
+        "famille": "Bague",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 101.42,
+        "dispo": "2/2",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000 UNITES"
+      },
+      "identification": {
+        "intitule_inpulse": "BAGUE TFB BOWL 900ML",
+        "sku_fournisseur": "TFBBAGUEBOL900D183"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "PS / PP",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "PS / PP",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "900 ml",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 1000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.1014
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Bowl salé",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-1x-eclair-tfb",
+      "nom": "BOÎTE 1X ECLAIR TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 98.1,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "BOITE(S) DE 900PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "BOÎTE 1X ECLAIR TFB",
+        "sku_fournisseur": "STARDSBECLAIR1605050"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 900,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Boîte",
+        "prix_unitaire_ht": 0.109
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-1x-patisserie-tfb",
+      "nom": "BOITE 1X PATISSERIE TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 59.5,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 500PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 1X PATISSERIE TFB",
+        "sku_fournisseur": "TFBBPOIGNEE11010560"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 500,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.119
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-2x-patisserie-tfb",
+      "nom": "BOITE 2X PATISSERIE TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 0.159,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 500PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 2X PATISSERIE TFB",
+        "sku_fournisseur": "TFBBPOIGNEE18010060"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 500,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0003
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-4x-bmc-tfb",
+      "nom": "BOITE 4X BMC TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 160.0,
+        "dispo": "0/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "à l'unité"
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 4X BMC TFB",
+        "sku_fournisseur": "TFBBMAC4BMC"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "à l'unité",
+        "prix_unitaire_ht": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-6x-patisserie-neutre",
+      "nom": "BOITE 6X PATISSERIE NEUTRE",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 14.85,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 50"
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 6X PATISSERIE NEUTRE",
+        "sku_fournisseur": "BPAT252508CB260GRSI"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 50,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.297
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-6x-patisserie-tfb",
+      "nom": "BOITE 6X PATISSERIE TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 0.439,
+        "dispo": "1/1",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 100"
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 6X PATISSERIE TFB",
+        "sku_fournisseur": "TFBBPAT222210"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 100,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0044
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boite-8x-bmc-tfb",
+      "nom": "BOITE 8X BMC TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 153.4,
+        "dispo": "0/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 100PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "BOITE 8X BMC TFB",
+        "sku_fournisseur": "TFBBMAC8BMC"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 100,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 1.534
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "boites-a-cakes-tfb",
+      "nom": "BOITES A CAKES TFB",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 0.568,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 5000 BOITES"
+      },
+      "identification": {
+        "intitule_inpulse": "BOITES A CAKES TFB",
+        "sku_fournisseur": "TFB+++32251029-00"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 5000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0001
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "bouteille-pet-25cl-bouchon-noir",
+      "nom": "BOUTEILLE PET 25CL + BOUCHON NOIR",
+      "app": {
+        "famille": "Bouteille",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 14.95,
+        "dispo": "1/1",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": "BOUTEILLE 25CL AVEC BOUCHON NOIR",
+        "unite_achat": "CARTON(S) DE 270PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "BOUTEILLE PET 25CL + BOUCHON NOIR",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "PET",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "PET",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "25 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 270,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0554
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson froide",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "bowl-900-ml-kraft-d183",
+      "nom": "BOWL 900 ML KRAFT D183",
+      "app": {
+        "famille": "Bowl",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 35.996,
+        "dispo": "2/2",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 300 UNITES"
+      },
+      "identification": {
+        "intitule_inpulse": "BOWL 900 ML KRAFT D183",
+        "sku_fournisseur": "BOL900D183KF"
+      },
+      "dimensions": {
+        "longueur_cm": 18.3,
+        "largeur_cm": 18.3,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "900 ml",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 300,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.12
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Bowl salé",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "calisto-mug-h10-sable-creme",
+      "nom": "CALISTO MUG H10 SABLE CREME",
+      "app": {
+        "famille": "Vaisselle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 31.5,
+        "dispo": "10/10",
+        "fournisseur": "GOBERLOTE",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 6 UNITES"
+      },
+      "identification": {
+        "intitule_inpulse": "CALISTO MUG H10 SABLE CREME",
+        "sku_fournisseur": "Casacm10"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": 10.0,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Grès / céramique",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Grès / céramique",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 6,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 5.25
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Consommation sur place",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "calisto-tasse-h5-5-sable-creme",
+      "nom": "CALISTO TASSE H5,5 SABLE CREME",
+      "app": {
+        "famille": "Vaisselle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 42.0,
+        "dispo": "10/10",
+        "fournisseur": "GOBERLOTE",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 12 UNITES"
+      },
+      "identification": {
+        "intitule_inpulse": "CALISTO TASSE H5,5 SABLE CREME",
+        "sku_fournisseur": "Casact05"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": 5.5,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Grès / céramique",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Grès / céramique",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 12,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 3.5
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Consommation sur place",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "couvercle-gobelet-10cl",
+      "nom": "COUVERCLE GOBELET 10CL",
+      "app": {
+        "famille": "Couvercle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 27.97,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "COUVERCLE GOBELET 10CL",
+        "sku_fournisseur": "COUVGOB4OZØ62"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "10 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 1000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.028
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "couvercle-gobelet-25cl",
+      "nom": "COUVERCLE GOBELET 25CL",
+      "app": {
+        "famille": "Couvercle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 44.56,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "COUVERCLE GOBELET 25CL",
+        "sku_fournisseur": "COUVGOB8OZØ80"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "25 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 1000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0446
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "couvercle-gobelet-35cl",
+      "nom": "COUVERCLE GOBELET 35CL",
+      "app": {
+        "famille": "Couvercle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 55.0,
+        "dispo": "5/5",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "COUVERCLE GOBELET 35CL",
+        "sku_fournisseur": "CVGOBD90BLC"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "35 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 1000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.055
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "etiquettes-en-rouleau-45x45mm-cake-marbre",
+      "nom": "ETIQUETTES EN ROULEAU 45X45MM CAKE MARBRE",
+      "app": {
+        "famille": "Étiquette",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "à l'unité"
+      },
+      "identification": {
+        "intitule_inpulse": "ETIQUETTES EN ROULEAU 45X45MM CAKE MARBRE",
+        "sku_fournisseur": "TFB+++51260319-00"
+      },
+      "dimensions": {
+        "longueur_cm": 4.5,
+        "largeur_cm": 4.5,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "à l'unité",
+        "prix_unitaire_ht": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Étiquetage cake",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "etiquettes-en-rouleau-45x45mm-cake-praline-amande",
+      "nom": "ETIQUETTES EN ROULEAU 45X45MM CAKE PRALINE AMANDE",
+      "app": {
+        "famille": "Étiquette",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "à l'unité"
+      },
+      "identification": {
+        "intitule_inpulse": "ETIQUETTES EN ROULEAU 45X45MM CAKE PRALINE AMANDE",
+        "sku_fournisseur": "TFB+++51260319-00"
+      },
+      "dimensions": {
+        "longueur_cm": 4.5,
+        "largeur_cm": 4.5,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "à l'unité",
+        "prix_unitaire_ht": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Étiquetage cake",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "etiquettes-en-rouleau-45x45mm-cake-vanille-caramel",
+      "nom": "ETIQUETTES EN ROULEAU 45X45MM CAKE VANILLE CARAMEL",
+      "app": {
+        "famille": "Étiquette",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "à l'unité"
+      },
+      "identification": {
+        "intitule_inpulse": "ETIQUETTES EN ROULEAU 45X45MM CAKE VANILLE CARAMEL",
+        "sku_fournisseur": "TFB+++51260319-00"
+      },
+      "dimensions": {
+        "longueur_cm": 4.5,
+        "largeur_cm": 4.5,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "à l'unité",
+        "prix_unitaire_ht": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Étiquetage cake",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "gobelet-10cl-tfb",
+      "nom": "GOBELET 10CL TFB",
+      "app": {
+        "famille": "Gobelet",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 24.85,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "GOBELET 10CL TFB",
+        "sku_fournisseur": "TFBGOB4OZD62"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "10 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 1000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0249
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "gobelet-25cl-tfb",
+      "nom": "GOBELET 25CL TFB",
+      "app": {
+        "famille": "Gobelet",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 46.69,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000"
+      },
+      "identification": {
+        "intitule_inpulse": "GOBELET 25CL TFB",
+        "sku_fournisseur": "TFBGOB8OZD80"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "25 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 1000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0467
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "gobelet-35cl-neutre",
+      "nom": "GOBELET 35CL NEUTRE",
+      "app": {
+        "famille": "Gobelet",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 54.0,
+        "dispo": "6/6",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000"
+      },
+      "identification": {
+        "intitule_inpulse": "GOBELET 35CL NEUTRE",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton + PE",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton + PE",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "35 cl",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 1000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.054
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "grand-sac-pain-tranche-tfb-22x12x40cm",
+      "nom": "GRAND SAC PAIN TRANCHE TFB 22x12x40CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 37.855,
+        "dispo": "14/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 500PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "GRAND SAC PAIN TRANCHE TFB 22x12x40CM",
+        "sku_fournisseur": "TFBSSOS221240"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 22,
+        "profondeur_soufflet_cm": 12,
+        "hauteur_cm": 40,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 500,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0757
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "inventaire-cofanetto-cake-cartoncino",
+      "nom": "INVENTAIRE - COFANETTO CAKE CARTONCINO",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 2500 CARTONCINO"
+      },
+      "identification": {
+        "intitule_inpulse": "INVENTAIRE - COFANETTO CAKE CARTONCINO",
+        "sku_fournisseur": "TFB+++32251029-00"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 2500,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "inventaire-cofanetto-cake-fascia",
+      "nom": "INVENTAIRE - COFANETTO CAKE FASCIA",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 250 FASCIA"
+      },
+      "identification": {
+        "intitule_inpulse": "INVENTAIRE - COFANETTO CAKE FASCIA",
+        "sku_fournisseur": "TFB+++32251029-00"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 250,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "inventaire-cofanetto-cake-fondo",
+      "nom": "INVENTAIRE - COFANETTO CAKE FONDO",
+      "app": {
+        "famille": "Boîte",
+        "marquage": "Neutre",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "2/2",
+        "fournisseur": "LITOGRAF",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 300 FONDO"
+      },
+      "identification": {
+        "intitule_inpulse": "INVENTAIRE - COFANETTO CAKE FONDO",
+        "sku_fournisseur": "TFB+++32251029-00"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 300,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Pâtisserie à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "kit-2-1-en-bois-fourchette-couteau",
+      "nom": "KIT 2/1 EN BOIS (FOURCHETTE / COUTEAU)",
+      "app": {
+        "famille": "Couverts",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 52.52,
+        "dispo": "0/19",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000 PCS"
+      },
+      "identification": {
+        "intitule_inpulse": "KIT 2/1 EN BOIS (FOURCHETTE / COUTEAU)",
+        "sku_fournisseur": "WEKIT2EN1BOIS"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Bois",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Bois",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Snacking",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "mug-aube-h10cm",
+      "nom": "MUG AUBE H10CM",
+      "app": {
+        "famille": "Vaisselle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 120.78,
+        "dispo": "10/10",
+        "fournisseur": "GOBERLOTE",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 18PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "MUG AUBE H10CM",
+        "sku_fournisseur": "AUBKAM10"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": 10.0,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Grès / céramique",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Grès / céramique",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 18,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 6.71
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Consommation sur place",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "papier-ingraissable-900x1000-mm-kraft",
+      "nom": "PAPIER INGRAISSABLE 900x1000 MM KRAFT",
+      "app": {
+        "famille": "Papier",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 60.88,
+        "dispo": "14/14",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON DE 300 UNITES"
+      },
+      "identification": {
+        "intitule_inpulse": "PAPIER INGRAISSABLE 900x1000 MM KRAFT",
+        "sku_fournisseur": "PAPING9001000KF"
+      },
+      "dimensions": {
+        "longueur_cm": 90.0,
+        "largeur_cm": 100.0,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "90.0 × 100.0",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Sandwich / pain",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "papier-sandwich-ingraissable-tfb",
+      "nom": "PAPIER SANDWICH INGRAISSABLE TFB",
+      "app": {
+        "famille": "Papier",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 51.9,
+        "dispo": "18/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 10KG"
+      },
+      "identification": {
+        "intitule_inpulse": "PAPIER SANDWICH INGRAISSABLE TFB",
+        "sku_fournisseur": "TFBPAP3040ING"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Papier ingraissable",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Papier ingraissable",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 10,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 5.19
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Sandwich / pain",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "petit-sac-pain-tranche-tfb-22x12x25cm",
+      "nom": "PETIT SAC PAIN TRANCHE TFB 22x12x25CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 26.4,
+        "dispo": "15/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 500PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "PETIT SAC PAIN TRANCHE TFB 22x12x25CM",
+        "sku_fournisseur": "TFBSSOS220120250"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 22,
+        "profondeur_soufflet_cm": 12,
+        "hauteur_cm": 25,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 500,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0528
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "porte-gobelet",
+      "nom": "PORTE GOBELET",
+      "app": {
+        "famille": "Accessoire",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 51.6,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 400PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "PORTE GOBELET",
+        "sku_fournisseur": "PORTEGOB24"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Carton compact",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Carton compact",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 400,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.129
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Boisson chaude à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "rouleau-pain-papier-alimentaire-tfb",
+      "nom": "ROULEAU PAIN PAPIER ALIMENTAIRE TFB",
+      "app": {
+        "famille": "Papier",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 31.945,
+        "dispo": "2/5",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "ROULEAU(X)"
+      },
+      "identification": {
+        "intitule_inpulse": "ROULEAU PAIN PAPIER ALIMENTAIRE TFB",
+        "sku_fournisseur": "BASTARDSBOBINE50CM"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Rouleau",
+        "prix_unitaire_ht": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Sandwich / pain",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sac-cabas-tfb-26x17x29cm",
+      "nom": "SAC CABAS TFB 26X17X29CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 22.25,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 250PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "SAC CABAS TFB 26X17X29CM",
+        "sku_fournisseur": "TFBSCAB261729CMYK"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 26,
+        "profondeur_soufflet_cm": 17,
+        "hauteur_cm": 29,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 250,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.089
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sac-croissant-t1-tfb-14x8x22cm",
+      "nom": "SAC CROISSANT T1 TFB 14X8X22CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 16.75,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "SAC CROISSANT T1 TFB 14X8X22CM",
+        "sku_fournisseur": "TFBSCRO14080220"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 14,
+        "profondeur_soufflet_cm": 8,
+        "hauteur_cm": 22,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 1000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0168
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sac-croissant-t2-tfb-18x8x31cm",
+      "nom": "SAC CROISSANT T2 TFB 18X8X31CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 24.17,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "SAC CROISSANT T2 TFB 18X8X31CM",
+        "sku_fournisseur": "TFBSCRO18080310"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 18,
+        "profondeur_soufflet_cm": 8,
+        "hauteur_cm": 31,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 1000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0242
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sac-croissant-t3-tfb-19x8x33cm",
+      "nom": "SAC CROISSANT T3 TFB 19X8X33CM",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 27.34,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "SAC CROISSANT T3 TFB 19X8X33CM",
+        "sku_fournisseur": "TFBSCRO19080330"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": 19,
+        "profondeur_soufflet_cm": 8,
+        "hauteur_cm": 33,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 1000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0273
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sac-grands-gateaux",
+      "nom": "SAC GRANDS GATEAUX",
+      "app": {
+        "famille": "Sac",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 0.539,
+        "dispo": "0/0",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 100PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "SAC GRANDS GATEAUX",
+        "sku_fournisseur": "TFBSLUX252530"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 100,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0054
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sachet-baguette-tfb",
+      "nom": "SACHET BAGUETTE TFB",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 15.9,
+        "dispo": "17/18",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 1000PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "SACHET BAGUETTE TFB",
+        "sku_fournisseur": "FRENCHBASTARFDSSBAG"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 1000,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0159
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "sachet-galettes-tfb-x-isigny",
+      "nom": "SACHET GALETTES TFB X ISIGNY",
+      "app": {
+        "famille": "Sac",
+        "marquage": "Co-branding",
+        "statut": "À compléter"
+      },
+      "inpulse": {
+        "prix_ht": 0.0,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "à l'unité"
+      },
+      "identification": {
+        "intitule_inpulse": "SACHET GALETTES TFB X ISIGNY",
+        "sku_fournisseur": ""
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Kraft brun",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Kraft brun",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": null,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "à l'unité",
+        "prix_unitaire_ht": null
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "serviette-tfb",
+      "nom": "SERVIETTE TFB",
+      "app": {
+        "famille": "Serviette",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 48.8,
+        "dispo": "17/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 3200"
+      },
+      "identification": {
+        "intitule_inpulse": "SERVIETTE TFB",
+        "sku_fournisseur": "TFBSERV300300"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Ouate de cellulose",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": true
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Ouate de cellulose",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 3200,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 0.0152
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Toutes ventes",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "tasse-aube-h7cm",
+      "nom": "TASSE AUBE H7CM",
+      "app": {
+        "famille": "Vaisselle",
+        "marquage": "Neutre",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 78.84,
+        "dispo": "10/10",
+        "fournisseur": "GOBERLOTE",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 18PCE"
+      },
+      "identification": {
+        "intitule_inpulse": "TASSE AUBE H7CM",
+        "sku_fournisseur": "AUBKAT07"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": 7.0,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "Grès / céramique",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "Grès / céramique",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 18,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 4.38
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Consommation sur place",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "tote-baguette-tfb",
+      "nom": "TOTE BAGUETTE TFB",
+      "app": {
+        "famille": "Sac",
+        "marquage": "TFB",
+        "statut": "Actif"
+      },
+      "inpulse": {
+        "prix_ht": 134.5,
+        "dispo": "0/17",
+        "fournisseur": "WELLEMBAL",
+        "categorie": "PACKAGING",
+        "sous_categorie": "PACKAGING TFB",
+        "ingredient": null,
+        "unite_achat": "CARTON(S) DE 50"
+      },
+      "identification": {
+        "intitule_inpulse": "TOTE BAGUETTE TFB",
+        "sku_fournisseur": "FRENCHBASTARDSSTJ"
+      },
+      "dimensions": {
+        "longueur_cm": null,
+        "largeur_cm": null,
+        "profondeur_soufflet_cm": null,
+        "hauteur_cm": null,
+        "dimensions_a_plat_cm": "",
+        "tolerance_mm": null
+      },
+      "matiere": {
+        "matiere": "PS / PP",
+        "grammage_g_m2": null,
+        "epaisseur_um": null,
+        "poids_unitaire_g": null,
+        "contact_alimentaire": false
+      },
+      "design": {
+        "design_valide_tfb": "",
+        "gabarit_fournisseur": "",
+        "logo": "",
+        "couleurs": {
+          "pantone_principal": "",
+          "pantone_secondaire": "",
+          "pantone_tertiaire": "",
+          "nb_couleurs_impression": null
+        },
+        "support_rendu": {
+          "type_support": "PS / PP",
+          "grammage_g_m2": null,
+          "finition": ""
+        },
+        "bat": {
+          "valide_par": "",
+          "date_validation": "",
+          "fichier": ""
+        },
+        "mentions_obligatoires": {
+          "denomination_produit": "",
+          "poids_contenance": "",
+          "allergenes": "",
+          "ddm_dlc": "",
+          "adresse_raison_sociale": "",
+          "logo_tri_recyclabilite": ""
+        }
+      },
+      "logistique": {
+        "nombre_par_carton": 50,
+        "cartons_par_palette": null,
+        "conditions_stockage": "",
+        "moq": null,
+        "delai_reappro_jours": null,
+        "unite_commande": "Carton",
+        "prix_unitaire_ht": 2.69
+      },
+      "deploiement": {
+        "points_de_vente": [],
+        "date_mise_en_service": "",
+        "points_de_vigilance": ""
+      },
+      "usage_tfb": {
+        "recettes_concernees": [],
+        "usage": "Viennoiserie / pain à emporter",
+        "quantite_par_emballage": null
+      },
+      "photos": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    }
+  ]
+};
+</script>
+<script>
+/* ============================================================
+   TFB — Info Pack · configuration métier
+   Tout ce qui se règle sans toucher au code de la fiche vit ici :
+   formules de dimensions, paramètres du développé, unités.
+   Chargé AVANT app.js (index.html) — pas de dépendance à app.js.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1 · Dimensions à plat, famille par famille
+   mode : 'auto'   → calculé avec la formule nommée dans `formule`
+          'manuel' → saisie à la main (aucune formule fiable)
+          'na'     → non applicable, le champ est masqué
+   Règle de sûreté : toute famille absente de cette table tombe en
+   'manuel'. Une cote fausse envoyée à un imprimeur coûte une
+   production entière — on ne devine pas une formule.
+   ------------------------------------------------------------ */
+const DIM_A_PLAT_PAR_FAMILLE = {
+  'Sac':       { mode:'auto',   formule:'largeur_hauteur', note:'le sac tel qu’il est livré, aplati' },
+  'Sachet':    { mode:'auto',   formule:'largeur_hauteur', note:'le sachet tel qu’il est livré, aplati' },
+  'Papier':    { mode:'auto',   formule:'largeur_hauteur', note:'format déplié' },
+  'Serviette': { mode:'auto',   formule:'largeur_hauteur', note:'format déplié' },
+  'Étiquette': { mode:'auto',   formule:'largeur_hauteur', note:'format déplié' },
+  'Boîte':     { mode:'manuel', note:'dépend du montage — se lit sur le gabarit fournisseur' },
+  'Gobelet':   { mode:'na',     note:'produit non développable' },
+  'Bouteille': { mode:'na',     note:'produit non développable' },
+  'Bowl':      { mode:'na',     note:'produit non développable' },
+  'Vaisselle': { mode:'na',     note:'produit non développable' },
+  'Couvercle': { mode:'na',     note:'produit non développable' }
+};
+/* Accessoire, Bague, Couverts… : pas de formule connue → saisie manuelle. */
+const DIM_A_PLAT_DEFAUT = { mode:'manuel', note:'aucune formule définie pour cette famille — saisie manuelle' };
+
+/* Les formules elles-mêmes. `req` liste les dimensions nécessaires :
+   si l'une manque, le champ affiche « — » plutôt qu'une valeur fausse. */
+const A_PLAT_FORMULES = {
+  largeur_hauteur: {
+    lb:  'Largeur × Hauteur',
+    req: ['largeur_cm', 'hauteur_cm'],
+    calc: d => ({ l: d.largeur_cm, h: d.hauteur_cm })
+  }
+};
+
+/* ------------------------------------------------------------
+   2 · Développé (à découper) — la cote qui intéresse l'imprimeur
+   (2 × Largeur + 2 × Soufflet + rabat) × (Hauteur + fond)
+   rabat et fond sont deux paramètres modifiables par référence.
+   ------------------------------------------------------------ */
+const DEVELOPPE = {
+  familles: ['Sac', 'Sachet', 'Boîte'],
+  lb:  '(2 × Largeur + 2 × Soufflet + rabat) × (Hauteur + fond)',
+  req: ['largeur_cm', 'profondeur_soufflet_cm', 'hauteur_cm'],
+  rabat_defaut: 2,                                  // cm
+  rabat_lb: '2 cm',
+  fond_defaut: d => d.profondeur_soufflet_cm / 2 + 2, // cm
+  fond_lb: 'soufflet ÷ 2 + 2 cm',
+  calc: (d, rabat, fond) => ({
+    l: 2 * d.largeur_cm + 2 * d.profondeur_soufflet_cm + rabat,
+    h: d.hauteur_cm + fond
+  })
+};
+
+/* ------------------------------------------------------------
+   3 · Unités de « Quantité par emballage »
+   La première de la liste est la valeur par défaut.
+   ------------------------------------------------------------ */
+const UNITES_QUANTITE = ['pièces', 'g', 'kg', 'mL', 'L', 'cm', 'm', 'm²'];
+const UNITE_QUANTITE_DEFAUT = UNITES_QUANTITE[0];
+
+</script>
+<script>
+/* ============================================================
+   TFB — Info Pack · base packaging
+   Structure : fiche Notion (5 onglets), champ pour champ.
+   Liste     : Inpulse › Ingrédients fournisseurs › catégorie PACKAGING
+   Trois couches, dans cet ordre de priorité :
+     1. data/packaging.json  — socle versionné dans le repo
+     2. /api/store           — saisies TFB (Netlify Blobs), se superposent
+     3. /api/packaging|proxy — Inpulse, écrase ses propres champs
+   Un champ badgé INPULSE n'est jamais saisissable : il serait écrasé.
+   Les formules de dimensions et les unités vivent dans config.js.
+   ============================================================ */
+
+const TABS = [
+  {k:'general', t:'Informations générales',        i:'ti-pencil'},
+  {k:'design',  t:'Design & gabarit',              i:'ti-palette'},
+  {k:'logi',    t:'Conditionnement & logistique',  i:'ti-package'},
+  {k:'usage',   t:'Usage TFB',                     i:'ti-croissant'},
+  {k:'photos',  t:'Photos',                        i:'ti-camera'}
+];
+
+let DB=null, OVR={records:{}}, ROWS=[], view='list', sortK='nom', sortD=1, activeTab='general', current=null;
+let storeOk=false;
+let ORD=null, ORDINFO=null;          // historique de commandes par packaging
+const EXP=new Set();                 // lignes depliees
+const FREE={};   // champs "Autre…" ouverts en saisie libre
+const F={q:'',fam:'',four:'',marq:'',comp:'',masquerHS:true};
+let nHS=0;   // références hors service masquées par le filtre
+
+const eur  = n => (n==null||isNaN(n))?'—':n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const eur4 = n => (n==null||isNaN(n))?'—':n.toLocaleString('fr-FR',{minimumFractionDigits:3,maximumFractionDigits:4})+' €';
+const esc  = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const isEmpty = v => v===''||v==null||(Array.isArray(v)&&!v.length);
+const num = v => { if(v===''||v==null) return null;
+  const x = typeof v==='number'?v:Number(String(v).replace(',','.').trim());
+  return isNaN(x)?null:x; };
+const fmtCm = x => (Math.round(x*10)/10).toLocaleString('fr-FR',{maximumFractionDigits:1});
+const todayISO = () => { const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const dateFR = iso => { const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||''); return m?m[3]+'/'+m[2]+'/'+m[1]:(iso||''); };
+
+/* ---- hors service : la date de fin est passée (le jour même compte encore) ---- */
+const dateFinService = r => (r.deploiement && r.deploiement.date_fin_service) || '';
+const horsService = r => { const f=dateFinService(r); return !!f && f < todayISO(); };
+
+/* ---- unité de « Quantité par emballage » ---- */
+const uniteQte = r => (r.usage_tfb && r.usage_tfb.unite_quantite) || UNITE_QUANTITE_DEFAUT;
+
+/* ============================================================
+   Dimensions calculées — formules dans config.js, jamais ici
+   ============================================================ */
+const cfgAPlat = r => DIM_A_PLAT_PAR_FAMILLE[r.app && r.app.famille] || DIM_A_PLAT_DEFAUT;
+const dimsNum = r => { const d=(r&&r.dimensions)||{};
+  return {longueur_cm:num(d.longueur_cm), largeur_cm:num(d.largeur_cm),
+          profondeur_soufflet_cm:num(d.profondeur_soufflet_cm), hauteur_cm:num(d.hauteur_cm)}; };
+const reqOk = (d,req) => req.every(k=>d[k]!=null);
+const paire = o => fmtCm(o.l)+' × '+fmtCm(o.h);
+
+/* mode de saisie : 'auto' (calculé) ou 'manuel' (forcé).
+   Une valeur déjà saisie sans mode connu est considérée MANUELLE :
+   on n'écrase jamais ce qui a été tapé avant la mise à jour. */
+function calcMode(r,valuePath,modePath){
+  const m=getPath(r,modePath);
+  if(m==='manuel'||m==='auto') return m;
+  return isEmpty(getPath(r,valuePath))?'auto':'manuel';
+}
+const aPlatMode = r => calcMode(r,'dimensions.dimensions_a_plat_cm','dimensions.a_plat_mode');
+const devMode   = r => calcMode(r,'dimensions.developpe_cm','dimensions.developpe_mode');
+
+function aPlatAuto(r){
+  const c=cfgAPlat(r); if(c.mode!=='auto') return null;
+  const f=A_PLAT_FORMULES[c.formule]; if(!f) return null;
+  const d=dimsNum(r); if(!reqOk(d,f.req)) return null;
+  return paire(f.calc(d));
+}
+function aPlatValue(r){
+  const c=cfgAPlat(r);
+  if(c.mode==='na') return null;
+  if(c.mode==='manuel'||aPlatMode(r)==='manuel') return getPath(r,'dimensions.dimensions_a_plat_cm')||null;
+  return aPlatAuto(r);
+}
+const devApplicable = r => DEVELOPPE.familles.indexOf(r.app&&r.app.famille)>=0;
+const devRabat = r => { const v=num(getPath(r,'dimensions.rabat_collage_cm'));
+  return v==null?DEVELOPPE.rabat_defaut:v; };
+function devFond(r){
+  const v=num(getPath(r,'dimensions.fond_cm'));
+  if(v!=null) return v;
+  const d=dimsNum(r);
+  return d.profondeur_soufflet_cm==null?null:DEVELOPPE.fond_defaut(d);
+}
+function devAuto(r){
+  if(!devApplicable(r)) return null;
+  const d=dimsNum(r); if(!reqOk(d,DEVELOPPE.req)) return null;
+  const fond=devFond(r); if(fond==null) return null;
+  return paire(DEVELOPPE.calc(d,devRabat(r),fond));
+}
+function devValue(r){
+  if(!devApplicable(r)) return null;
+  return devMode(r)==='manuel' ? (getPath(r,'dimensions.developpe_cm')||null) : devAuto(r);
+}
+const uniteCommande = n => { const u=(n||'').toUpperCase();
+  return u.indexOf('CARTON')===0?'Carton':u.indexOf('BOITE')===0?'Boîte':u.indexOf('ROULEAU')===0?'Rouleau'
+    :(u.indexOf("L'UNITE")>=0||u.indexOf('L UNITE')>=0)?'Unité':(n||''); };
+
+/* ---- accès par chemin pointé ---- */
+function getPath(o,p){ return p.split('.').reduce((a,k)=>(a==null?a:a[k]), o); }
+function setPath(o,p,v){
+  const ks=p.split('.'); let a=o;
+  for(let i=0;i<ks.length-1;i++){ const k=ks[i]; if(a[k]==null) a[k]= /^\d+$/.test(ks[i+1])?[]:{}; a=a[k]; }
+  a[ks[ks.length-1]]=v;
+}
+
+/* ============================================================
+   Registre des champs — une seule source de vérité :
+   la fiche, l'export, la complétude et l'édition en découlent.
+   src : 'inp' = piloté par Inpulse (lecture seule) · 'tfb' = saisi ici
+   ============================================================ */
+const R = ref => (DB && DB.referentiels[ref]) || [];
+const FIELDS = [
+  // ---------- 1. Informations générales ----------
+  {tab:'general', grp:'Identification', path:'identification.intitule_inpulse', lb:'Intitulé Inpulse', src:'inp', wide:1},
+  {tab:'general', grp:'Identification', path:'identification.sku_fournisseur',  lb:'SKU fournisseur',  src:'inp'},
+  {tab:'general', grp:'Identification', path:'inpulse.fournisseur',             lb:'Fournisseur',      src:'inp'},
+  {tab:'general', grp:'Identification', path:'app.famille',   lb:'Famille',  src:'tfb', type:'select', opt:()=>R('famille')},
+  {tab:'general', grp:'Identification', path:'app.marquage',  lb:'Marquage', src:'tfb', type:'select', opt:()=>R('marquage')},
+  {tab:'general', grp:'Identification', path:'app.statut',    lb:'Statut',   src:'tfb', type:'select', opt:()=>R('statut')},
+  {tab:'general', grp:'Identification', path:'app.sous_famille', lb:'Sous-famille', src:'tfb', type:'text'},
+
+  {tab:'general', grp:'Achat', path:'inpulse.prix_ht',   lb:'Prix HT',        src:'inp', fmt:eur},
+  {tab:'general', grp:'Achat', path:'inpulse.unite_achat', lb:'Unité d’achat', src:'inp'},
+  {tab:'general', grp:'Achat', path:'logistique.prix_unitaire_ht', lb:'Prix unitaire HT', src:'inp', fmt:eur4},
+  {tab:'general', grp:'Achat', path:'inpulse.dispo',     lb:'Disponibilité boutiques', src:'inp'},
+
+  {tab:'general', grp:'Dimensions', path:'dimensions.longueur_cm',           lb:'Longueur',              src:'tfb', type:'dec', u:'cm'},
+  {tab:'general', grp:'Dimensions', path:'dimensions.largeur_cm',            lb:'Largeur',               src:'tfb', type:'dec', u:'cm'},
+  {tab:'general', grp:'Dimensions', path:'dimensions.profondeur_soufflet_cm',lb:'Profondeur (soufflet)', src:'tfb', type:'dec', u:'cm'},
+  {tab:'general', grp:'Dimensions', path:'dimensions.hauteur_cm',            lb:'Hauteur',               src:'tfb', type:'dec', u:'cm'},
+  {tab:'general', grp:'Dimensions', path:'dimensions.dimensions_a_plat_cm',  lb:'Dimensions à plat (L × H)', src:'tfb', type:'calc', kind:'aplat', u:'cm', wide:1,
+    hide:r=>cfgAPlat(r).mode==='na', val:r=>aPlatValue(r)},
+  {tab:'general', grp:'Dimensions', path:'dimensions.developpe_cm',          lb:'Développé (à découper)',    src:'tfb', type:'calc', kind:'dev', u:'cm', wide:1,
+    hide:r=>!devApplicable(r), val:r=>devValue(r)},
+  {tab:'general', grp:'Dimensions', path:'dimensions.tolerance_mm',          lb:'Tolérance dimensionnelle',  src:'tfb', type:'num', u:'mm', step:'0.5'},
+
+  {tab:'general', grp:'Matière', path:'matiere.matiere',             lb:'Matière',            src:'tfb', type:'select', opt:()=>R('type_support'), free:1},
+  {tab:'general', grp:'Matière', path:'matiere.grammage_g_m2',       lb:'Grammage',           src:'tfb', type:'num', u:'g/m²'},
+  {tab:'general', grp:'Matière', path:'matiere.epaisseur_um',        lb:'Épaisseur',          src:'tfb', type:'num', u:'µm'},
+  {tab:'general', grp:'Matière', path:'matiere.poids_unitaire_g',    lb:'Poids unitaire',     src:'tfb', type:'num', u:'g', step:'0.1'},
+  {tab:'general', grp:'Matière', path:'matiere.contact_alimentaire', lb:'Contact alimentaire',src:'tfb', type:'bool'},
+
+  // ---------- 2. Design & gabarit ----------
+  {tab:'design', grp:'Fichiers', path:'design.design_valide_tfb',   lb:'Design validé (TFB)',   src:'tfb', type:'link', wide:1},
+  {tab:'design', grp:'Fichiers', path:'design.gabarit_fournisseur', lb:'Gabarit (fournisseur)', src:'tfb', type:'link', wide:1},
+  {tab:'design', grp:'Fichiers', path:'design.logo',                lb:'Logo (si nécessaire)',  src:'tfb', type:'link', wide:1},
+
+  {tab:'design', grp:'Couleurs & pantones', path:'design.couleurs.pantone_principal',      lb:'Pantone principal',  src:'tfb', type:'text'},
+  {tab:'design', grp:'Couleurs & pantones', path:'design.couleurs.pantone_secondaire',     lb:'Pantone secondaire', src:'tfb', type:'text'},
+  {tab:'design', grp:'Couleurs & pantones', path:'design.couleurs.pantone_tertiaire',      lb:'Pantone tertiaire',  src:'tfb', type:'text'},
+  {tab:'design', grp:'Couleurs & pantones', path:'design.couleurs.nb_couleurs_impression', lb:'Nombre de couleurs d’impression', src:'tfb', type:'num'},
+
+  {tab:'design', grp:'Support et rendu', path:'design.support_rendu.type_support',  lb:'Type de support', src:'tfb', type:'select', opt:()=>R('type_support'), free:1},
+  {tab:'design', grp:'Support et rendu', path:'design.support_rendu.grammage_g_m2', lb:'Grammage',       src:'tfb', type:'num', u:'g/m²'},
+  {tab:'design', grp:'Support et rendu', path:'design.support_rendu.finition',       lb:'Finition',      src:'tfb', type:'select', opt:()=>R('finition')},
+
+  {tab:'design', grp:'BAT', path:'design.bat.valide_par',      lb:'BAT validé par',     src:'tfb', type:'text'},
+  {tab:'design', grp:'BAT', path:'design.bat.date_validation', lb:'Date de validation', src:'tfb', type:'date'},
+  {tab:'design', grp:'BAT', path:'design.bat.fichier',         lb:'Fichier BAT joint',  src:'tfb', type:'link', wide:1},
+
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.denomination_produit',   lb:'Dénomination du produit',  src:'tfb', type:'text'},
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.poids_contenance',       lb:'Poids / contenance',       src:'tfb', type:'text'},
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.allergenes',             lb:'Allergènes',               src:'tfb', type:'text'},
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.ddm_dlc',                lb:'DDM / DLC',                src:'tfb', type:'text'},
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.adresse_raison_sociale', lb:'Adresse et raison sociale',src:'tfb', type:'text'},
+  {tab:'design', grp:'Mentions obligatoires (si nécessaire)', path:'design.mentions_obligatoires.logo_tri_recyclabilite', lb:'Logo tri / recyclabilité', src:'tfb', type:'text'},
+
+  // ---------- 3. Conditionnement & logistique ----------
+  {tab:'logi', grp:'Logistique', path:'logistique.nombre_par_carton',    lb:'Nombre par carton',   src:'inp', u:'pièces'},
+  {tab:'logi', grp:'Logistique', path:'logistique.unite_commande',       lb:'Unité de commande',   src:'inp'},
+  {tab:'logi', grp:'Logistique', path:'logistique.cartons_par_palette',  lb:'Cartons par palette', src:'tfb', type:'num', u:'cartons'},
+  {tab:'logi', grp:'Logistique', path:'logistique.conditions_stockage',  lb:'Conditions de stockage', src:'tfb', type:'select', opt:()=>R('conditions_stockage'), free:1, wide:1},
+  {tab:'logi', grp:'Logistique', path:'logistique.moq',                  lb:'MOQ',                 src:'tfb', type:'num', u:'pièces'},
+  {tab:'logi', grp:'Logistique', path:'logistique.delai_reappro_jours',  lb:'Délai de réapprovisionnement', src:'tfb', type:'num', u:'jours'},
+
+  {tab:'logi', grp:'Déploiement', path:'deploiement.points_de_vente',       lb:'Points de vente concernés', src:'tfb', type:'multi', opt:()=>R('points_de_vente'), wide:1},
+  {tab:'logi', grp:'Déploiement', path:'deploiement.date_mise_en_service',  lb:'Date de mise en service',   src:'tfb', type:'date'},
+  {tab:'logi', grp:'Déploiement', path:'deploiement.date_fin_service',      lb:'Date de fin de service',    src:'tfb', type:'date'},
+
+  // ---------- 4. Usage TFB ----------
+  {tab:'usage', grp:'Usage', path:'usage_tfb.usage',                  lb:'Usage',                 src:'tfb', type:'area', wide:1},
+  {tab:'usage', grp:'Usage', path:'usage_tfb.quantite_par_emballage', lb:'Quantité par emballage', src:'tfb', type:'dec',
+    u:r=>uniteQte(r), unitSel:'usage_tfb.unite_quantite'},
+
+  // ---------- 5. Photos ----------
+  {tab:'photos', grp:'Galerie', path:'photos.0', lb:'Produit nu',                  src:'tfb', type:'photo'},
+  {tab:'photos', grp:'Galerie', path:'photos.1', lb:'Produit garni',               src:'tfb', type:'photo'},
+  {tab:'photos', grp:'Galerie', path:'photos.2', lb:'Mise en situation boutique',  src:'tfb', type:'photo'},
+  {tab:'photos', grp:'Galerie', path:'photos.3', lb:'Gabarit à plat',              src:'tfb', type:'photo'}
+];
+const TFB_FIELDS = FIELDS.filter(f=>f.src==='tfb');
+const byTab = k => FIELDS.filter(f=>f.tab===k);
+
+/* ---- visibilité : un champ masqué (non applicable à la famille) ne compte
+   ni au numérateur ni au dénominateur de la complétude ---- */
+const visible = (f,r) => !f.hide || !f.hide(r);
+/* valeur affichée : calculée si le champ porte une formule, sinon stockée */
+const valOf = (r,f) => f.val ? f.val(r) : getPath(r,f.path);
+const fieldsTFB = r => TFB_FIELDS.filter(f=>visible(f,r));
+
+/* ---- complétude : part des champs TFB applicables et renseignés ---- */
+const comp = r => { const a=fieldsTFB(r);
+  return a.length?Math.round(100*a.filter(f=>!isEmpty(valOf(r,f))).length/a.length):0; };
+const tabComp = (r,k) => { const a=byTab(k).filter(f=>f.src==='tfb'&&visible(f,r));
+  return {n:a.filter(f=>!isEmpty(valOf(r,f))).length, t:a.length}; };
+
+/* ============================================================
+   Chargement
+   ============================================================ */
+async function load(){
+  setConn('spin','Chargement du référentiel…','');
+  let doc = (typeof EMBEDDED!=='undefined') ? EMBEDDED : null;
+  try{ const r=await fetch('data/packaging.json',{cache:'no-store'}); if(r.ok) doc=await r.json(); }catch(e){}
+  if(!doc){ setConn('err','Référentiel introuvable',''); return; }
+  DB=doc;
+  await loadOverrides();
+  migrerRecettes();
+  buildFilters(); render(); syncInpulse(); loadOrders();
+}
+
+async function loadOverrides(){
+  try{
+    const r=await fetch('/api/store',{cache:'no-store'});
+    if(!r.ok) throw new Error((await r.json().catch(()=>({}))).error||('HTTP '+r.status));
+    OVR = await r.json(); if(!OVR.records) OVR.records={};
+    storeOk=true;
+    applyOverrides();
+    setSave('ok', OVR.updated_at ? 'Dernière saisie ' + new Date(OVR.updated_at).toLocaleString('fr-FR') : 'Aucune saisie enregistrée');
+  }catch(e){
+    storeOk=false; OVR={records:{}};
+    setSave('err','Saisie non enregistrée — ' + e.message);
+  }
+}
+/* ---- Migration « Recettes concernées » → « Usage » ------------------
+   Le champ a été retiré de la fiche. Rien ne doit être perdu : le contenu
+   est reversé dans Usage, préfixé par « Recettes : », et un drapeau évite
+   de rejouer la migration. Ne tourne que si le stockage répond. ---- */
+function migrerRecettes(){
+  if(!storeOk||!DB) return;
+  const faits=[];
+  DB.packagings.forEach(p=>{
+    const u=p.usage_tfb||{};
+    if(u.recettes_migre) return;
+    const rec=u.recettes_concernees;
+    if(isEmpty(rec)) return;
+    const list=(Array.isArray(rec)?rec:[String(rec)]).filter(x=>!isEmpty(x));
+    if(!list.length) return;
+    const pref='Recettes : '+list.join(', ');
+    const cur=String(u.usage||'').trim();
+    if(cur.indexOf(pref)<0) saveField(p.id,'usage_tfb.usage', cur?pref+'\n'+cur:pref);
+    saveField(p.id,'usage_tfb.recettes_migre',true);
+    faits.push(p.nom);
+  });
+  if(faits.length) console.info('Info Pack — recettes reversées dans Usage :', faits.join(' · '));
+}
+
+function applyOverrides(){
+  DB.packagings.forEach(p=>{
+    const o=OVR.records[p.id]; if(!o) return;
+    Object.keys(o).forEach(path=>setPath(p,path,o[path]));
+  });
+}
+
+/* ============================================================
+   Historique de commandes (function /api/orders, agregat en cache)
+   ============================================================ */
+const MONTHS = (()=>{ const out=[]; const now=new Date();
+  for(let y=2026,m=1;;m++){ if(m>12){m=1;y++;}
+    out.push(y+'-'+String(m).padStart(2,'0'));
+    if(y>now.getFullYear()||(y===now.getFullYear()&&m>=now.getMonth()+1)) break;
+    if(out.length>60) break; }
+  return out; })();
+const MOISLB=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+const moisCourt = k => { const [y,m]=k.split('-'); return MOISLB[+m-1]+' '+y.slice(2); };
+
+async function loadOrders(force){
+  try{
+    let r = await fetch('/api/orders'+(force?'?reset=1&work=1':'?work=1'),{cache:'no-store'});
+    let d = await r.json();
+    if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
+    let guard=0;
+    while(d.progress && !d.progress.done && guard++ < 40){
+      setOrdInfo('spin', d.progress.headers.done
+        ? ('Historique : '+d.progress.seen+' commandes lues, '+d.progress.queue+' restantes')
+        : ('Historique : balayage '+d.progress.headers.skip+' / '+(d.progress.headers.total||'?')));
+      if(d.data){ ORD=d.data; render(); }
+      r = await fetch('/api/orders?work=1',{cache:'no-store'});
+      d = await r.json();
+      if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
+    }
+    ORD = d.data || {};
+    ORDINFO = {maj:d.full_built_at||d.updated_at, seen:(d.progress&&d.progress.seen)||0};
+    setOrdInfo('ok', ORDINFO.seen+' commandes dépouillées depuis janvier 2026');
+    render();
+  }catch(e){
+    ORD=null; setOrdInfo('err','Historique indisponible — '+e.message); render();
+  }
+}
+function setOrdInfo(s,t){ const el=document.getElementById('ordbadge'); if(!el) return;
+  el.className='savebadge '+(s==='spin'?'wait':s); el.style.display='inline-flex';
+  el.innerHTML='<i class="ti '+(s==='ok'?'ti-history':s==='spin'?'ti-loader-2':'ti-history-off')+'"></i>'+esc(t); }
+
+/* Agregat d\'un packaging : {mois:{n,oq,rq}} + total */
+function ordFor(p){
+  if(!ORD) return null;
+  const a=ORD[p.identification.intitule_inpulse.trim().toUpperCase()];
+  const tot={n:0,oq:0,rq:0};
+  if(!a) return {vide:true, mois:{}, tot};
+  MONTHS.forEach(m=>{ const c=a[m]; if(c){ tot.n+=c.n; tot.oq+=c.oq; tot.rq+=c.rq; } });
+  return {vide:tot.n===0, mois:a, tot};
+}
+
+/* ---- Inpulse : /api/packaging si dispo, sinon pagination via /api/proxy ---- */
+async function syncInpulse(){
+  setConn('spin','Interrogation d’Inpulse…','');
+  try{
+    let list=null, via='';
+    try{
+      const r=await fetch('/api/packaging',{cache:'no-store'});
+      if(r.ok){ const d=await r.json(); if(d.data&&d.data.length){ list=d.data; via='via /api/packaging'; } }
+    }catch(e){}
+    if(!list){ list=await scanViaProxy(); via='via /api/proxy'; }
+    if(!list.length) throw new Error('aucune référence PACKAGING renvoyée');
+
+    const by={}; list.forEach(x=>{ if(x.name) by[String(x.name).trim().toUpperCase()]=x; });
+    let hit=0; const orphans=[];
+    DB.packagings.forEach(p=>{
+      const m=by[p.identification.intitule_inpulse.trim().toUpperCase()];
+      if(!m){ orphans.push(p.nom); return; }
+      hit++;
+      p.inpulse.live=true;
+      if(m.price!=null) p.inpulse.prix_ht=Number(m.price);
+      if(m.supplier) p.inpulse.fournisseur=m.supplier;
+      if(m.subCategory) p.inpulse.sous_categorie=m.subCategory;
+      p.inpulse.unite_achat=m.packaging.name;
+      p.inpulse.actif=m.active;
+      p.identification.sku_fournisseur=(m.sku&&m.sku!=='?')?m.sku:'';
+      const q=m.packaging.quantity;
+      p.logistique.nombre_par_carton=(q&&q>1)?q:null;
+      p.logistique.unite_commande=uniteCommande(m.packaging.name);
+      p.logistique.prix_unitaire_ht=(q&&q>1&&m.price)?m.price/q:null;
+    });
+    const known={}; DB.packagings.forEach(p=>known[p.identification.intitule_inpulse.trim().toUpperCase()]=1);
+    const nouvelles=list.filter(x=>!known[String(x.name).trim().toUpperCase()]).map(x=>x.name);
+    let note='prix, SKU et conditionnements à jour — '+via;
+    if(nouvelles.length) note+=' · '+nouvelles.length+' nouvelle(s) réf. dans Inpulse : '+nouvelles.join(', ');
+    if(orphans.length)   note+=' · non retrouvée(s) : '+orphans.join(', ');
+    setConn((hit===DB.packagings.length&&!nouvelles.length)?'ok':'warn',
+      '<strong>Inpulse connecté</strong> — '+hit+' / '+DB.packagings.length+' références rapprochées', note);
+    if(current) openDrawer(current.id);
+    render();
+  }catch(e){
+    setConn('err','<strong>Inpulse non joignable</strong> — affichage du dernier extrait','('+e.message+')');
+  }
+}
+async function scanViaProxy(){
+  const PAGE=100, MAX=30; let rows=[];
+  for(let page=0;page<MAX;page++){
+    const r=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({endpoint:'/public/v2/supplier-products?limit='+PAGE+'&skip='+(page*PAGE),method:'GET'})});
+    if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error(e.error||('HTTP '+r.status)); }
+    const d=await r.json(); const batch=d.data||[];
+    rows=rows.concat(batch);
+    setConn('spin','Interrogation d’Inpulse…', rows.length+' / '+(d.total||'?')+' références lues');
+    if(batch.length<PAGE) break;
+  }
+  return rows.filter(x=>x&&x.category==='PACKAGING').map(x=>{
+    const p=(x.packagings||[]).find(q=>q.isUsedInOrder)||(x.packagings||[])[0]||{};
+    return {name:String(x.name||'').trim(), sku:String(x.sku||'').trim(),
+            price:x.price==null?null:Number(x.price), active:!!x.active,
+            category:x.category, subCategory:x.subCategory,
+            supplier:(x.supplier&&x.supplier.name)||'',
+            packaging:{name:String(p.name||'').trim(), quantity:p.quantity==null?null:Number(p.quantity), unit:p.unit||''}};
+  });
+}
+function setConn(s,t,d){ document.getElementById('dot').className='dot '+s;
+  document.getElementById('conn-t').innerHTML=t; document.getElementById('conn-d').textContent=d||''; }
+function setSave(s,t){ const el=document.getElementById('save'); if(!el) return;
+  el.className='savebadge '+s; el.innerHTML='<i class="ti '+(s==='ok'?'ti-cloud-check':s==='wait'?'ti-cloud-upload':'ti-cloud-off')+'"></i>'+esc(t); }
+
+/* ============================================================
+   Enregistrement des saisies — file d'attente, envoi groupé
+   ============================================================ */
+const QUEUE=[]; let flushT=null, inflight=false;
+function saveField(id,path,value){
+  const rec=DB.packagings.find(p=>p.id===id); if(rec) setPath(rec,path,value);
+  const o=OVR.records[id]||(OVR.records[id]={});
+  if(isEmpty(value)) delete o[path]; else o[path]=value;
+  if(!Object.keys(o).length) delete OVR.records[id];
+  if(!storeOk){ setSave('err','Saisie gardée en mémoire seulement — stockage indisponible'); refreshHeader(); render(); return; }
+  const i=QUEUE.findIndex(q=>q.id===id&&q.path===path);
+  const op={id,path,value:isEmpty(value)?null:value};
+  if(i>=0) QUEUE[i]=op; else QUEUE.push(op);
+  setSave('wait','Enregistrement…');
+  clearTimeout(flushT); flushT=setTimeout(flush,600);
+  refreshHeader(); render();
+}
+
+/* Rafraichit les compteurs de la fiche sans re-rendre le corps :
+   sinon on perdrait le focus du champ en cours de saisie. */
+function refreshHeader(){
+  if(!current) return;
+  const r=current; r._comp=comp(r);
+  const pill=document.querySelector('#d-sub .pill:last-child');
+  if(pill){ pill.textContent='fiche '+r._comp+' %';
+    pill.className='pill '+(r._comp<25?'p-warn':r._comp<60?'p-todo':'p-ok'); }
+  document.querySelectorAll('#d-tabs [data-tab]').forEach(el=>{
+    const c=tabComp(r,el.dataset.tab), sp=el.querySelector('.tcount');
+    if(sp){ sp.textContent=c.n+'/'+c.t;
+      sp.className='tcount'+(c.n===0?' zero':c.n===c.t?' full':''); }
+  });
+}
+async function flush(){
+  if(inflight||!QUEUE.length) return;
+  const ops=QUEUE.splice(0,QUEUE.length); inflight=true;
+  try{
+    const r=await fetch('/api/store',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ops})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
+    OVR.updated_at=d.updated_at;
+    setSave('ok','Enregistré à '+new Date(d.updated_at).toLocaleTimeString('fr-FR')+' · '+d.fiches_modifiees+' fiche(s) saisie(s)');
+  }catch(e){
+    ops.forEach(o=>QUEUE.push(o));
+    setSave('err','Échec de l’enregistrement — '+e.message+' (nouvelle tentative dans 10 s)');
+    setTimeout(flush,10000);
+  }finally{ inflight=false; if(QUEUE.length){ clearTimeout(flushT); flushT=setTimeout(flush,800); } }
+}
+window.addEventListener('beforeunload', e=>{ if(QUEUE.length){ e.preventDefault(); e.returnValue=''; } });
+
+/* ============================================================
+   Filtres, liste, grille
+   ============================================================ */
+function buildFilters(){
+  const fam=document.getElementById('f-fam');
+  fam.innerHTML='<button class="fgb active" data-fam="">Toutes familles</button>'+
+    R('famille').map(f=>'<button class="fgb" data-fam="'+esc(f)+'">'+esc(f)+'</button>').join('');
+  fam.onclick=e=>{const b=e.target.closest('[data-fam]');if(!b)return;
+    F.fam=b.dataset.fam;[...fam.children].forEach(c=>c.classList.toggle('active',c===b));render();};
+  const four=document.getElementById('f-four');
+  [...new Set(DB.packagings.map(p=>p.inpulse.fournisseur))].sort()
+    .forEach(f=>four.insertAdjacentHTML('beforeend','<option>'+esc(f)+'</option>'));
+  document.getElementById('q').oninput=e=>{F.q=e.target.value.toLowerCase();render();};
+  four.onchange=e=>{F.four=e.target.value;render();};
+  document.getElementById('f-marq').onchange=e=>{F.marq=e.target.value;render();};
+  document.getElementById('f-comp').onchange=e=>{F.comp=e.target.value;render();};
+  const hs=document.getElementById('f-hs');
+  hs.classList.toggle('active',F.masquerHS);
+  hs.onclick=()=>{F.masquerHS=!F.masquerHS;hs.classList.toggle('active',F.masquerHS);render();};
+  document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{view=b.dataset.view;
+    document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));render();});
+  document.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{
+    if(sortK===th.dataset.k)sortD=-sortD;else{sortK=th.dataset.k;sortD=1;}render();});
+  document.getElementById('btn-sync').onclick=()=>{loadOverrides().then(syncInpulse).then(()=>loadOrders(true));};
+  document.getElementById('btn-xls').onclick=exportXls;
+  document.getElementById('d-close').onclick=closeDrawer;
+  document.getElementById('ov').onclick=closeDrawer;
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape' && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName||''))) closeDrawer();});
+}
+
+function filtered(){
+  nHS=0;
+  return DB.packagings.filter(p=>{
+    if(F.fam&&p.app.famille!==F.fam)return false;
+    if(F.four&&p.inpulse.fournisseur!==F.four)return false;
+    if(F.marq&&p.app.marquage!==F.marq)return false;
+    if(F.comp==='lt50'&&p._comp>=50)return false;
+    if(F.comp==='lt80'&&p._comp>=80)return false;
+    if(F.comp==='eq100'&&p._comp<100)return false;
+    if(F.comp==='saisies'&&!OVR.records[p.id])return false;
+    if(F.q){const h=(p.nom+' '+p.app.famille+' '+p.inpulse.fournisseur+' '+p.app.marquage+' '+
+      (p.usage_tfb.usage||'')).toLowerCase();
+      if(h.indexOf(F.q)<0)return false;}
+    if(horsService(p)){ nHS++; if(F.masquerHS) return false; }
+    return true;
+  });
+}
+
+function render(){
+  DB.packagings.forEach(p=>p._comp=comp(p));
+  ROWS=filtered();
+  const val=r=>sortK==='prix'?(r.inpulse.prix_ht||0):sortK==='comp'?r._comp
+    :sortK==='dispo'?parseInt((r.inpulse.dispo||'0/0').split('/')[0],10)
+    :sortK==='famille'?r.app.famille:sortK==='marquage'?r.app.marquage
+    :sortK==='four'?r.inpulse.fournisseur:String(r[sortK]||'');
+  ROWS.sort((a,b)=>{const x=val(a),y=val(b);
+    return (typeof x==='number'?x-y:String(x).localeCompare(String(y),'fr'))*sortD;});
+  document.querySelectorAll('th[data-k]').forEach(th=>{th.className=th.dataset.k===sortK?(sortD>0?'asc':'desc'):'';});
+  renderMetrics(); renderList(); renderGrid();
+  document.getElementById('view-list').style.display=view==='list'?'':'none';
+  document.getElementById('view-grid').style.display=view==='grid'?'grid':'none';
+  document.getElementById('count').textContent=ROWS.length+' / '+DB.packagings.length+' références';
+  const hsc=document.getElementById('f-hs-n');
+  if(hsc){ hsc.textContent=nHS?' ('+nHS+')':''; document.getElementById('f-hs').title=
+    nHS?(nHS+' référence(s) dont la date de fin de service est passée'):'aucune référence hors service'; }
+}
+
+function renderMetrics(){
+  const a=DB.packagings,n=a.length;
+  const tfb=a.filter(p=>p.app.marquage==='TFB').length;
+  const moy=Math.round(a.reduce((s,p)=>s+p._comp,0)/n);
+  const den=a.map(p=>fieldsTFB(p).length);
+  const dmin=Math.min.apply(null,den), dmax=Math.max.apply(null,den);
+  const denLb='moyenne sur '+(dmin===dmax?dmin:dmin+' à '+dmax)+' champs';
+  const px0=a.filter(p=>!p.inpulse.prix_ht).length;
+  const pxu=a.filter(p=>p.logistique.nombre_par_carton>1&&p.inpulse.prix_ht>0&&p.inpulse.prix_ht<1).length;
+  const gab=a.filter(p=>p.design.gabarit_fournisseur).length;
+  const sai=Object.keys(OVR.records).length;
+  document.getElementById('metrics').innerHTML=[
+    ['Références',n,R('famille').length+' familles',''],
+    ['Marquées TFB',tfb,Math.round(100*tfb/n)+' % du parc',''],
+    ['Fiches remplies',moy+' %',denLb,'accent'],
+    ['Fiches saisies',sai+' / '+n,'au moins un champ renseigné',''],
+    ['Gabarits joints',gab+' / '+n,'fichier fournisseur',''],
+    ['Prix à 0,00 €',px0,'dans Inpulse',''],
+    ['Prix incohérents',pxu,'prix unitaire saisi sur un carton','']
+  ].map(([l,v,s,c])=>'<div class="metric '+c+'"><div class="ml">'+l+'</div><div class="mv">'+v+
+     '</div><div class="msub">'+s+'</div></div>').join('');
+}
+
+const pillMarq=m=>'<span class="pill '+(m==='TFB'?'p-tfb':m==='Co-branding'?'p-cob':'p-neutre')+'">'+esc(m)+'</span>';
+const bar=v=>'<div class="bw"><div class="bb"><div class="bf" style="width:'+v+'%;background:'+
+  (v<25?'#dc2626':v<60?'#d97706':'#16a34a')+'"></div></div><span class="bp">'+v+'%</span></div>';
+
+function renderList(){
+  const tb=document.getElementById('tb');
+  if(!ROWS.length){tb.innerHTML='<tr><td colspan="8"><div class="empty"><i class="ti ti-package-off"></i>'+
+    '<p>Aucun packaging ne correspond aux filtres.</p></div></td></tr>';return;}
+  tb.innerHTML=ROWS.map(p=>{
+    const ok=(p.inpulse.dispo||'').split('/')[0]!=='0';
+    const open=EXP.has(p.id);
+    const o=ordFor(p);
+    const resume = !o ? '' : o.vide ? '<span class="ordnil">aucune commande</span>'
+      : '<span class="ordsum">'+o.tot.n+' cmd · '+fmt(o.tot.oq)+' → '+fmt(o.tot.rq)+' cartons</span>';
+    return '<tr class="mainrow'+(open?' open':'')+'" data-id="'+p.id+'">'
+      + '<td class="tb namecell" data-toggle="'+p.id+'">'
+        + '<span class="chev'+(open?' on':'')+'"><i class="ti ti-chevron-right"></i></span>'
+        + esc(p.nom) + (OVR.records[p.id]?' <i class="ti ti-pencil edited" title="fiche saisie"></i>':'')
+        + '<div class="ordline">'+resume+'</div></td>'
+      + '<td><button class="btn btn-sm btn-fiche" data-open="'+p.id+'"><i class="ti ti-layout-sidebar-right-expand"></i>Ouvrir la fiche</button></td>'
+      + '<td class="tm">'+esc(p.app.famille)+'</td><td>'+pillMarq(p.app.marquage)+'</td>'
+      + '<td class="tm">'+esc(p.inpulse.fournisseur)+'</td>'
+      + '<td class="num">'+eur(p.inpulse.prix_ht)+'</td>'
+      + '<td><span class="pill '+(ok?'p-ok':'p-warn')+'">'+esc(p.inpulse.dispo)+'</span></td>'
+      + '<td>'+bar(p._comp)+'</td></tr>'
+      + (open?'<tr class="subrow"><td colspan="8">'+ordTable(p)+'</td></tr>':'');
+  }).join('');
+  tb.querySelectorAll('[data-toggle]').forEach(el=>el.onclick=e=>{
+    e.stopPropagation(); const id=el.dataset.toggle;
+    if(EXP.has(id)) EXP.delete(id); else EXP.add(id);
+    renderList();
+  });
+  tb.querySelectorAll('[data-open]').forEach(el=>el.onclick=e=>{
+    e.stopPropagation(); openDrawer(el.dataset.open);
+  });
+}
+
+const fmt = n => (n==null||isNaN(n))?'—':(Math.round(n*100)/100).toLocaleString('fr-FR');
+
+/* Tableau mois par mois : commandes, cartons commandes / recus, ecart, unites */
+function ordTable(p){
+  if(!ORD) return '<div class="ordempty"><i class="ti ti-loader-2"></i> Historique de commandes en cours de chargement…</div>';
+  const o=ordFor(p);
+  if(o.vide) return '<div class="ordempty"><i class="ti ti-info-circle"></i> Aucune commande de cette référence depuis janvier 2026.</div>';
+  const pcb=p.logistique.nombre_par_carton;
+  const cell=(m,f)=>{ const c=o.mois[m]; return c?f(c):null; };
+  const rows=[
+    {lb:'Commandes',        v:m=>cell(m,c=>c.n),  t:o.tot.n,  cls:'', u:''},
+    {lb:'Cartons commandés',v:m=>cell(m,c=>c.oq), t:o.tot.oq, cls:'', u:''},
+    {lb:'Cartons reçus',    v:m=>cell(m,c=>c.rq), t:o.tot.rq, cls:'', u:''},
+    {lb:'Écart',            v:m=>cell(m,c=>c.rq-c.oq), t:o.tot.rq-o.tot.oq, cls:'ecart', u:''}
+  ];
+  if(pcb) rows.push({lb:'Unités reçues', v:m=>cell(m,c=>c.rq*pcb), t:o.tot.rq*pcb, cls:'unit', u:''});
+  const th=MONTHS.map(m=>'<th'+(o.mois[m]?'':' class="off"')+'>'+moisCourt(m)+'</th>').join('');
+  const body=rows.map(r=>'<tr class="'+r.cls+'"><th>'+r.lb+'</th>'
+    + MONTHS.map(m=>{ const x=r.v(m);
+        if(x==null||x===0&&r.cls!=='ecart') return '<td class="void">'+(x===0?'0':'·')+'</td>';
+        const neg=r.cls==='ecart'&&x<0, pos=r.cls==='ecart'&&x>0;
+        return '<td'+(neg?' class="neg"':pos?' class="pos"':'')+'>'+(pos?'+':'')+fmt(x)+'</td>'; }).join('')
+    + '<td class="tot">'+(r.cls==='ecart'&&r.t>0?'+':'')+fmt(r.t)+'</td></tr>').join('');
+  return '<div class="ordwrap"><table class="ordtab"><thead><tr><th></th>'+th+'<th class="tot">Total</th></tr></thead>'
+    + '<tbody>'+body+'</tbody></table>'
+    + '<div class="ordnote"><i class="ti ti-info-circle"></i> Mois de la <strong>date de commande</strong>. '
+    + 'La quantité reçue est exprimée dans le conditionnement commandé, donc directement comparable. '
+    + (pcb?('Unités = cartons × '+pcb+' (PCB Inpulse). '):'PCB inconnu, unités non calculables. ')
+    + 'Brouillons exclus.</div></div>';
+}
+
+function renderGrid(){
+  const g=document.getElementById('view-grid');
+  g.innerHTML=ROWS.map(p=>'<div class="card" data-id="'+p.id+'">'
+    +'<div class="card-ph">'+(p.photos[0]?'<img src="'+esc(p.photos[0])+'" alt="">':'<i class="ti ti-camera-plus"></i>')+'</div>'
+    +'<div class="card-b"><div class="card-t">'+esc(p.nom)+'</div>'
+    +'<div class="card-m"><span>'+esc(p.app.famille)+'</span><span>'+eur(p.inpulse.prix_ht)+'</span></div>'
+    +'<div style="margin-top:8px">'+bar(p._comp)+'</div></div></div>').join('');
+  g.querySelectorAll('[data-id]').forEach(c=>c.onclick=()=>openDrawer(c.dataset.id));
+}
+
+/* ============================================================
+   Fiche — champs Inpulse en lecture, champs TFB éditables
+   ============================================================ */
+const SRC_INP='<span class="src src-inp" title="piloté par Inpulse, non modifiable ici">Inpulse</span>';
+const SRC_TFB='<span class="src src-tfb" title="saisi par TFB">TFB</span>';
+const SRC_CALC='<span class="src src-calc" title="calculé à partir des dimensions saisies (config.js)">Calculé</span>';
+const SRC_MAN='<span class="src src-man" title="valeur forcée à la main, non écrasée par le recalcul">Manuel</span>';
+
+function control(r,f){
+  const v=getPath(r,f.path), id=r.id, P=f.path;
+  const a='data-id="'+id+'" data-path="'+P+'"';
+  const U=uOf(r,f);
+  if(f.src==='inp'){
+    const txt=f.fmt?f.fmt(v):(v===true?'oui':v===false?'non':v);
+    return isEmpty(txt)||txt==='—'?'<div class="fv void">—</div>'
+      :'<div class="fv">'+esc(txt)+(U?' <span class="u">'+esc(U)+'</span>':'')+'</div>';
+  }
+  switch(f.type){
+    case 'calc': return calcControl(r,f);
+    case 'dec': {
+      const sel=f.unitSel?uniteSelect(r,f):(U?'<span class="u">'+esc(U)+'</span>':'');
+      return '<div class="ctl"><input class="ed" type="text" inputmode="decimal" data-dec="1" '+a+
+        ' value="'+(v==null?'':esc(String(v).replace('.',',')))+'" placeholder="—">'+sel+'</div>';
+    }
+    case 'num':
+      return '<div class="ctl"><input class="ed" type="number" step="'+(f.step||'1')+'" '+a+
+        ' value="'+(v==null?'':esc(v))+'" placeholder="—">'+(f.u?'<span class="u">'+esc(f.u)+'</span>':'')+'</div>';
+    case 'area':
+      return '<textarea class="ed" rows="3" '+a+' placeholder="à compléter">'+esc(v||'')+'</textarea>';
+    case 'select': {
+      const opts=(f.opt?f.opt():[]);
+      const fk=id+'|'+P, known=opts.indexOf(v)>=0, libre=FREE[fk]||(!known&&!isEmpty(v));
+      return '<div class="ctl"><select class="ed" '+a+'><option value="">— à compléter —</option>'
+        +opts.map(o=>'<option'+(o===v?' selected':'')+'>'+esc(o)+'</option>').join('')
+        +(f.free?'<option value="__autre"'+(libre?' selected':'')+'>Autre…</option>':'')
+        +'</select>'+(f.free&&libre?'<input class="ed free" type="text" '+a+' value="'+esc(known?'':(v||''))+'" placeholder="valeur libre">':'')+'</div>';
+    }
+    case 'bool':
+      return '<select class="ed" '+a+'><option value="">—</option>'
+        +'<option value="1"'+(v===true?' selected':'')+'>oui</option>'
+        +'<option value="0"'+(v===false?' selected':'')+'>non</option></select>';
+    case 'date':
+      return '<input class="ed" type="date" '+a+' value="'+esc(v||'')+'">';
+    case 'multi': {
+      const sel=Array.isArray(v)?v:[];
+      return '<div class="multi">'+(f.opt?f.opt():[]).map(o=>
+        '<label class="chk'+(sel.indexOf(o)>=0?' on':'')+'"><input type="checkbox" class="ed-multi" '+a+
+        ' value="'+esc(o)+'"'+(sel.indexOf(o)>=0?' checked':'')+'>'+esc(o)+'</label>').join('')+'</div>';
+    }
+    case 'tags': {
+      const t=Array.isArray(v)?v:[];
+      return '<div class="tags">'+t.map((x,i)=>'<span class="chip">'+esc(x)+
+          '<button class="chip-x ed-tagdel" '+a+' data-i="'+i+'" title="retirer">×</button></span>').join('')
+        +'<input class="ed-tagadd taginput" '+a+' placeholder="ajouter puis Entrée"></div>';
+    }
+    case 'link': case 'photo': {
+      const isImg=/\.(png|jpe?g|webp|gif|svg)(\?|$)/i.test(v||'');
+      let head='';
+      if(v) head='<div class="linkrow"><a href="'+esc(v)+'" target="_blank" rel="noopener"><i class="ti ti-external-link"></i> ouvrir</a></div>';
+      const prev=(f.type==='photo')
+        ? (v&&isImg?'<img class="thumb" src="'+esc(v)+'" alt="">':'<div class="slot sm"><i class="ti ti-photo-plus"></i>'+esc(f.lb)+'</div>')
+        : (v?'':'<div class="filedrop"><i class="ti ti-link"></i> Coller le lien du fichier (Drive, Dropbox…)</div>');
+      return prev+head+'<input class="ed" type="url" '+a+' value="'+esc(v||'')+'" placeholder="https://…">';
+    }
+    default: {
+      const inp='<input class="ed" type="text" '+a+' value="'+esc(v||'')+'" placeholder="à compléter">';
+      return f.u ? '<div class="ctl">'+inp+'<span class="u">'+esc(f.u)+'</span></div>' : inp;
+    }
+  }
+}
+
+/* unité : soit une chaîne, soit une fonction de la référence (unité paramétrable) */
+const uOf = (r,f) => typeof f.u==='function' ? f.u(r) : f.u;
+
+function uniteSelect(r,f){
+  const cur=uniteQte(r);
+  return '<select class="ed unitsel" data-id="'+r.id+'" data-path="'+f.unitSel+'" title="unité de la quantité">'
+    + UNITES_QUANTITE.map(u=>'<option'+(u===cur?' selected':'')+'>'+esc(u)+'</option>').join('')
+    + '</select>';
+}
+
+/* ---- champs calculés : valeur, formule en légende, forçage manuel ---- */
+function calcControl(r,f){
+  const dev = f.kind==='dev';
+  const cfg = cfgAPlat(r);
+  const valuePath = f.path;
+  const modePath  = dev?'dimensions.developpe_mode':'dimensions.a_plat_mode';
+  const figee     = !dev && cfg.mode==='manuel';        // famille sans formule fiable
+  const mode      = figee?'manuel':(dev?devMode(r):aPlatMode(r));
+  const auto      = dev?devAuto(r):aPlatAuto(r);
+  const v         = valOf(r,f);
+  const a='data-id="'+r.id+'" data-path="'+valuePath+'"';
+  const formule   = dev?DEVELOPPE.lb:(A_PLAT_FORMULES[cfg.formule]||{}).lb;
+  let html='';
+
+  if(mode==='manuel'){
+    html+='<div class="ctl"><input class="ed" type="text" '+a+' value="'+esc(getPath(r,valuePath)||'')+
+      '" placeholder="L × H">'+(f.u?'<span class="u">'+esc(f.u)+'</span>':'')+'</div>';
+  } else {
+    html+='<div class="fv'+(isEmpty(v)?' void':'')+'">'+(isEmpty(v)?'—':esc(v)+
+      (f.u?' <span class="u">'+esc(f.u)+'</span>':''))+'</div>';
+  }
+
+  const leg=[];
+  if(mode==='auto'&&formule) leg.push(formule);
+  if(figee) leg.push(cfg.note||'saisie manuelle');
+  else if(mode==='manuel') leg.push('valeur forcée à la main');
+  if(mode==='auto'&&isEmpty(v)) leg.push('dimensions nécessaires manquantes');
+  if(leg.length) html+='<div class="calclegend">'+esc(leg.join(' · '))+'</div>';
+
+  if(dev){
+    html+='<div class="calcparams">'
+      +'<label>rabat de collage <input class="ed p" type="text" inputmode="decimal" data-dec="1" data-id="'+r.id+
+        '" data-path="dimensions.rabat_collage_cm" value="'+esc(String(devRabat(r)).replace('.',','))+'"> cm</label>'
+      +'<label>fond <input class="ed p" type="text" inputmode="decimal" data-dec="1" data-id="'+r.id+
+        '" data-path="dimensions.fond_cm" value="'+(devFond(r)==null?'':esc(String(fmtCm(devFond(r)))))+'"> cm</label>'
+      +'<span class="hint">défauts : rabat '+esc(DEVELOPPE.rabat_lb)+' · fond = '+esc(DEVELOPPE.fond_lb)+'</span></div>';
+  }
+
+  if(!figee){
+    html+='<div class="calcbtns">';
+    if(mode==='auto') html+='<button class="btn btn-sm" data-calcforce="'+valuePath+'" data-mode="'+modePath+
+      '" data-id="'+r.id+'"><i class="ti ti-pencil"></i>Forcer une valeur</button>';
+    else html+='<button class="btn btn-sm" data-calcauto="'+valuePath+'" data-mode="'+modePath+
+      '" data-id="'+r.id+'"'+(auto?'':' disabled title="dimensions nécessaires manquantes"')+
+      '><i class="ti ti-refresh"></i>Recalculer</button>';
+    html+='</div>';
+  }
+  return html;
+}
+
+function fieldHTML(r,f){
+  const filled=!isEmpty(valOf(r,f));
+  const ovr=OVR.records[r.id]&&OVR.records[r.id][f.path]!==undefined;
+  let badge='';
+  if(f.type==='calc'){
+    const dev=f.kind==='dev';
+    const figee=!dev&&cfgAPlat(r).mode==='manuel';
+    const mode=figee?'manuel':(dev?devMode(r):aPlatMode(r));
+    badge=mode==='auto'?SRC_CALC:SRC_MAN;
+  }
+  return '<div class="f'+(f.wide?' wide':'')+(f.src==='tfb'?' ed-f':'')+(filled?'':' vide')+'">'
+    +'<div class="fl">'+esc(f.lb)+(f.src==='inp'?SRC_INP:SRC_TFB)+badge
+    +(ovr?'<i class="ti ti-point-filled dotsaved" title="saisi dans l’app"></i>':'')+'</div>'
+    +control(r,f)+'</div>';
+}
+
+function tabBody(r,k){
+  const fs=byTab(k).filter(f=>visible(f,r)); const groups=[];
+  fs.forEach(f=>{ const g=groups.find(x=>x.g===f.grp); (g?g.f:(groups.push({g:f.grp,f:[]}),groups[groups.length-1].f)).push(f); });
+  let html='';
+  if(k==='design') html+='<div class="note"><i class="ti ti-info-circle"></i><div>Les fichiers se renseignent par <strong>lien</strong> (Drive, Dropbox) : collez l’URL, l’app garde le lien et affiche un aperçu pour les images. Le téléversement direct viendra dans un second temps.</div></div>';
+  if(k==='photos') html+='<div class="note"><i class="ti ti-camera"></i><div>Quatre prises par référence, dans cet ordre. Collez l’URL de chaque image — un aperçu s’affiche dès que le lien est valide.</div></div>';
+  groups.forEach(g=>{ html+='<div class="gh">'+esc(g.g)+'</div><div class="fields'+(k==='photos'?' photofields':'')+'">'
+    +g.f.map(f=>fieldHTML(r,f)).join('')+'</div>'; });
+  return html;
+}
+
+/* ---- bandeau « hors service », en tête de fiche ---- */
+function bandHTML(r){
+  if(!horsService(r)) return '';
+  const prop = r.app.statut!=='Arrêté'
+    ? '<button class="btn btn-sm" data-statut="'+r.id+'"><i class="ti ti-archive"></i>Basculer le statut sur « Arrêté »</button>'
+    : '<span class="bandok"><i class="ti ti-check"></i>statut déjà « Arrêté »</span>';
+  return '<div class="band"><i class="ti ti-circle-off"></i>'
+    +'<div>Référence hors service depuis le <strong>'+esc(dateFR(dateFinService(r)))+'</strong></div>'+prop+'</div>';
+}
+
+function openDrawer(id){
+  current=DB.packagings.find(p=>p.id===id); if(!current) return;
+  const r=current;
+  document.getElementById('d-title').textContent=r.nom;
+  document.getElementById('d-sub').innerHTML=pillMarq(r.app.marquage)
+    +'<span>'+esc(r.app.famille)+'</span><span>·</span><span>'+esc(r.inpulse.fournisseur)+'</span>'
+    +'<span>·</span><span>'+eur(r.inpulse.prix_ht)+'</span>'
+    +'<span class="pill '+(r._comp<25?'p-warn':r._comp<60?'p-todo':'p-ok')+'">fiche '+r._comp+' %</span>';
+  document.getElementById('d-tabs').innerHTML=TABS.map(t=>{
+    const c=tabComp(r,t.k);
+    return '<div class="tab'+(t.k===activeTab?' active':'')+'" data-tab="'+t.k+'"><i class="ti '+t.i+'"></i>'
+      +t.t+'<span class="tcount'+(c.n===0?' zero':c.n===c.t?' full':'')+'">'+c.n+'/'+c.t+'</span></div>';
+  }).join('');
+  document.getElementById('d-tabs').querySelectorAll('[data-tab]')
+    .forEach(el=>el.onclick=()=>{activeTab=el.dataset.tab;openDrawer(id);});
+  document.getElementById('d-band').innerHTML=bandHTML(r);
+  const b=document.getElementById('d-body');
+  b.innerHTML=tabBody(r,activeTab);
+  b.scrollTop=0;
+  wire(b);
+  const bs=document.querySelector('#d-band [data-statut]');
+  if(bs) bs.onclick=()=>{ saveField(bs.dataset.statut,'app.statut','Arrêté'); openDrawer(id); };
+  document.getElementById('ov').classList.add('on');
+  document.getElementById('drawer').classList.add('on');
+}
+function closeDrawer(){ if(QUEUE.length) flush();
+  document.getElementById('ov').classList.remove('on');
+  document.getElementById('drawer').classList.remove('on'); current=null; }
+
+/* ---- branchement des contrôles ---- */
+function wire(root){
+  root.querySelectorAll('input.ed, textarea.ed, select.ed').forEach(el=>{
+    const id=el.dataset.id, path=el.dataset.path;
+    const commit=()=>{
+      let v;
+      if(el.tagName==='SELECT'){
+        if(el.value==='__autre'){ FREE[id+'|'+path]=true; openDrawer(id); return; }
+        delete FREE[id+'|'+path];
+        const f=FIELDS.find(x=>x.path===path);
+        v = f&&f.type==='bool' ? (el.value===''?null:el.value==='1') : (el.value||null);
+      } else if(el.dataset.dec){
+        if(el.value.trim()===''){ v=null; }
+        else { v=num(el.value); if(v===null){ el.classList.add('bad'); return; } }
+        el.classList.remove('bad');
+      } else if(el.type==='number'){
+        v = el.value===''?null:Number(el.value);
+        if(v!==null&&isNaN(v)) return;
+      } else {
+        v = el.value.trim()||null;
+      }
+      const rec=DB.packagings.find(p=>p.id===id);
+      /* cohérence : une fin de service ne peut pas précéder la mise en service */
+      if(path==='deploiement.date_fin_service' && v){
+        const deb=rec.deploiement&&rec.deploiement.date_mise_en_service;
+        if(deb && v<deb){
+          fieldMsg(el,'La date de fin ne peut pas précéder la mise en service ('+dateFR(deb)+').');
+          el.value=rec.deploiement.date_fin_service||''; return;
+        }
+      }
+      if(path==='deploiement.date_mise_en_service' && v){
+        const fin=rec.deploiement&&rec.deploiement.date_fin_service;
+        if(fin && fin<v){
+          fieldMsg(el,'La mise en service ne peut pas suivre la fin de service ('+dateFR(fin)+').');
+          el.value=rec.deploiement.date_mise_en_service||''; return;
+        }
+      }
+      const cur=getPath(rec,path);
+      if((cur==null?null:cur)===v) return;
+      saveField(id,path,v);
+      const f=FIELDS.find(x=>x.path===path);
+      if(/^dimensions\./.test(path)||/^app\.famille$/.test(path)||path==='deploiement.date_fin_service'
+         ||path==='usage_tfb.unite_quantite'){ openDrawer(id); return; }
+      if(f&&(f.type==='photo'||f.type==='link'||f.type==='select')) openDrawer(id);
+    };
+    el.addEventListener('change',commit);
+    if(el.tagName==='TEXTAREA'||el.type==='text'||el.type==='url') el.addEventListener('blur',commit);
+    el.addEventListener('keydown',e=>{ if(e.key==='Enter'&&el.tagName!=='TEXTAREA'){ e.preventDefault(); el.blur(); }});
+  });
+  /* boutons des champs calculés */
+  root.querySelectorAll('[data-calcforce]').forEach(el=>el.onclick=()=>{
+    const id=el.dataset.id, vp=el.dataset.calcforce, mp=el.dataset.mode;
+    const r=DB.packagings.find(p=>p.id===id);
+    const suggestion = vp==='dimensions.developpe_cm' ? devAuto(r) : aPlatAuto(r);
+    saveField(id,mp,'manuel');
+    if(suggestion && isEmpty(getPath(r,vp))) saveField(id,vp,suggestion);
+    openDrawer(id);
+  });
+  root.querySelectorAll('[data-calcauto]').forEach(el=>el.onclick=()=>{
+    const id=el.dataset.id, vp=el.dataset.calcauto, mp=el.dataset.mode;
+    saveField(id,vp,null); saveField(id,mp,'auto'); openDrawer(id);
+  });
+  root.querySelectorAll('.ed-multi').forEach(el=>el.addEventListener('change',()=>{
+    const id=el.dataset.id, path=el.dataset.path;
+    const sel=[...root.querySelectorAll('.ed-multi[data-path="'+path+'"]:checked')].map(x=>x.value);
+    el.closest('label').classList.toggle('on',el.checked);
+    saveField(id,path,sel.length?sel:null);
+  }));
+  root.querySelectorAll('.ed-tagadd').forEach(el=>el.addEventListener('keydown',e=>{
+    if(e.key!=='Enter') return; e.preventDefault();
+    const val=el.value.trim(); if(!val) return;
+    const id=el.dataset.id, path=el.dataset.path;
+    const cur=getPath(DB.packagings.find(p=>p.id===id),path)||[];
+    if(cur.indexOf(val)<0) saveField(id,path,cur.concat([val]));
+    openDrawer(id);
+  }));
+  root.querySelectorAll('.ed-tagdel').forEach(el=>el.addEventListener('click',()=>{
+    const id=el.dataset.id, path=el.dataset.path, i=+el.dataset.i;
+    const cur=(getPath(DB.packagings.find(p=>p.id===id),path)||[]).slice();
+    cur.splice(i,1); saveField(id,path,cur.length?cur:null); openDrawer(id);
+  }));
+}
+
+function fieldMsg(el,txt){
+  const box=el.closest('.f'); if(!box) return;
+  let m=box.querySelector('.fieldmsg');
+  if(!m){ m=document.createElement('div'); m.className='fieldmsg'; box.appendChild(m); }
+  m.textContent=txt;
+  clearTimeout(m._t); m._t=setTimeout(()=>{ if(m.parentNode) m.parentNode.removeChild(m); },6000);
+}
+
+/* ============================================================
+   Export
+   ============================================================ */
+function exportXls(){
+  const rows=ROWS.map(p=>{
+    const o={Packaging:p.nom};
+    FIELDS.forEach(f=>{
+      const uu=typeof f.u==='function'?'':(f.u?' ('+f.u+')':'');
+      const col=f.lb+uu;
+      if(!visible(f,p)){ o[col]='n/a'; return; }
+      let v=valOf(p,f);
+      if(Array.isArray(v)) v=v.join(', ');
+      else if(v===true) v='oui'; else if(v===false) v='non';
+      o[col]=v==null?'':v;
+      if(f.unitSel) o['Unité de la quantité']=uniteQte(p);
+    });
+    o['Hors service']=horsService(p)?'oui':'non';
+    o['Fiche %']=p._comp;
+    o['Saisi dans l’app']=OVR.records[p.id]?'oui':'non';
+    return o;
+  });
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Info Pack');
+  XLSX.writeFile(wb,'tfb-info-pack-'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+load();
+
+</script>
+</body></html>

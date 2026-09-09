@@ -9,6 +9,7 @@ et ce que seul TFB sait (dimensions, matière, gabarit, BAT, logistique, usage, 
 | Fichier | Rôle |
 |---|---|
 | `index.html` | l'app : coquille HTML + charte TFB |
+| `config.js` | **configuration métier** : formules de dimensions par famille, paramètres du développé, unités de quantité |
 | `app.js` | toute la logique (chargement, filtres, fiche 5 onglets, export XLSX) |
 | `data/packaging.json` | **la base** : 43 références + référentiels + métadonnées |
 | `data/packaging-inpulse.tsv` | extrait brut d'Inpulse, trace de la source |
@@ -24,14 +25,50 @@ et ce que seul TFB sait (dimensions, matière, gabarit, BAT, logistique, usage, 
 
 Cinq onglets, calqués sur la fiche Notion :
 
-1. **Informations générales** — Identification, Dimensions, Matière
+1. **Informations générales** — Identification, Achat, Dimensions, Matière
 2. **Design & gabarit** — fichiers (design validé TFB, gabarit fournisseur, logo),
    Couleurs & pantones, Support et rendu, BAT, Mentions obligatoires
 3. **Conditionnement & logistique** — Logistique, Déploiement
-4. **Usage TFB** — Recettes concernées
+   (mise en service, **fin de service**)
+4. **Usage TFB** — usage et quantité par emballage (unité paramétrable)
 5. **Photos** — produit nu, produit garni, situation boutique, gabarit à plat
 
 Voir `SCHEMA.md` pour le détail champ par champ.
+
+## Dimensions calculées
+
+`Dimensions à plat` et `Développé (à découper)` ne se saisissent plus : ils se
+**calculent** à partir des quatre cotes, selon la famille. Les formules vivent
+dans `config.js`, jamais dans le composant :
+
+| Famille | Dimensions à plat |
+|---|---|
+| Sac, Sachet | Largeur × Hauteur (le sac tel qu'il est livré, aplati) |
+| Papier, Serviette, Étiquette | Largeur × Hauteur (format déplié) |
+| Boîte | **manuel** — dépend du montage, se lit sur le gabarit fournisseur |
+| Gobelet, Bouteille, Bowl, Vaisselle, Couvercle | **non applicable**, le champ est masqué |
+| toute autre famille | **manuel** par défaut : on ne devine pas une formule |
+
+`Développé (à découper)` n'existe que pour **Sac** et **Boîte** :
+`(2 × Largeur + 2 × Soufflet + rabat) × (Hauteur + fond)`, avec deux paramètres
+modifiables par référence — rabat de collage (2 cm par défaut) et fond
+(soufflet ÷ 2 + 2 cm par défaut). C'est cette cote qui intéresse l'imprimeur ;
+la première n'est que l'encombrement.
+
+Chaque champ porte son badge — <kbd>CALCULÉ</kbd> ou <kbd>MANUEL</kbd> — et la
+formule appliquée en légende. *Forcer une valeur* fait passer le champ en
+manuel : il n'est plus écrasé par le recalcul. *Recalculer* rétablit la valeur
+automatique. Si une cote nécessaire manque, le champ affiche « — » : jamais une
+valeur fausse.
+
+## Fin de service
+
+`deploiement.date_fin_service` clôt une référence. Dès que la date est passée,
+la fiche affiche un bandeau « Référence hors service depuis le JJ/MM/AAAA » et
+**propose** — sans l'imposer — de basculer le statut sur *Arrêté*. La liste
+principale masque ces références par défaut (bouton *Masquer les références
+hors service*, avec le compteur des masquées). Une date de fin antérieure à la
+mise en service est refusée.
 
 ## Origine des données
 
@@ -93,3 +130,8 @@ direct dans le blob store est la suite prévue.
 donc un historique lisible et un rollback possible. Les champs vides s'affichent
 « à compléter » et la barre *Fiche remplie* donne l'avancement, par référence
 et par onglet (compteur `n/total` sur chaque onglet).
+
+Le dénominateur **dépend de la famille** : un champ non applicable (les
+dimensions à plat d'un gobelet, le développé d'une serviette) ne compte ni au
+numérateur ni au dénominateur. Le KPI *Fiches remplies* affiche donc une
+fourchette (« moyenne sur 46 à 48 champs ») plutôt qu'un nombre unique.

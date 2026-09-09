@@ -39,8 +39,21 @@ regrouper et compter. Ils sont modifiables comme les autres.
 | `dimensions.largeur_cm` | cm | idem |
 | `dimensions.profondeur_soufflet_cm` | cm | idem |
 | `dimensions.hauteur_cm` | cm | idem |
-| `dimensions.dimensions_a_plat_cm` | cm | TFB (format libre « L × H ») |
+| `dimensions.dimensions_a_plat_cm` | cm | **calc** — Largeur × Hauteur selon la famille (`config.js`) ; sert de valeur forcée quand le mode est `manuel` |
+| `dimensions.a_plat_mode` | — | TFB — `auto` (défaut) ou `manuel` |
+| `dimensions.developpe_cm` | cm | **calc** — familles Sac et Boîte uniquement ; sert de valeur forcée quand le mode est `manuel` |
+| `dimensions.developpe_mode` | — | TFB — `auto` (défaut) ou `manuel` |
+| `dimensions.rabat_collage_cm` | cm | TFB — paramètre du développé, défaut 2 |
+| `dimensions.fond_cm` | cm | TFB — paramètre du développé, défaut soufflet ÷ 2 + 2 |
 | `dimensions.tolerance_mm` | mm | TFB |
+
+Les quatre cotes se saisissent en **texte libre décimal** (la virgule vaut le
+point) : plus de sélecteur numérique. Formules et applicabilité par famille :
+`config.js` › `DIM_A_PLAT_PAR_FAMILLE`, `A_PLAT_FORMULES`, `DEVELOPPE`.
+Une famille absente de la table tombe en saisie **manuelle** — une cote fausse
+envoyée à un imprimeur coûte une production entière, donc aucune formule n'est
+devinée. Les familles non développables (Gobelet, Bouteille, Bowl, Vaisselle,
+Couvercle) **masquent** le champ, qui sort alors du calcul de complétude.
 
 Convention de lecture appliquée à la génération : pour un **sac**, `22x12x40` se lit
 largeur × soufflet × hauteur ; pour tout le reste, longueur × largeur × hauteur.
@@ -92,15 +105,27 @@ largeur × soufflet × hauteur ; pour tout le reste, longueur × largeur × haut
 | `logistique.delai_reappro_jours` | jours | TFB |
 | `deploiement.points_de_vente` | liste de codes | TFB — OB, SD, SF, PG, SV, TP, LBA, NE, LV, LNV, RB, LIL3, LP, BC, PP, BCJ, BDJ, BGH |
 | `deploiement.date_mise_en_service` | date | TFB |
-| `deploiement.points_de_vigilance` | texte | TFB |
+| `deploiement.date_fin_service` | date | TFB — refusée si antérieure à la mise en service ; une fois passée, la référence est *hors service* (bandeau de fiche + filtre de liste) |
+
+`deploiement.points_de_vigilance` a été **retiré de la fiche** : texte libre sans
+structure, qui ne se filtrait pas, ne se cherchait pas et n'alimentait aucun
+contrôle. Son contenu relève d'une condition de stockage, d'une note de design
+ou d'une consigne opérationnelle. La clé reste tolérée dans le JSON (rien n'est
+détruit) mais n'est plus ni affichée ni exportée ; le contenu au 09/09/2026 a
+été extrait pour arbitrage (43 références, aucune valeur renseignée).
 
 ## 4 · Usage TFB
 
 | Chemin | Unité | Source |
 |---|---|---|
-| `usage_tfb.recettes_concernees` | liste | TFB |
 | `usage_tfb.usage` | texte | calc (proposition par famille) puis TFB |
-| `usage_tfb.quantite_par_emballage` | pièces | TFB |
+| `usage_tfb.quantite_par_emballage` | selon l'unité | TFB |
+| `usage_tfb.unite_quantite` | — | TFB — `pièces` (défaut), `g`, `kg`, `mL`, `L`, `cm`, `m`, `m²` (`config.js` › `UNITES_QUANTITE`) |
+| `usage_tfb.recettes_migre` | booléen | drapeau technique de migration, voir ci-dessous |
+
+`usage_tfb.recettes_concernees` a été **retiré**. Au chargement, tout contenu
+restant est reversé dans `usage_tfb.usage`, préfixé par « Recettes : », puis le
+drapeau `recettes_migre` évite de rejouer l'opération. Rien n'est perdu.
 
 ## 5 · Photos
 
@@ -122,10 +147,13 @@ Tous les champs marqués TFB ci-dessus sont **modifiables dans l'app** et enregi
 dans Netlify Blobs (voir README). Les champs INP ne le sont pas : ils seraient écrasés
 à la synchro suivante.
 
-La barre *Fiche remplie* compte 48 champs saisissables par TFB (les champs Inpulse
-ne comptent pas : ils sont toujours remplis). Chaque onglet affiche son propre
-compteur `n/total`, ce qui permet de voir d'un coup d'œil s'il manque le design,
-la logistique ou les photos.
+La barre *Fiche remplie* compte les champs TFB **applicables à la référence**
+(les champs Inpulse ne comptent pas : ils sont toujours remplis). Le
+dénominateur varie donc d'une famille à l'autre — 48 champs pour un sac ou une
+boîte, 46 pour un gobelet dont les dimensions à plat et le développé n'ont pas
+de sens. Un champ calculé compte comme rempli dès que la formule aboutit.
+Chaque onglet affiche son propre compteur `n/total`, ce qui permet de voir d'un
+coup d'œil s'il manque le design, la logistique ou les photos.
 
 ## Audit Inpulse du 08/09/2026
 
