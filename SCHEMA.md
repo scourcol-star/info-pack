@@ -17,6 +17,8 @@ Colonne **Source** : <kbd>INP</kbd> = piloté par Inpulse (écrasé à chaque sy
 | `inpulse.dispo` | texte | INP | « 17/18 » = points de vente approvisionnables |
 | `inpulse.fournisseur` | texte | INP | |
 | `inpulse.categorie` / `sous_categorie` | texte | INP | PACKAGING / PACKAGING TFB |
+| `inpulse.unite_achat` | texte | INP | libellé du conditionnement de commande, ex. « CARTON(S) DE 1000PCE » |
+| `inpulse.actif` | booléen | INP | référence encore active côté Inpulse |
 | `inpulse.ingredient` | texte | INP | rattachement ingrédient Inpulse, souvent nul |
 
 `app.*` n'existe pas dans Notion : ces trois champs sont ajoutés pour filtrer,
@@ -28,7 +30,7 @@ regrouper et compter. Ils sont modifiables comme les autres.
 | Chemin | Type | Source |
 |---|---|---|
 | `identification.intitule_inpulse` | texte | INP — **clé de rapprochement** |
-| `identification.sku_fournisseur` | texte | TFB |
+| `identification.sku_fournisseur` | texte | INP — champ `sku` d'Inpulse |
 
 ### Dimensions
 | Chemin | Unité | Source |
@@ -81,7 +83,9 @@ largeur × soufflet × hauteur ; pour tout le reste, longueur × largeur × haut
 
 | Chemin | Unité | Source |
 |---|---|---|
-| `logistique.nombre_par_carton` | pièces | TFB |
+| `logistique.nombre_par_carton` | pièces | INP — `packagings[].quantity` |
+| `logistique.unite_commande` | — | INP — déduit du libellé (Carton / Boîte / Rouleau / Unité) |
+| `logistique.prix_unitaire_ht` | € | INP — `price / quantity`, calculé à la volée |
 | `logistique.cartons_par_palette` | cartons | TFB |
 | `logistique.conditions_stockage` | énum/texte | TFB |
 | `logistique.moq` | pièces | TFB |
@@ -114,17 +118,55 @@ en pointillés dans la fiche.
 
 ## Complétude
 
-La barre *Fiche remplie* compte 32 champs saisissables par TFB (les champs Inpulse
+Tous les champs marqués TFB ci-dessus sont **modifiables dans l'app** et enregistrés
+dans Netlify Blobs (voir README). Les champs INP ne le sont pas : ils seraient écrasés
+à la synchro suivante.
+
+La barre *Fiche remplie* compte 48 champs saisissables par TFB (les champs Inpulse
 ne comptent pas : ils sont toujours remplis). Chaque onglet affiche son propre
 compteur `n/total`, ce qui permet de voir d'un coup d'œil s'il manque le design,
 la logistique ou les photos.
 
-## Trois points à trancher
+## Audit Inpulse du 08/09/2026
 
-1. **Dimensions déduites du libellé** : 15 références sur 43 en ont. La convention
+43 / 43 références rapprochées. Ce que la synchronisation a révélé :
+
+### 4 prix qui semblent saisis à l'unité sur un conditionnement carton
+
+| Référence | Prix Inpulse | Conditionnement |
+|---|---|---|
+| BOITE 2X PATISSERIE TFB | 0,159 € | carton de 500 |
+| BOITE 6X PATISSERIE TFB | 0,439 € | carton de 100 |
+| BOITES A CAKES TFB | 0,568 € | carton de 5 000 |
+| SAC GRANDS GATEAUX | 0,539 € | carton de 100 |
+
+Ailleurs le prix est bien celui du carton (98,10 € pour 900 boîtes éclair, soit
+0,109 €/pièce). Ces quatre lignes cassent donc le calcul de coût matière : soit
+le prix est à corriger dans Inpulse, soit le conditionnement.
+
+### 7 références à 0,00 €
+
+Les 3 étiquettes en rouleau et les 3 cofanetto (Litograf), plus le sachet
+galettes TFB × Isigny. Prix réellement offert, refacturé ailleurs, ou jamais saisi ?
+
+### 2 PCB incohérents avec leur libellé
+
+| Référence | Libellé Inpulse | Quantité enregistrée |
+|---|---|---|
+| KIT 2/1 EN BOIS | CARTON(S) DE 1000 PCS | 1 |
+| PAPIER INGRAISSABLE 900×1000 | CARTON DE 300 UNITES | 1 |
+
+Conséquence directe : pas de prix unitaire calculable sur ces deux lignes.
+
+### 3 SKU manquants
+
+`BOUTEILLE PET 25CL + BOUCHON NOIR` (SKU = « ? »), `GOBELET 35CL NEUTRE` et
+`SACHET GALETTES TFB X ISIGNY` (vides).
+
+### 2 questions de fond
+
+1. **Dimensions déduites du libellé** : 15 références sur 43. La convention
    sac = largeur × soufflet × hauteur est une hypothèse — à confirmer avant de
    s'appuyer dessus pour commander.
-2. **Six références à 0,00 € dans Inpulse** (étiquettes Litograf, cofanetto, sachet
-   galettes Isigny) : prix réellement nul, offert, ou non renseigné ?
-3. **`INVENTAIRE - COFANETTO CAKE …`** : trois lignes qui ressemblent à des articles
+2. **`INVENTAIRE - COFANETTO CAKE …`** : trois lignes qui ressemblent à des articles
    d'inventaire plutôt qu'à des packagings vendables. À garder dans la base, ou à sortir ?

@@ -479,7 +479,7 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 160,
+        "prix_ht": 160.0,
         "dispo": "0/18",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
@@ -1132,7 +1132,7 @@
         "longueur_cm": null,
         "largeur_cm": null,
         "profondeur_soufflet_cm": null,
-        "hauteur_cm": 10,
+        "hauteur_cm": 10.0,
         "dimensions_a_plat_cm": "",
         "tolerance_mm": null
       },
@@ -1207,7 +1207,7 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 42,
+        "prix_ht": 42.0,
         "dispo": "10/10",
         "fournisseur": "GOBERLOTE",
         "categorie": "PACKAGING",
@@ -1480,7 +1480,7 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 55,
+        "prix_ht": 55.0,
         "dispo": "5/5",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
@@ -1571,7 +1571,7 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0,
+        "prix_ht": 0.0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
@@ -1662,7 +1662,7 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0,
+        "prix_ht": 0.0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
@@ -1753,7 +1753,7 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0,
+        "prix_ht": 0.0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
@@ -2026,7 +2026,7 @@
         "statut": "Actif"
       },
       "inpulse": {
-        "prix_ht": 54,
+        "prix_ht": 54.0,
         "dispo": "6/6",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
@@ -2208,7 +2208,7 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0,
+        "prix_ht": 0.0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
@@ -2299,7 +2299,7 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0,
+        "prix_ht": 0.0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
@@ -2390,7 +2390,7 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0,
+        "prix_ht": 0.0,
         "dispo": "2/2",
         "fournisseur": "LITOGRAF",
         "categorie": "PACKAGING",
@@ -2588,7 +2588,7 @@
         "longueur_cm": null,
         "largeur_cm": null,
         "profondeur_soufflet_cm": null,
-        "hauteur_cm": 10,
+        "hauteur_cm": 10.0,
         "dimensions_a_plat_cm": "",
         "tolerance_mm": null
       },
@@ -2676,8 +2676,8 @@
         "sku_fournisseur": "PAPING9001000KF"
       },
       "dimensions": {
-        "longueur_cm": 90,
-        "largeur_cm": 100,
+        "longueur_cm": 90.0,
+        "largeur_cm": 100.0,
         "profondeur_soufflet_cm": null,
         "hauteur_cm": null,
         "dimensions_a_plat_cm": "90.0 × 100.0",
@@ -3664,7 +3664,7 @@
         "statut": "À compléter"
       },
       "inpulse": {
-        "prix_ht": 0,
+        "prix_ht": 0.0,
         "dispo": "17/17",
         "fournisseur": "WELLEMBAL",
         "categorie": "PACKAGING",
@@ -3818,7 +3818,7 @@
         "moq": null,
         "delai_reappro_jours": null,
         "unite_commande": "Carton",
-        "prix_unitaire_ht": 0.0153
+        "prix_unitaire_ht": 0.0152
       },
       "deploiement": {
         "points_de_vente": [],
@@ -3862,7 +3862,7 @@
         "longueur_cm": null,
         "largeur_cm": null,
         "profondeur_soufflet_cm": null,
-        "hauteur_cm": 7,
+        "hauteur_cm": 7.0,
         "dimensions_a_plat_cm": "",
         "tolerance_mm": null
       },

@@ -10,11 +10,11 @@
    ============================================================ */
 
 const TABS = [
-  {k:'general', t:'Informations générales',        s:'Général',     i:'ti-pencil'},
-  {k:'design',  t:'Design & gabarit',              s:'Design',      i:'ti-palette'},
-  {k:'logi',    t:'Conditionnement & logistique',  s:'Logistique',  i:'ti-package'},
-  {k:'usage',   t:'Usage TFB',                     s:'Usage',       i:'ti-croissant'},
-  {k:'photos',  t:'Photos',                        s:'Photos',      i:'ti-camera'}
+  {k:'general', t:'Informations générales',        i:'ti-pencil'},
+  {k:'design',  t:'Design & gabarit',              i:'ti-palette'},
+  {k:'logi',    t:'Conditionnement & logistique',  i:'ti-package'},
+  {k:'usage',   t:'Usage TFB',                     i:'ti-croissant'},
+  {k:'photos',  t:'Photos',                        i:'ti-camera'}
 ];
 
 let DB=null, OVR={records:{}}, ROWS=[], view='list', sortK='nom', sortD=1, activeTab='general', current=null;
@@ -54,6 +54,7 @@ const FIELDS = [
   {tab:'general', grp:'Identification', path:'app.famille',   lb:'Famille',  src:'tfb', type:'select', opt:()=>R('famille')},
   {tab:'general', grp:'Identification', path:'app.marquage',  lb:'Marquage', src:'tfb', type:'select', opt:()=>R('marquage')},
   {tab:'general', grp:'Identification', path:'app.statut',    lb:'Statut',   src:'tfb', type:'select', opt:()=>R('statut')},
+  {tab:'general', grp:'Identification', path:'app.sous_famille', lb:'Sous-famille', src:'tfb', type:'text'},
 
   {tab:'general', grp:'Achat', path:'inpulse.prix_ht',   lb:'Prix HT',        src:'inp', fmt:eur},
   {tab:'general', grp:'Achat', path:'inpulse.unite_achat', lb:'Unité d’achat', src:'inp'},
@@ -111,9 +112,9 @@ const FIELDS = [
   {tab:'logi', grp:'Déploiement', path:'deploiement.points_de_vigilance',   lb:'Points de vigilance',       src:'tfb', type:'area', wide:1},
 
   // ---------- 4. Usage TFB ----------
-  {tab:'usage', grp:'Utilisation', path:'usage_tfb.recettes_concernees',    lb:'Recettes concernées',   src:'tfb', type:'tags', wide:1, dl:'recettes'},
-  {tab:'usage', grp:'Utilisation', path:'usage_tfb.usage',                  lb:'Usage',                 src:'tfb', type:'area', wide:1},
-  {tab:'usage', grp:'Utilisation', path:'usage_tfb.quantite_par_emballage', lb:'Quantité par emballage', src:'tfb', type:'num', u:'pièces'},
+  {tab:'usage', grp:'Recettes concernées', path:'usage_tfb.recettes_concernees',    lb:'Recettes concernées',   src:'tfb', type:'tags', wide:1},
+  {tab:'usage', grp:'Recettes concernées', path:'usage_tfb.usage',                  lb:'Usage',                 src:'tfb', type:'area', wide:1},
+  {tab:'usage', grp:'Recettes concernées', path:'usage_tfb.quantite_par_emballage', lb:'Quantité par emballage', src:'tfb', type:'num', u:'pièces'},
 
   // ---------- 5. Photos ----------
   {tab:'photos', grp:'Galerie', path:'photos.0', lb:'Produit nu',                  src:'tfb', type:'photo'},
@@ -310,13 +311,6 @@ function refreshHeader(){
     if(sp){ sp.textContent=c.n+'/'+c.t;
       sp.className='tcount'+(c.n===0?' zero':c.n===c.t?' full':''); }
   });
-  document.querySelectorAll('#d-body .grp').forEach(el=>{
-    const a=byTab(activeTab).filter(f=>f.src==='tfb'&&f.grp===el.dataset.grp);
-    const sp=el.querySelector('.grp-c'); if(!sp||!a.length) return;
-    const n=a.filter(f=>!isEmpty(getPath(r,f.path))).length;
-    sp.textContent=n+'/'+a.length;
-    sp.className='grp-c'+(n===0?' zero':n===a.length?' full':'');
-  });
 }
 async function flush(){
   if(inflight||!QUEUE.length) return;
@@ -389,10 +383,30 @@ function render(){
   ROWS.sort((a,b)=>{const x=val(a),y=val(b);
     return (typeof x==='number'?x-y:String(x).localeCompare(String(y),'fr'))*sortD;});
   document.querySelectorAll('th[data-k]').forEach(th=>{th.className=th.dataset.k===sortK?(sortD>0?'asc':'desc'):'';});
-  renderList(); renderGrid();
+  renderMetrics(); renderList(); renderGrid();
   document.getElementById('view-list').style.display=view==='list'?'':'none';
   document.getElementById('view-grid').style.display=view==='grid'?'grid':'none';
   document.getElementById('count').textContent=ROWS.length+' / '+DB.packagings.length+' références';
+}
+
+function renderMetrics(){
+  const a=DB.packagings,n=a.length;
+  const tfb=a.filter(p=>p.app.marquage==='TFB').length;
+  const moy=Math.round(a.reduce((s,p)=>s+p._comp,0)/n);
+  const px0=a.filter(p=>!p.inpulse.prix_ht).length;
+  const pxu=a.filter(p=>p.logistique.nombre_par_carton>1&&p.inpulse.prix_ht>0&&p.inpulse.prix_ht<1).length;
+  const gab=a.filter(p=>p.design.gabarit_fournisseur).length;
+  const sai=Object.keys(OVR.records).length;
+  document.getElementById('metrics').innerHTML=[
+    ['Références',n,R('famille').length+' familles',''],
+    ['Marquées TFB',tfb,Math.round(100*tfb/n)+' % du parc',''],
+    ['Fiches remplies',moy+' %','moyenne sur '+TFB_FIELDS.length+' champs','accent'],
+    ['Fiches saisies',sai+' / '+n,'au moins un champ renseigné',''],
+    ['Gabarits joints',gab+' / '+n,'fichier fournisseur',''],
+    ['Prix à 0,00 €',px0,'dans Inpulse',''],
+    ['Prix incohérents',pxu,'prix unitaire saisi sur un carton','']
+  ].map(([l,v,s,c])=>'<div class="metric '+c+'"><div class="ml">'+l+'</div><div class="mv">'+v+
+     '</div><div class="msub">'+s+'</div></div>').join('');
 }
 
 const pillMarq=m=>'<span class="pill '+(m==='TFB'?'p-tfb':m==='Co-branding'?'p-cob':'p-neutre')+'">'+esc(m)+'</span>';
@@ -484,9 +498,8 @@ function control(r,f){
   const a='data-id="'+id+'" data-path="'+P+'"';
   if(f.src==='inp'){
     const txt=f.fmt?f.fmt(v):(v===true?'oui':v===false?'non':v);
-    return isEmpty(txt)||txt==='—'
-      ? '<div class="fv void">— '+SRC_INP+'</div>'
-      : '<div class="fv">'+esc(txt)+(f.u?' <span class="u">'+esc(f.u)+'</span>':'')+' '+SRC_INP+'</div>';
+    return isEmpty(txt)||txt==='—'?'<div class="fv void">—</div>'
+      :'<div class="fv">'+esc(txt)+(f.u?' <span class="u">'+esc(f.u)+'</span>':'')+'</div>';
   }
   switch(f.type){
     case 'num':
@@ -516,24 +529,18 @@ function control(r,f){
     }
     case 'tags': {
       const t=Array.isArray(v)?v:[];
-      const ph=f.dl?'chercher une recette Inpulse, puis Entrée':'ajouter puis Entrée';
       return '<div class="tags">'+t.map((x,i)=>'<span class="chip">'+esc(x)+
           '<button class="chip-x ed-tagdel" '+a+' data-i="'+i+'" title="retirer">×</button></span>').join('')
-        +'<input class="ed-tagadd taginput"'+(f.dl?' list="dl-'+f.dl+'"':'')+' '+a+' placeholder="'+ph+'">'
-        +(f.dl?'<datalist id="dl-'+f.dl+'"></datalist>':'')+'</div>';
+        +'<input class="ed-tagadd taginput" '+a+' placeholder="ajouter puis Entrée"></div>';
     }
     case 'link': case 'photo': {
       const isImg=/\.(png|jpe?g|webp|gif|svg)(\?|$)/i.test(v||'');
-      const open = v ? '<a class="lk-open" href="'+esc(v)+'" target="_blank" rel="noopener" title="ouvrir dans un onglet">'
-                       +'<i class="ti ti-external-link"></i>Ouvrir</a>' : '';
-      const row = '<div class="lk"><i class="ti '+(f.type==='photo'?'ti-photo':'ti-paperclip')+' lk-ic"></i>'
-        +'<input class="ed" type="url" '+a+' value="'+esc(v||'')+'" placeholder="'
-        +(f.type==='photo'?'Lien de l’image (Drive, Dropbox…)':'Lien du fichier (Drive, Dropbox…)')+'">'+open+'</div>';
-      if(f.type!=='photo') return row;
-      const box = (v&&isImg)
-        ? '<div class="ph-box"><img src="'+esc(v)+'" alt=""></div>'
-        : '<div class="ph-box vide"><i class="ti ti-photo-plus"></i>'+(v?'aperçu indisponible':'aucune photo')+'</div>';
-      return box+row;
+      let head='';
+      if(v) head='<div class="linkrow"><a href="'+esc(v)+'" target="_blank" rel="noopener"><i class="ti ti-external-link"></i> ouvrir</a></div>';
+      const prev=(f.type==='photo')
+        ? (v&&isImg?'<img class="thumb" src="'+esc(v)+'" alt="">':'<div class="slot sm"><i class="ti ti-photo-plus"></i>'+esc(f.lb)+'</div>')
+        : (v?'':'<div class="filedrop"><i class="ti ti-link"></i> Coller le lien du fichier (Drive, Dropbox…)</div>');
+      return prev+head+'<input class="ed" type="url" '+a+' value="'+esc(v||'')+'" placeholder="https://…">';
     }
     default: {
       const inp='<input class="ed" type="text" '+a+' value="'+esc(v||'')+'" placeholder="à compléter">';
@@ -545,9 +552,8 @@ function control(r,f){
 function fieldHTML(r,f){
   const filled=!isEmpty(getPath(r,f.path));
   const ovr=OVR.records[r.id]&&OVR.records[r.id][f.path]!==undefined;
-  const tall = f.type==='area'||f.type==='tags'||f.type==='multi'||f.type==='photo';
-  return '<div class="f'+(f.wide?' wide':'')+(tall?' top':'')+(f.src==='tfb'?' ed-f':'')+(filled?'':' vide')+'">'
-    +'<div class="fl">'+esc(f.lb)
+  return '<div class="f'+(f.wide?' wide':'')+(f.src==='tfb'?' ed-f':'')+(filled?'':' vide')+'">'
+    +'<div class="fl">'+esc(f.lb)+(f.src==='inp'?SRC_INP:SRC_TFB)
     +(ovr?'<i class="ti ti-point-filled dotsaved" title="saisi dans l’app"></i>':'')+'</div>'
     +control(r,f)+'</div>';
 }
@@ -556,52 +562,11 @@ function tabBody(r,k){
   const fs=byTab(k); const groups=[];
   fs.forEach(f=>{ const g=groups.find(x=>x.g===f.grp); (g?g.f:(groups.push({g:f.grp,f:[]}),groups[groups.length-1].f)).push(f); });
   let html='';
-  groups.forEach(g=>{
-    const a=g.f.filter(f=>f.src==='tfb');
-    const n=a.filter(f=>!isEmpty(getPath(r,f.path))).length, tot=a.length;
-    const cnt = tot ? '<span class="grp-c'+(n===0?' zero':n===tot?' full':'')+'">'+n+'/'+tot+'</span>'
-                    : '<span class="grp-c auto">Inpulse</span>';
-    html+='<section class="grp"'+(tot?'':' data-auto="1"')+' data-grp="'+esc(g.g)+'">'
-      +'<div class="grp-h"><span class="grp-n">'+esc(g.g)+'</span>'+cnt+'</div>'
-      +'<div class="grp-b"><div class="fields'+(k==='photos'?' photofields':'')+'">'
-      +g.f.map(f=>fieldHTML(r,f)).join('')+'</div></div></section>'; });
+  if(k==='design') html+='<div class="note"><i class="ti ti-info-circle"></i><div>Les fichiers se renseignent par <strong>lien</strong> (Drive, Dropbox) : collez l’URL, l’app garde le lien et affiche un aperçu pour les images. Le téléversement direct viendra dans un second temps.</div></div>';
+  if(k==='photos') html+='<div class="note"><i class="ti ti-camera"></i><div>Quatre prises par référence, dans cet ordre. Collez l’URL de chaque image — un aperçu s’affiche dès que le lien est valide.</div></div>';
+  groups.forEach(g=>{ html+='<div class="gh">'+esc(g.g)+'</div><div class="fields'+(k==='photos'?' photofields':'')+'">'
+    +g.f.map(f=>fieldHTML(r,f)).join('')+'</div>'; });
   return html;
-}
-
-/* ---- recettes Inpulse : suggestions du champ « Recettes concernées » ---- */
-let RECIPES=null, recipesJob=null;
-const recipeName = x => (x && (x.name || x.label || x.title || x.recipeName)) || '';
-function loadRecipes(){
-  if(RECIPES) return Promise.resolve(RECIPES);
-  if(recipesJob) return recipesJob;
-  recipesJob = (async()=>{
-    const out=[], PAGE=100;   // l'API Inpulse plafonne a 100 par page
-    try{
-      for(let p=0;p<20;p++){
-        const r=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({endpoint:'/public/v2/recipes?limit='+PAGE+'&skip='+(p*PAGE),method:'GET'})});
-        if(!r.ok) break;
-        const d=await r.json();
-        const arr=Array.isArray(d)?d:(d&&(d.data||d.items||d.results||d.recipes))||[];
-        if(!Array.isArray(arr)||!arr.length) break;
-        arr.forEach(x=>{ const n=recipeName(x); if(n) out.push(String(n).trim()); });
-        if(arr.length<PAGE) break;
-      }
-    }catch(e){ /* Inpulse injoignable : on reste en saisie libre */ }
-    RECIPES=[...new Set(out.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
-    return RECIPES;
-  })();
-  return recipesJob;
-}
-async function fillSuggestions(root){
-  const dl=root.querySelector('#dl-recettes'); if(!dl) return;
-  const list=await loadRecipes();
-  if(!document.body.contains(dl)) return;
-  dl.innerHTML=list.map(o=>'<option value="'+esc(o)+'"></option>').join('');
-  const inp=root.querySelector('.ed-tagadd[list="dl-recettes"]');
-  if(inp) inp.placeholder = list.length
-    ? 'chercher parmi '+list.length+' recettes Inpulse, puis Entrée'
-    : 'recettes Inpulse indisponibles — saisie libre, puis Entrée';
 }
 
 function openDrawer(id){
@@ -614,9 +579,8 @@ function openDrawer(id){
     +'<span class="pill '+(r._comp<25?'p-warn':r._comp<60?'p-todo':'p-ok')+'">fiche '+r._comp+' %</span>';
   document.getElementById('d-tabs').innerHTML=TABS.map(t=>{
     const c=tabComp(r,t.k);
-    return '<button type="button" class="tab'+(t.k===activeTab?' active':'')+'" data-tab="'+t.k+'"'
-      +' title="'+esc(t.t)+'"><i class="ti '+t.i+'"></i><span class="tl">'+esc(t.s)+'</span>'
-      +'<span class="tcount'+(c.n===0?' zero':c.n===c.t?' full':'')+'">'+c.n+'/'+c.t+'</span></button>';
+    return '<div class="tab'+(t.k===activeTab?' active':'')+'" data-tab="'+t.k+'"><i class="ti '+t.i+'"></i>'
+      +t.t+'<span class="tcount'+(c.n===0?' zero':c.n===c.t?' full':'')+'">'+c.n+'/'+c.t+'</span></div>';
   }).join('');
   document.getElementById('d-tabs').querySelectorAll('[data-tab]')
     .forEach(el=>el.onclick=()=>{activeTab=el.dataset.tab;openDrawer(id);});
@@ -624,7 +588,6 @@ function openDrawer(id){
   b.innerHTML=tabBody(r,activeTab);
   b.scrollTop=0;
   wire(b);
-  fillSuggestions(b);
   document.getElementById('ov').classList.add('on');
   document.getElementById('drawer').classList.add('on');
 }

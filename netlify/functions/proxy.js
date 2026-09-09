@@ -14,7 +14,7 @@ exports.handler = async (event) => {
   if (!API_KEY)
     return { statusCode: 503, headers, body: JSON.stringify({ error: "API_KEY non configuree sur Netlify." }) };
 
-  const OK = ["/public/v2/supplier-products", "/public/v2/suppliers", "/public/v2/ingredients", "/public/v2/orders", "/public/v2/stores", "/public/v2/recipes"];
+  const OK = ["/public/v2/supplier-products", "/public/v2/suppliers", "/public/v2/ingredients", "/public/v2/orders", "/public/v2/stores"];
   try {
     const { endpoint, body, method } = JSON.parse(event.body || "{}");
     if (!endpoint) return { statusCode: 400, headers, body: JSON.stringify({ error: "Missing endpoint" }) };
