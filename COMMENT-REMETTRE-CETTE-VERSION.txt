@@ -1,0 +1,58 @@
+INFO-PACK — VERSION DU MARDI 08/09/2026 A 18h23
+Reperes : depot scourcol-star/info-pack, commit 40cc3ba
+Dossier prepare le 11/09/2026
+
+
+CE QU'IL Y A DANS CE DOSSIER
+---------------------------
+
+app-du-08-09-a-ouvrir.html
+    L'application complete du 08/09, base packaging incluse.
+    Double-clic : elle s'ouvre dans n'importe quel navigateur, sans
+    serveur et sans rien installer. C'est le fichier a faire circuler
+    pour que chacun voie la bonne version.
+
+index-html-08-09.txt
+app-js-08-09.txt
+proxy-js-08-09.txt
+    Le code de cette version, en fichiers texte lisibles partout
+    (bloc-notes, TextEdit, mail, telephone).
+
+README-08-09.txt
+SCHEMA-08-09.txt
+    La documentation telle qu'elle etait a cette date.
+
+
+POUR REMETTRE CETTE VERSION EN LIGNE
+------------------------------------
+
+Le site Netlify se publie depuis GitHub : il faut donc remettre les
+fichiers dans le depot. Les .txt ci-dessus servent a lire et verifier ;
+pour le televersement, ce sont les vrais fichiers qu'il faut, avec leur
+nom et leur extension d'origine :
+
+    index-html-08-09.txt   ->  index.html                     (racine)
+    app-js-08-09.txt       ->  app.js                         (racine)
+    proxy-js-08-09.txt     ->  netlify/functions/proxy.js
+
+Trois fichiers, rien d'autre. Une fois pousses sur la branche main,
+Netlify republie tout seul en une minute environ.
+
+
+CE QUI NE BOUGE PAS
+-------------------
+
+data/packaging.json reste en l'etat : entre le 08/09 et aujourd'hui il
+n'a change que d'un prix unitaire (0,0153 au lieu de 0,0152). Aucune
+saisie n'est perdue en revenant en arriere.
+
+Attention en revanche a proxy.js : la version actuelle a retire l'acces
+aux recettes Inpulse, que l'application du 08/09 utilise. Si on remet
+index.html et app.js sans proxy.js, les recettes ne remontent pas.
+
+
+SI QUELQUE CHOSE CLOCHE
+-----------------------
+
+Rien n'est efface : l'historique GitHub garde toutes les versions, on
+peut revenir a l'etat actuel a tout moment.
