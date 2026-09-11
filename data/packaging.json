@@ -79,6 +79,8 @@
       "Hors zone chaude"
     ],
     "points_de_vente": [
+      "CHA",
+      "LOG",
       "OB",
       "SD",
       "SF",
@@ -90,7 +92,6 @@
       "LV",
       "LNV",
       "RB",
-      "LIL3",
       "LP",
       "BC",
       "PP",
