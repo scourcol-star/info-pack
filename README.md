@@ -9,11 +9,12 @@ et ce que seul TFB sait (dimensions, matière, gabarit, BAT, logistique, usage, 
 | Fichier | Rôle |
 |---|---|
 | `index.html` | l'app : coquille HTML + charte TFB |
-| `config.js` | **configuration métier** : formules de dimensions par famille, paramètres du développé, unités de quantité |
+| `config.js` | **configuration métier** : formules de dimensions par famille, paramètres du développé, unités de quantité, **référentiel des 19 boutiques** (abréviation TFB, nom Inpulse, zone) et règles de stock |
 | `app.js` | toute la logique (chargement, filtres, fiche 5 onglets, export XLSX) |
 | `data/packaging.json` | **la base** : 43 références + référentiels + métadonnées |
 | `data/packaging-inpulse.tsv` | extrait brut d'Inpulse, trace de la source |
 | `netlify/functions/store.mjs` | enregistre les saisies TFB dans Netlify Blobs (function v2) |
+| `netlify/functions/orders.mjs` | historique de commandes Inpulse, **mois par mois et boutique par boutique** |
 | `netlify/functions/packaging.js` | agrège les 9 pages de l'API Inpulse et ne renvoie que le PACKAGING |
 | `netlify/functions/proxy.js` | proxy Inpulse générique (la clé API reste côté serveur) |
 | `data/inpulse-enrich.tsv` | SKU, prix et conditionnements relevés dans Inpulse le 08/09 |
@@ -135,3 +136,79 @@ Le dénominateur **dépend de la famille** : un champ non applicable (les
 dimensions à plat d'un gobelet, le développé d'une serviette) ne compte ni au
 numérateur ni au dénominateur. Le KPI *Fiches remplies* affiche donc une
 fourchette (« moyenne sur 46 à 48 champs ») plutôt qu'un nombre unique.
+
+
+## Deux feuilles
+
+La barre de navigation ne propose plus que deux feuilles, toutes les deux réelles :
+
+- **Packagings** — la base, une ligne par référence, la fiche en 5 onglets.
+- **Stock** — le suivi des stocks, labo et boutiques.
+
+Les anciens onglets *Fournisseurs* et *Référentiels* étaient des liens morts ;
+le fournisseur se lit déjà sur chaque fiche et les référentiels vivent dans
+`config.js` et `data/packaging.json`.
+
+## Les 19 boutiques, quatre zones
+
+`config.js › BOUTIQUES` est la seule table de correspondance : une ligne par
+boutique, avec l'abréviation TFB, le nom exact renvoyé par Inpulse
+(`/public/v2/stores`, clé de rapprochement) et la zone. Quatre zones, quatre
+couleurs, définies une seule fois dans `ZONES` :
+
+| Zone | Couleur | Boutiques |
+|---|---|---|
+| Paris labo | violet | CHA (Chalifert), LOG (Lognes) — les deux plateformes |
+| Paris boutique | bleu | OB, SD, SF, PG, SV, TP, LV, RB, BC, PP, NE, LP |
+| Bordeaux | bordeaux | BDJ, BCJ, BGH |
+| Lille | vert | LBA, LNV |
+
+Une boutique Inpulse absente de cette table est signalée dans la légende de la
+carte plutôt que silencieusement ignorée.
+
+## Disponibilité boutiques
+
+La colonne *Dispo.* de la liste est **cliquable** : elle déplie la carte des 19
+boutiques, groupées par zone et colorées par zone. Puce pleine = la boutique a
+réellement commandé la référence depuis janvier 2026 (constaté dans Inpulse),
+puce grise = jamais commandée ; le chiffre est le nombre de cartons reçus. La
+même carte s'affiche dans la fiche, à la place du `17/18` d'Inpulse — qui reste
+rappelé en légende, car c'est une disponibilité *théorique*, pas un constat.
+
+## Trajet logistique
+
+L'onglet *Conditionnement & logistique* se termine par le trajet reconstitué à
+partir des commandes : **fournisseur → plateforme (Chalifert / Lognes) →
+boutiques**, avec le détail de qui a commandé quoi, combien et quand. Si aucune
+commande n'est passée par une plateforme, l'app le dit : la référence part en
+direct chez le commerçant. Un bouton reprend les boutiques réellement
+approvisionnées dans *Points de vente concernés*, plutôt que de les cocher à la main.
+
+## Feuille Stock
+
+Une ligne par référence, une colonne par zone, plus l'entrepôt fournisseur.
+En dépliant, la grille des 19 boutiques : reçu depuis janvier, consommation
+moyenne par jour, inventaire saisi, stock estimé.
+
+    stock estimé = inventaire + réceptions postérieures − consommation × jours écoulés
+
+La consommation moyenne est le reçu depuis le 1er janvier divisé par le nombre
+de jours : sur la durée, une boutique consomme ce qu'elle reçoit. **Sans
+inventaire, aucun stock n'est affiché** — on montre le reçu, pas une valeur
+inventée. Un inventaire saisi fait toujours foi et l'estimation ne fait que le
+vieillir. Les réceptions sont comptées au mois, l'estimation est donc juste à un
+mois près sur le mois de l'inventaire.
+
+Le stock de l'entrepôt fournisseur se saisit à la main, par référence, avec sa date.
+
+Les inventaires se rangent dans le même blob que les autres saisies, sous
+`stock.inv.<ABR>.q` / `.d` et `stock.fournisseur.q` / `.d` — donc historisés et
+patchés comme le reste.
+
+## Champs retirés
+
+- **Recettes concernées** — le champ tags de l'onglet *Usage TFB*. Les valeurs
+  déjà saisies sont recopiées en tête du champ *Usage* (migration unique) avant
+  que le champ disparaisse : rien n'est perdu.
+- **Points de vigilance** — remplacé par le trajet logistique, qui dit la même
+  chose avec des faits plutôt qu'avec un commentaire libre.

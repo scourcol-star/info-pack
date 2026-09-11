@@ -1,11 +1,13 @@
 # TFB — Info Pack
-# Publication : le fichier <page>AAAAMMJJHHMM.html le plus recent est copie sur
-# son nom definitif (meme convention que tfb-achats).
-#   app202609081500.html -> index.html
+# index.html est publie tel quel : c'est la source, plus une copie.
+#
+# L'ancienne regle copiait le app<AAAAMMJJHHMM>.html le plus recent sur
+# index.html. Un fichier app202609101205.html de l'app « Pilotage achats »
+# ayant ete depose ici, la regle publiait cette autre app a la place
+# d'Info Pack : la regle est retiree, index.html fait foi.
 [build]
   publish = "."
   functions = "netlify/functions"
-  command = 'pub(){ d=$(ls -1 $1[0-9]*.html 2>/dev/null | LC_ALL=C sort | tail -n 1); if [ -n "$d" ]; then echo "Publie : $d -> $2"; cp "$d" "$2"; fi; }; pub app index.html'
 
 [[redirects]]
 from = "/api/store"
