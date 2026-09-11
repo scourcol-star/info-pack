@@ -28,10 +28,10 @@ const json = (s, b) => new Response(JSON.stringify(b), { status: s, headers: H }
 
 function blank() {
   return {
-    version: 1, from: FROM,
-    stores: null, packagingIds: null, names: {}, packagingSuppliers: null,
+    version: 2, from: FROM,
+    stores: null, storeNames: null, packagingIds: null, names: {}, packagingSuppliers: null,
     headerSkip: 0, headerTotal: null, headersDone: false,
-    queue: [], seen: {}, agg: {},
+    queue: [], seen: {}, agg: {}, aggStore: {},
     updated_at: null, full_built_at: null
   };
 }
@@ -71,7 +71,7 @@ export default async (req) => {
   catch (e) { return json(503, { error: "Stockage Netlify indisponible : " + String(e?.message || e) }); }
 
   let st = reset ? blank() : ((await store.get(KEY, { type: "json" })) || blank());
-  if (st.version !== 1) st = blank();
+  if (st.version !== 2) st = blank();
 
   const out = () => json(200, {
     ok: true, from: st.from, updated_at: st.updated_at, full_built_at: st.full_built_at,
@@ -80,7 +80,9 @@ export default async (req) => {
       queue: st.queue.length, seen: Object.keys(st.seen).length,
       done: st.headersDone && st.queue.length === 0
     },
-    data: st.agg
+    data: st.agg,
+    byStore: st.aggStore || {},
+    storeNames: st.storeNames || {}
   });
 
   if (!work) return out();
@@ -92,7 +94,10 @@ export default async (req) => {
     // --- 1. Boutiques (obligatoire dans le filtre des commandes) ---
     if (!st.stores) {
       const d = await inpulse(key, "/public/v2/stores?limit=100", null, "GET");
-      st.stores = ((d.data || d) || []).map(s => s.id);
+      const rows = (d.data || d) || [];
+      st.stores = rows.map(s => s.id);
+      st.storeNames = {};
+      rows.forEach(s => { st.storeNames[s.id] = String(s.name || "").trim(); });
     }
 
     // --- 2. Referentiel : quels supplier-products sont du PACKAGING ---
@@ -129,7 +134,13 @@ export default async (req) => {
         if (!st.packagingSuppliers || !st.packagingSuppliers[sup]) return;
         // on garde la commande pour inspection : le filtre fournisseur est fait
         // sur les lignes (une commande peut melanger packaging et autre chose)
-        st.queue.push({ id: o.id, m: String(o.orderDate || o.deliveryDate || "").slice(0, 7), sup });
+        st.queue.push({
+          id: o.id,
+          m: String(o.orderDate || o.deliveryDate || "").slice(0, 7),
+          sup,
+          s: o.storeId || "",
+          d: String(o.receptionDate || o.deliveryDate || o.orderDate || "").slice(0, 10)
+        });
       });
       st.headerSkip += rows.length;
       if (rows.length < PAGE || st.headerSkip >= st.headerTotal) { st.headersDone = true; break; }
@@ -149,9 +160,20 @@ export default async (req) => {
           const m = job.m || "?";
           const a = st.agg[nm] || (st.agg[nm] = {});
           const c = a[m] || (a[m] = { n: 0, oq: 0, rq: 0 });
-          c.oq += parseFloat(L.orderedQuantity) || 0;
-          c.rq += parseFloat(L.receivedQuantity) || 0;
+          const oq = parseFloat(L.orderedQuantity) || 0;
+          const rq = parseFloat(L.receivedQuantity) || 0;
+          c.oq += oq;
+          c.rq += rq;
           if (!touched[nm]) { c.n += 1; touched[nm] = 1; }
+          // meme agregat, mais garde la boutique : qui commande quoi, ou, quand
+          if (job.s) {
+            const sa = st.aggStore[nm] || (st.aggStore[nm] = {});
+            const ss = sa[job.s] || (sa[job.s] = { n: 0, oq: 0, rq: 0, mois: {}, last: null });
+            const sc = ss.mois[m] || (ss.mois[m] = { n: 0, oq: 0, rq: 0 });
+            ss.oq += oq; ss.rq += rq; sc.oq += oq; sc.rq += rq;
+            if (!touched["@" + nm]) { ss.n += 1; sc.n += 1; touched["@" + nm] = 1; }
+            if (job.d && (!ss.last || job.d > ss.last)) ss.last = job.d;
+          }
         });
         st.seen[job.id] = 1;
       }, deadline);
