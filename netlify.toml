@@ -1,13 +1,21 @@
 # TFB — Info Pack
 # index.html est publie tel quel : c'est la source, plus une copie.
 #
-# L'ancienne regle copiait le app<AAAAMMJJHHMM>.html le plus recent sur
-# index.html. Un fichier app202609101205.html de l'app « Pilotage achats »
-# ayant ete depose ici, la regle publiait cette autre app a la place
-# d'Info Pack : la regle est retiree, index.html fait foi.
+# Historique : une ancienne regle de build copiait le app<AAAAMMJJHHMM>.html
+# le plus recent sur index.html. Le fichier app202609101205.html de l'app
+# « Pilotage achats », depose ici par erreur, etait donc publie a la place
+# d'Info Pack. Deux garde-fous sont en place :
+#   1. la commande de build est definie ICI (elle prend le pas sur le
+#      reglage « Build command » de l'interface Netlify, qui contenait
+#      encore l'ancienne regle de copie) ;
+#   2. app202609101205.html est range dans archives/, hors de portee de
+#      toute regle qui chercherait un app*.html a la racine.
+# L'app « Pilotage achats » n'est pas touchee : elle a son propre site,
+# ce fichier n'en etait qu'une copie.
 [build]
   publish = "."
   functions = "netlify/functions"
+  command = "echo 'Info Pack : index.html publie tel quel, aucune copie.'"
 
 [[redirects]]
 from = "/api/store"
