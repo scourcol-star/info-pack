@@ -274,7 +274,7 @@ async function load(){
   DB=doc;
   await loadOverrides();
   migrerRecettes();
-  buildFilters(); render(); syncInpulse(); loadOrders();
+  buildFilters(); render(); syncInpulse(); loadOrders(); loadInventories();
 }
 
 async function loadOverrides(){
@@ -749,7 +749,8 @@ function buildFilters(){
   document.getElementById('btn-find').onclick=focusRecherche;
   document.getElementById('conn-more').onclick=toggleConnDetail;
 
-  document.getElementById('btn-sync').onclick=()=>{loadOverrides().then(syncInpulse).then(()=>loadOrders(true));};
+  document.getElementById('btn-sync').onclick=()=>{
+    loadOverrides().then(syncInpulse).then(()=>loadOrders(true)).then(()=>loadInventories(true));};
   document.getElementById('btn-xls').onclick=exportXls;
   document.querySelectorAll('.pagenav [data-page]').forEach(a=>a.onclick=e=>{e.preventDefault();setPage(a.dataset.page);});
   document.getElementById('sq').oninput=e=>{SF.q=e.target.value.toLowerCase();renderStock();};
@@ -1494,13 +1495,70 @@ function trajetHTML(p){
 /* ============================================================
    Stock — inventaire saisi + réceptions Inpulse - consommation
    ============================================================ */
+/* ============================================================
+   Inventaires — lus dans Inpulse
+   Chaque debut de mois, les boutiques saisissent leur stock dans
+   Inpulse (inventaire « start »), packaging compris. L'app lit ces
+   inventaires : plus rien a ressaisir ici. Une valeur saisie a la
+   main dans la feuille Stock reste prioritaire — elle corrige.
+   ============================================================ */
+let INV=null, INVDATES={}, INVNAMES={}, INV_SID={}, INVINFO=null;
+function indexInvStores(){
+  INV_SID={};
+  Object.keys(INVNAMES||{}).forEach(sid=>{
+    const b=BQ_INP[String(INVNAMES[sid]||'').trim().toUpperCase()];
+    if(b) INV_SID[sid]=b.abr;
+  });
+}
+async function loadInventories(force){
+  try{
+    let r=await fetch('/api/inventories'+(force?'?reset=1&work=1':'?work=1'),{cache:'no-store'});
+    let d=await r.json();
+    if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
+    let guard=0;
+    while(d.progress && !d.progress.done && guard++<25){
+      INV=d.data||INV; INVNAMES=d.storeNames||INVNAMES; INVDATES=d.dates||INVDATES; indexInvStores();
+      setInvInfo('spin','Inventaires Inpulse : '+d.progress.reste+' boutique(s) restante(s)');
+      render();
+      r=await fetch('/api/inventories?work=1',{cache:'no-store'}); d=await r.json();
+      if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
+    }
+    INV=d.data||{}; INVNAMES=d.storeNames||{}; INVDATES=d.dates||{}; indexInvStores();
+    const n=Object.keys(INV).length;
+    INVINFO={maj:d.full_built_at||d.updated_at, refs:n};
+    setInvInfo('ok', n+' r\u00e9f\u00e9rence(s) packaging relev\u00e9e(s) dans les inventaires Inpulse');
+    render();
+  }catch(e){
+    INV=null; setInvInfo('err','Inventaires Inpulse indisponibles \u2014 '+e.message); render();
+  }
+}
+function setInvInfo(s,t){
+  const el=document.getElementById('invbadge'); if(!el) return;
+  el.className='savebadge '+(s==='spin'?'wait':s); el.style.display='inline-flex';
+  el.innerHTML='<i class="ti '+(s==='ok'?'ti-clipboard-check':s==='spin'?'ti-loader-2':'ti-clipboard-off')+'"></i>'+esc(t);
+}
+/* Releve Inpulse d'une reference pour une boutique, ou null. */
+function invInpulse(p,abr){
+  if(!INV) return null;
+  const e=INV[String(p.identification.intitule_inpulse||'').trim().toUpperCase()];
+  if(!e) return null;
+  let best=null;
+  Object.keys(e).forEach(sid=>{ if(INV_SID[sid]===abr){ const v=e[sid]; if(!best||(v.d||'')>(best.d||'')) best=v; } });
+  return best ? {q:num(best.q), d:best.d||'', cartons:best.cartons, cond:best.cond, src:'inpulse'} : null;
+}
+
 const DAY=86400000;
 /* memo : la liste recalcule le stock de chaque reference a chaque frappe */
 const _JE={};
 const joursEntre=(a,b)=>{ const k=a+'|'+b; let v=_JE[k];
   if(v===undefined){ v=Math.max(0,Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/DAY)); _JE[k]=v; }
   return v; };
-const invOf = (p,abr) => { const o=getPath(p,'stock.inv.'+abr)||{}; return {q:num(o.q), d:o.d||''}; };
+const invManuel = (p,abr) => getPath(p,'stock.inv.'+abr)||{};
+const invOf = (p,abr) => {
+  const o=invManuel(p,abr);
+  if(!isEmpty(o.q)) return {q:num(o.q), d:o.d||'', src:'tfb'};
+  return invInpulse(p,abr) || {q:null, d:'', src:''};
+};
 const stockFour = p => { const o=getPath(p,'stock.fournisseur')||{}; return {q:num(o.q), d:o.d||''}; };
 
 function unitesRecuesDepuis(ag,p,abr,depuis){
@@ -1603,7 +1661,7 @@ function renderStockMetrics(rows){
   const recu=rows.reduce((s,p)=>s+p._stk.recu,0);
   document.getElementById('stock-metrics').innerHTML=[
     ['Références suivies',n,'hors références arrêtées',''],
-    ['Inventaires saisis',avecInv+' / '+n,'au moins une boutique','accent'],
+    ['Références inventoriées',avecInv+' / '+n,'relevé Inpulse ou saisie','accent'],
     ['Stock estimé',fmt(totU),'unités, toutes zones',''],
     ['Reçu depuis janvier',fmt(recu),'unités, source Inpulse',''],
     ['Stock fournisseur',four+' / '+n,'entrepôt renseigné',''],
@@ -1624,7 +1682,7 @@ function invTable(p,s){
   const list=BOUTIQUES.slice().sort((a,b)=>(ordre[a.zone]-ordre[b.zone])||a.nom.localeCompare(b.nom,'fr'));
   html+='<div class="tw"><table class="invtab"><thead><tr><th>Boutique</th><th>Zone</th>'
     +'<th class="num">Reçu 2026</th><th class="num">Conso./j</th>'
-    +'<th>Inventaire (unités)</th><th>Date d’inventaire</th><th class="num">Stock estimé</th>'
+    +'<th>Inventaire (unités)</th><th>Date d’inventaire</th><th>Source</th><th class="num">Stock estimé</th>'
     +'<th>Dernière réception</th></tr></thead><tbody>';
   list.forEach(b=>{
     const st=stockBq(p,b.abr,s.ag), a=s.ag[b.abr], c=ZONES[b.zone];
@@ -1633,13 +1691,23 @@ function invTable(p,s){
       +'<td class="tm">'+esc(b.zone)+'</td>'
       +'<td class="num">'+fmt(st.recu)+'</td>'
       +'<td class="num">'+(st.conso?fmt(Math.round(st.conso*10)/10):'—')+'</td>'
-      +'<td><input class="inv ed-inv" data-id="'+p.id+'" data-p="stock.inv.'+b.abr+'.q" type="text" inputmode="decimal" '
-        +'value="'+(st.inv.q==null?'':esc(String(st.inv.q).replace('.',',')))+'" placeholder="—"></td>'
-      +'<td><input class="invd ed-inv" data-id="'+p.id+'" data-p="stock.inv.'+b.abr+'.d" type="date" value="'+esc(st.inv.d)+'"></td>'
+      +(function(){
+         const man=invManuel(p,b.abr), auto=invInpulse(p,b.abr);
+         const ph = auto ? fmt(auto.q) : '—';
+         return '<td><input class="inv ed-inv" data-id="'+p.id+'" data-p="stock.inv.'+b.abr+'.q" type="text" inputmode="decimal" '
+           +'value="'+(isEmpty(man.q)?'':esc(String(man.q).replace('.',',')))+'" placeholder="'+esc(ph)+'"></td>'
+           +'<td><input class="invd ed-inv" data-id="'+p.id+'" data-p="stock.inv.'+b.abr+'.d" type="date" value="'
+           +esc(man.d||'')+'"'+(auto&&!man.d?' title="relevé Inpulse du '+esc(dateFR(auto.d))+'"':'')+'></td>'
+           +'<td>'+(st.inv.src==='tfb'?SRC_TFB:st.inv.src==='inpulse'
+               ?(SRC_INP+(auto&&auto.cartons!=null?' <span class="tm" style="font-size:11px">'+fmt(auto.cartons)+(auto.cond?' × '+esc(auto.cond):'')+'</span>':''))
+               :'<span class="tm">—</span>')+'</td>';
+       })()
       +'<td class="num">'+(st.estime==null?'<span class="tm">—</span>':'<strong>'+fmt(st.estime)+'</strong>')+'</td>'
       +'<td class="tm">'+(a&&a.last?dateFR(a.last):'—')+'</td></tr>';
   });
   html+='</tbody></table></div><div class="bqlegend"><i class="ti ti-info-circle"></i><div>'
+    +'Les inventaires sont <strong>lus dans Inpulse</strong> (inventaire de début de mois, quantités converties en unités). '
+    +'Une valeur saisie ici corrige le relevé Inpulse pour cette boutique ; videz-la pour revenir au relevé. '
     +'Unités = '+(p.logistique.nombre_par_carton?(uniteCmd(p)+'s × '+pcb+' (PCB Inpulse)'):'conditionnement inconnu, 1 unité par '+uniteCmd(p))+'. '
     +'Consommation par jour = reçu depuis le '+dateFR(STOCK.debut_historique)+' ÷ nombre de jours. '
     +'Stock estimé = inventaire + réceptions postérieures − consommation × jours écoulés, jamais négatif. '
