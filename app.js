@@ -1510,23 +1510,122 @@ function indexInvStores(){
     if(b) INV_SID[sid]=b.abr;
   });
 }
+/* Deux chemins, dans cet ordre :
+   1. /api/inventories — la function Netlify, qui met en cache cote serveur ;
+   2. a defaut, lecture directe depuis le navigateur via /api/proxy.
+   Le second sert tant que la function n'est pas deployee ; des qu'elle
+   repond, elle reprend la main toute seule, sans rien changer ici. */
+async function inventairesFonction(force){
+  const r=await fetch('/api/inventories'+(force?'?reset=1&work=1':'?work=1'),{cache:'no-store'});
+  const t=await r.text();
+  let d; try{ d=JSON.parse(t); }catch(e){ throw new Error('function absente'); }
+  if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
+  let guard=0;
+  while(d.progress && !d.progress.done && guard++<25){
+    INV=d.data||INV; INVNAMES=d.storeNames||INVNAMES; INVDATES=d.dates||INVDATES; indexInvStores();
+    setInvInfo('spin','Inventaires Inpulse : '+d.progress.reste+' boutique(s) restante(s)');
+    render();
+    const r2=await fetch('/api/inventories?work=1',{cache:'no-store'});
+    d=await r2.json();
+    if(!r2.ok) throw new Error(d.error||('HTTP '+r2.status));
+  }
+  return d;
+}
+
+/* Lecture directe. Environ quarante appels Inpulse, donc on garde le
+   resultat le temps de la session : rouvrir la feuille Stock est immediat. */
+const INVCACHE='infopack.inv';
+function invCacheLire(){
+  try{ const o=JSON.parse(sessionStorage.getItem(INVCACHE)||'null');
+    return (o && Date.now()-o.t < 1800000) ? o.d : null; }catch(e){ return null; }
+}
+function invCacheEcrire(d){ try{ sessionStorage.setItem(INVCACHE,JSON.stringify({t:Date.now(),d})); }catch(e){} }
+
+async function inventairesViaProxy(){
+  const P=(e,m,b)=>fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({endpoint:e,method:m||'GET',body:b})})
+    .then(async r=>{ const d=await r.json().catch(()=>null);
+      if(!r.ok) throw new Error((d&&d.error)||('proxy '+r.status)); return d; });
+
+  setInvInfo('spin','Inventaires Inpulse : boutiques\u2026');
+  const sd=await P('/public/v2/stores?limit=100');
+  const stores=(sd&&(sd.data||sd))||[];
+  const names={}; stores.forEach(x=>{ if(x&&x.id) names[x.id]=x.name; });
+  const storeIds=Object.keys(names);
+
+  setInvInfo('spin','Inventaires Inpulse : r\u00e9f\u00e9rences\u2026');
+  const packIds={};
+  for(let p=0;p<30;p++){
+    const d=await P('/public/v2/supplier-products?limit=100&skip='+(p*100));
+    const arr=(d&&(d.data||d))||[];
+    arr.forEach(x=>{ if(x&&x.category==='PACKAGING'&&x.id) packIds[x.id]=String(x.name||'').trim(); });
+    if(arr.length<100) break;
+  }
+
+  setInvInfo('spin','Inventaires Inpulse : relev\u00e9s\u2026');
+  const corps={startDate:STOCK.debut_historique+'T00:00:00.000Z', endDate:new Date().toISOString(), storeIds};
+  let tous=[];
+  for(let skip=0; skip<5000; skip+=100){
+    const d=await P('/public/v2/inventories?skip='+skip+'&limit=100','POST',corps);
+    const arr=(d&&d.data)||[]; tous=tous.concat(arr);
+    if(arr.length<100) break;
+  }
+  const vus={}; tous=tous.filter(x=>vus[x.id]?false:(vus[x.id]=1));
+  /* stockConvention « start » = l'inventaire de debut de mois, celui qui
+     porte le packaging. On garde le dernier de chaque boutique. */
+  const dernier={};
+  tous.filter(x=>x.stockConvention==='start').forEach(x=>{
+    const k=x.storeId;
+    if(!dernier[k]||x.inventoryDate>dernier[k].inventoryDate) dernier[k]=x;
+  });
+  const liste=Object.values(dernier);
+
+  const inv={}, dates={};
+  let faits=0;
+  async function detail(x){
+    let ls=[], skip=0;
+    for(let k=0;k<20;k++){
+      /* ce point d'entree n'accepte pas de parametre limit : seul skip compte */
+      const d=await P('/public/v2/inventories/'+x.id+(skip?'?skip='+skip:''));
+      const arr=(d&&d.data)||[]; ls=ls.concat(arr);
+      const tot=(d&&d.total)||0; skip+=100;
+      if(ls.length>=tot||arr.length<100) break;
+    }
+    const jour=String(x.inventoryDate||'').slice(0,10);
+    ls.forEach(l=>{
+      const nom=packIds[l.supplierProductId]; if(!nom) return;
+      const cond=l.supplierProductPackaging||{};
+      const q=Number(l.quantity); if(!isFinite(q)) return;
+      const cle=nom.toUpperCase();
+      (inv[cle]||(inv[cle]={}))[x.storeId]={
+        q:q*(Number(cond.quantity)||1), cartons:q, cond:cond.name||'', d:jour };
+    });
+    dates[x.storeId]=jour;
+    setInvInfo('spin','Inventaires Inpulse : '+(++faits)+' / '+liste.length+' boutiques');
+  }
+  /* quatre de front : une vingtaine de boutiques, sans saturer le proxy */
+  let i=0;
+  await Promise.all(Array.from({length:Math.min(4,liste.length)}, async ()=>{
+    while(i<liste.length){ const k=i++; try{ await detail(liste[k]); }catch(e){} }
+  }));
+  return {data:inv, dates, storeNames:names, via:'proxy'};
+}
+
 async function loadInventories(force){
   try{
-    let r=await fetch('/api/inventories'+(force?'?reset=1&work=1':'?work=1'),{cache:'no-store'});
-    let d=await r.json();
-    if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
-    let guard=0;
-    while(d.progress && !d.progress.done && guard++<25){
-      INV=d.data||INV; INVNAMES=d.storeNames||INVNAMES; INVDATES=d.dates||INVDATES; indexInvStores();
-      setInvInfo('spin','Inventaires Inpulse : '+d.progress.reste+' boutique(s) restante(s)');
-      render();
-      r=await fetch('/api/inventories?work=1',{cache:'no-store'}); d=await r.json();
-      if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
-    }
+    const d=await inventairesFonction(force);
     INV=d.data||{}; INVNAMES=d.storeNames||{}; INVDATES=d.dates||{}; indexInvStores();
-    const n=Object.keys(INV).length;
-    INVINFO={maj:d.full_built_at||d.updated_at, refs:n};
-    setInvInfo('ok', n+' r\u00e9f\u00e9rence(s) packaging relev\u00e9e(s) dans les inventaires Inpulse');
+    INVINFO={maj:d.full_built_at||d.updated_at, refs:Object.keys(INV).length};
+    setInvInfo('ok', Object.keys(INV).length+' r\u00e9f\u00e9rence(s) relev\u00e9e(s) dans les inventaires Inpulse');
+    render(); return;
+  }catch(e){ /* la function n'est pas la : on lit nous-memes */ }
+  try{
+    const cache=force?null:invCacheLire();
+    const d=cache||await inventairesViaProxy();
+    if(!cache) invCacheEcrire(d);
+    INV=d.data||{}; INVNAMES=d.storeNames||{}; INVDATES=d.dates||{}; indexInvStores();
+    INVINFO={maj:null, refs:Object.keys(INV).length};
+    setInvInfo('ok', Object.keys(INV).length+' r\u00e9f\u00e9rence(s) relev\u00e9e(s) \u2014 lecture directe Inpulse');
     render();
   }catch(e){
     INV=null; setInvInfo('err','Inventaires Inpulse indisponibles \u2014 '+e.message); render();
