@@ -28,7 +28,8 @@ const SF={q:'',zone:''};             // filtres de la feuille Stock
 let sSortK='total', sSortD=-1;
 const SEXP=new Set();                // lignes depliees de la feuille Stock
 const FREE={};   // champs "Autre…" ouverts en saisie libre
-const F={q:'',fam:'',four:'',marq:'',comp:'',masquerHS:true};
+const F={q:'',fam:'',four:'',marq:'',comp:'',flag:'',masquerHS:true};
+/* flag : point de vigilance actif — cmd, nocmd, couvlow, noinv, nogab, px0, pxu, hs */
 let nHS=0;   // références hors service masquées par le filtre
 
 const eur  = n => (n==null||isNaN(n))?'—':n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
@@ -119,10 +120,49 @@ function setPath(o,p,v){
    la fiche, l'export, la complétude et l'édition en découlent.
    src : 'inp' = piloté par Inpulse (lecture seule) · 'tfb' = saisi ici
    ============================================================ */
+/* ============================================================
+   Intitulé complet — recomposé depuis Inpulse, rectifiable
+   La règle de nommage vit dans config.js, jamais ici.
+   ============================================================ */
+/* « GOBELET 25CL TFB 12/2025 » → « 12/2025 ». Rien de tel → ''.
+   L'année doit commencer par 20 : les cotes du genre 210x80/80x610
+   ne sont donc jamais prises pour une version. */
+const versionDesign = r => {
+  const m=/(?:^|[\s(\-])(\d{1,2})\s*\/\s*(20\d{2})(?![\d])/
+    .exec((r&&r.identification&&r.identification.intitule_inpulse)||'');
+  return m ? String(m[1]).padStart(2,'0')+'/'+m[2] : '';
+};
+function intituleBase(r){
+  let n=String((r&&r.identification&&r.identification.intitule_inpulse)||'').trim();
+  INTITULE.retirer.forEach(re=>{ n=n.replace(re,' '); });
+  return n.replace(/\s{2,}/g,' ').trim();
+}
+function intituleAuto(r){
+  const base=intituleBase(r); if(!base) return '';
+  const mention=INTITULE.mentions[r.app&&r.app.marquage];
+  if(!mention) return base+' '+INTITULE.mention_neutre;
+  return base+' '+mention+' '+(versionDesign(r)||INTITULE.version_absente);
+}
+const intituleMode  = r => calcMode(r,'identification.intitule_complet','identification.intitule_mode');
+const intituleValue = r => intituleMode(r)==='manuel'
+  ? (getPath(r,'identification.intitule_complet')||'') : intituleAuto(r);
+
+/* Unité du tarif unitaire, et conditionnement d'achat en clair. */
+const uniteTarif = r => (r&&r.logistique&&r.logistique.unite_tarif) || UNITE_TARIF_DEFAUT;
+function conditionnementHA(r){
+  const u=String((r&&r.inpulse&&r.inpulse.unite_achat)||'').trim();
+  const n=num(r&&r.logistique&&r.logistique.nombre_par_carton);
+  const par=n?(fmt(n)+' '+uniteTarif(r)+(n>1?'s':'')):'';
+  if(u&&par) return u+' — '+par;
+  return u||par;
+}
+
 const R = ref => (DB && DB.referentiels[ref]) || [];
 const FIELDS = [
   // ---------- 1. Informations générales ----------
   {tab:'general', grp:'Identification', path:'identification.intitule_inpulse', lb:'Intitulé Inpulse', src:'inp', wide:1},
+  {tab:'general', grp:'Identification', path:'identification.intitule_complet',  lb:'Intitulé complet',
+    src:'tfb', type:'calctext', wide:1, val:r=>intituleValue(r)},
   {tab:'general', grp:'Identification', path:'identification.sku_fournisseur',  lb:'SKU fournisseur',  src:'inp'},
   {tab:'general', grp:'Identification', path:'inpulse.fournisseur',             lb:'Fournisseur',      src:'inp'},
   {tab:'general', grp:'Identification', path:'app.famille',   lb:'Famille',  src:'tfb', type:'select', opt:()=>R('famille')},
@@ -132,7 +172,12 @@ const FIELDS = [
 
   {tab:'general', grp:'Achat', path:'inpulse.prix_ht',   lb:'Prix HT',        src:'inp', fmt:eur},
   {tab:'general', grp:'Achat', path:'inpulse.unite_achat', lb:'Unité d’achat', src:'inp'},
-  {tab:'general', grp:'Achat', path:'logistique.prix_unitaire_ht', lb:'Prix unitaire HT', src:'inp', fmt:eur4},
+  {tab:'general', grp:'Achat', path:'logistique.prix_unitaire_ht', lb:'Tarif unitaire', src:'inp', fmt:eur4,
+    u:r=>'par '+uniteTarif(r)},
+  {tab:'general', grp:'Achat', path:'logistique.unite_tarif', lb:'Unité du tarif', src:'tfb',
+    type:'select', opt:()=>UNITES_TARIF, free:1},
+  {tab:'general', grp:'Achat', path:'logistique.conditionnement_ha', lb:'Conditionnement HA', src:'inp',
+    wide:1, val:r=>conditionnementHA(r)},
   {tab:'general', grp:'Achat', path:'inpulse.dispo',     lb:'Disponibilité boutiques', src:'inp', wide:1},
 
   {tab:'general', grp:'Dimensions', path:'dimensions.longueur_cm',           lb:'Longueur',              src:'tfb', type:'dec', u:'cm'},
@@ -150,6 +195,7 @@ const FIELDS = [
   {tab:'general', grp:'Matière', path:'matiere.epaisseur_um',        lb:'Épaisseur',          src:'tfb', type:'num', u:'µm'},
   {tab:'general', grp:'Matière', path:'matiere.poids_unitaire_g',    lb:'Poids unitaire',     src:'tfb', type:'num', u:'g', step:'0.1'},
   {tab:'general', grp:'Matière', path:'matiere.contact_alimentaire', lb:'Contact alimentaire',src:'tfb', type:'bool'},
+  {tab:'general', grp:'Matière', path:'matiere.personnalise_tfb',     lb:'Personnalisé TFB',   src:'tfb', type:'bool'},
 
   // ---------- 2. Design & gabarit ----------
   {tab:'design', grp:'Fichiers', path:'design.design_valide_tfb',   lb:'Design validé (TFB)',   src:'tfb', type:'link', wide:1},
@@ -480,8 +526,36 @@ async function scanViaProxy(){
             packaging:{name:String(p.name||'').trim(), quantity:p.quantity==null?null:Number(p.quantity), unit:p.unit||''}};
   });
 }
-function setConn(s,t,d){ document.getElementById('dot').className='dot '+s;
-  document.getElementById('conn-t').innerHTML=t; document.getElementById('conn-d').textContent=d||''; }
+/* Le detail de synchronisation peut faire plusieurs centaines de caracteres
+   (liste des references ajoutees). Court : affiche a la suite du message.
+   Long : range derriere un bouton « Detail », la page reste lisible. */
+function setConn(s,t,d){
+  document.getElementById('dot').className='dot '+s;
+  const box=document.getElementById('connbox'), det=document.getElementById('conn-d'),
+        more=document.getElementById('conn-more'), txt=String(d==null?'':d).trim();
+  const court = txt.length<=110;
+  document.getElementById('conn-t').innerHTML = t + (court&&txt?' <span class="sm">'+esc(txt)+'</span>':'');
+  if(!det||!more) return;
+  if(court){
+    det.textContent=''; det.classList.remove('on'); more.classList.remove('on');
+    more.style.display='none'; if(box) box.classList.remove('open');
+    return;
+  }
+  det.textContent=txt;
+  more.style.display='inline-flex';
+  const ouvert=det.classList.contains('on');
+  more.innerHTML=(ouvert?'Masquer le d\u00e9tail':'D\u00e9tail')+'<i class="ti ti-chevron-down"></i>';
+  more.classList.toggle('on',ouvert);
+  if(box) box.classList.toggle('open',ouvert);
+}
+function toggleConnDetail(){
+  const box=document.getElementById('connbox'), det=document.getElementById('conn-d'),
+        more=document.getElementById('conn-more');
+  const on=!det.classList.contains('on');
+  det.classList.toggle('on',on); more.classList.toggle('on',on);
+  if(box) box.classList.toggle('open',on);
+  more.innerHTML=(on?'Masquer le d\u00e9tail':'D\u00e9tail')+'<i class="ti ti-chevron-down"></i>';
+}
 function setSave(s,t){ const el=document.getElementById('save'); if(!el) return;
   el.className='savebadge '+s; el.innerHTML='<i class="ti '+(s==='ok'?'ti-cloud-check':s==='wait'?'ti-cloud-upload':'ti-cloud-off')+'"></i>'+esc(t); }
 
@@ -535,6 +609,61 @@ async function flush(){
 window.addEventListener('beforeunload', e=>{ if(QUEUE.length){ e.preventDefault(); e.returnValue=''; } });
 
 /* ============================================================
+   Preferences d'affichage — colonnes, densite, filtres lateraux.
+   Gardees dans le navigateur uniquement : aucune donnee metier ici.
+   ============================================================ */
+const COLS=[
+  {k:'intitule',lb:'Intitulé complet'},
+  {k:'famille', lb:'Famille'},
+  {k:'marquage',lb:'Marquage'},
+  {k:'four',    lb:'Fournisseur'},
+  {k:'prix',    lb:'Prix HT',        num:1},
+  {k:'cmd',     lb:'Commandes',      num:1},
+  {k:'recu',    lb:'Cartons re\u00e7us',  num:1},
+  {k:'stock',   lb:'Stock estim\u00e9',   num:1},
+  {k:'couv',    lb:'Couverture'},
+  {k:'dispo',   lb:'Dispo.'},
+  {k:'comp',    lb:'Fiche remplie'}
+];
+const COLS_DEF={intitule:0,famille:1,marquage:0,four:1,prix:1,cmd:1,recu:1,stock:0,couv:1,dispo:1,comp:1};
+const PREF={cols:Object.assign({},COLS_DEF), dense:false, side:true};
+(function(){ try{
+  const o=JSON.parse(localStorage.getItem('infopack.ui')||'{}');
+  if(o&&o.cols) Object.keys(COLS_DEF).forEach(k=>{ if(k in o.cols) PREF.cols[k]=!!o.cols[k]; });
+  if(o&&typeof o.dense==='boolean') PREF.dense=o.dense;
+  if(o&&typeof o.side==='boolean')  PREF.side=o.side;
+}catch(e){} })();
+function savePref(){ try{ localStorage.setItem('infopack.ui',JSON.stringify(PREF)); }catch(e){} }
+function applyPref(){
+  document.body.classList.toggle('dense',PREF.dense);
+  const d=document.getElementById('btn-dense'); if(d) d.classList.toggle('btn-primary',PREF.dense);
+  const l=document.getElementById('layout');    if(l) l.classList.toggle('nosid',!PREF.side);
+  const b=document.getElementById('btn-side');
+  if(b) b.innerHTML='<i class="ti ti-layout-sidebar-left-'+(PREF.side?'collapse':'expand')+'"></i>';
+}
+const colsVisibles = () => COLS.filter(c=>PREF.cols[c.k]);
+
+function buildHead(){
+  const th=document.getElementById('thead'); if(!th) return;
+  if(sortK!=='nom' && !colsVisibles().some(c=>c.k===sortK)){ sortK='nom'; sortD=1; }
+  th.innerHTML='<tr><th data-k="nom">Packaging<span class="si2"></span></th>'
+    + colsVisibles().map(c=>'<th data-k="'+c.k+'"'+(c.num?' class="num"':'')+'>'+c.lb+'<span class="si2"></span></th>').join('')
+    + '</tr>';
+  th.querySelectorAll('th[data-k]').forEach(el=>el.onclick=()=>{
+    if(sortK===el.dataset.k) sortD=-sortD; else { sortK=el.dataset.k; sortD=1; }
+    render();
+  });
+}
+function buildColsMenu(){
+  const m=document.getElementById('menu-cols'); if(!m) return;
+  m.innerHTML='<div class="mh">Colonnes affich\u00e9es</div>'+COLS.map(c=>
+    '<label><input type="checkbox" data-col="'+c.k+'"'+(PREF.cols[c.k]?' checked':'')+'>'+c.lb+'</label>').join('');
+  m.querySelectorAll('[data-col]').forEach(cb=>cb.onchange=()=>{
+    PREF.cols[cb.dataset.col]=cb.checked; savePref(); buildHead(); render();
+  });
+}
+
+/* ============================================================
    Filtres, liste, grille
    ============================================================ */
 /* Reconstruit la liste des fournisseurs : appelable apres l'ajout de
@@ -547,12 +676,48 @@ function refreshFournisseurs(){
       .map(f=>'<option'+(f===sel?' selected':'')+'>'+esc(f)+'</option>').join('');
 }
 
-function buildFilters(){
+function buildFamButtons(){
   const fam=document.getElementById('f-fam');
-  fam.innerHTML='<button class="fgb active" data-fam="">Toutes familles</button>'+
-    R('famille').map(f=>'<button class="fgb" data-fam="'+esc(f)+'">'+esc(f)+'</button>').join('');
+  const item=(v,lb)=>'<button class="fgb'+(F.fam===v?' active':'')+'" data-fam="'+esc(v)+'">'
+    +'<span>'+esc(lb)+'</span><span class="n" data-n="'+esc(v)+'"></span></button>';
+  fam.innerHTML=item('','Toutes les familles')+R('famille').map(f=>item(f,f)).join('');
+}
+/* Compteurs des familles : chaque famille affiche ce qu'elle donnerait
+   avec les autres filtres en place, le filtre famille mis de cote. */
+function renderFamCounts(){
+  const c=famCounts();
+  document.querySelectorAll('#f-fam .n').forEach(el=>{ el.textContent=c[el.dataset.n]||0; });
+}
+function syncFiltres(){
+  document.querySelectorAll('#f-fam [data-fam]').forEach(b=>b.classList.toggle('active',b.dataset.fam===F.fam));
+  const hs=document.getElementById('f-hs'); if(hs) hs.classList.toggle('active',F.masquerHS);
+  const c=document.getElementById('f-comp'); if(c) c.value=F.comp;
+  const fo=document.getElementById('f-four'); if(fo) fo.value=F.four;
+  const mq=document.getElementById('f-marq'); if(mq) mq.value=F.marq;
+  const q=document.getElementById('q'); if(q&&q.value!==F.q) q.value=F.q;
+}
+/* Un point de vigilance = un filtre. Recliquer dessus le releve. */
+function setFlag(k){
+  if(F.flag===k){ F.flag=''; }
+  else { F.flag=k; if(k==='hs') F.masquerHS=false; }
+  syncFiltres(); render();
+}
+function resetFiltres(){
+  F.q=''; F.fam=''; F.four=''; F.marq=''; F.comp=''; F.flag=''; F.masquerHS=true;
+  syncFiltres(); render();
+}
+function focusRecherche(){
+  const el=document.getElementById(PAGE==='stock'?'sq':'q');
+  if(!el) return;
+  if(PAGE==='pack' && !PREF.side){ PREF.side=true; savePref(); applyPref(); }
+  el.focus(); el.select();
+}
+
+function buildFilters(){
+  buildFamButtons();
+  const fam=document.getElementById('f-fam');
   fam.onclick=e=>{const b=e.target.closest('[data-fam]');if(!b)return;
-    F.fam=b.dataset.fam;[...fam.children].forEach(c=>c.classList.toggle('active',c===b));render();};
+    F.fam=b.dataset.fam;syncFiltres();render();};
   const four=document.getElementById('f-four');
   refreshFournisseurs();
   document.getElementById('q').oninput=e=>{F.q=e.target.value.toLowerCase();render();};
@@ -561,11 +726,29 @@ function buildFilters(){
   document.getElementById('f-comp').onchange=e=>{F.comp=e.target.value;render();};
   const hs=document.getElementById('f-hs');
   hs.classList.toggle('active',F.masquerHS);
-  hs.onclick=()=>{F.masquerHS=!F.masquerHS;hs.classList.toggle('active',F.masquerHS);render();};
+  hs.onclick=()=>{F.masquerHS=!F.masquerHS;if(F.masquerHS&&F.flag==='hs')F.flag='';syncFiltres();render();};
+  document.getElementById('f-reset').onclick=resetFiltres;
+
+  /* tuiles et pastilles : un seul ecouteur, le contenu est re-rendu a chaque fois */
+  document.getElementById('metrics').onclick=e=>{
+    const b=e.target.closest('[data-flag]'); if(b) setFlag(b.dataset.flag); };
+  document.getElementById('flags').onclick=e=>{
+    const b=e.target.closest('[data-flag]'); if(b){ setFlag(b.dataset.flag); return; }
+    const c=e.target.closest('[data-comp]'); if(c){
+      F.comp = F.comp===c.dataset.comp ? '' : c.dataset.comp; syncFiltres(); render(); } };
+
   document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{view=b.dataset.view;
     document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));render();});
-  document.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{
-    if(sortK===th.dataset.k)sortD=-sortD;else{sortK=th.dataset.k;sortD=1;}render();});
+
+  buildHead(); buildColsMenu(); applyPref();
+  const bc=document.getElementById('btn-cols'), mc=document.getElementById('menu-cols');
+  bc.onclick=e=>{e.stopPropagation();mc.classList.toggle('on');};
+  document.addEventListener('click',e=>{ if(!mc.contains(e.target)&&e.target!==bc) mc.classList.remove('on'); });
+  document.getElementById('btn-dense').onclick=()=>{PREF.dense=!PREF.dense;savePref();applyPref();};
+  document.getElementById('btn-side').onclick=()=>{PREF.side=!PREF.side;savePref();applyPref();};
+  document.getElementById('btn-find').onclick=focusRecherche;
+  document.getElementById('conn-more').onclick=toggleConnDetail;
+
   document.getElementById('btn-sync').onclick=()=>{loadOverrides().then(syncInpulse).then(()=>loadOrders(true));};
   document.getElementById('btn-xls').onclick=exportXls;
   document.querySelectorAll('.pagenav [data-page]').forEach(a=>a.onclick=e=>{e.preventDefault();setPage(a.dataset.page);});
@@ -581,68 +764,157 @@ function buildFilters(){
   document.getElementById('d-close').onclick=closeDrawer;
   document.getElementById('ov').onclick=closeDrawer;
   document.addEventListener('keydown',e=>{
-    if(e.key==='Escape' && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName||''))) closeDrawer();});
+    const champ=/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName||''));
+    if((e.ctrlKey||e.metaKey) && (e.key==='k'||e.key==='K')){ e.preventDefault(); focusRecherche(); return; }
+    if(e.key==='Escape'){
+      if(champ && (e.target.id==='q'||e.target.id==='sq')){ e.target.value=''; e.target.blur();
+        if(e.target.id==='q'){F.q='';render();} else {SF.q='';renderStock();} return; }
+      if(!champ) closeDrawer();
+    }
+  });
 }
+
+/* Un seul predicat pour la liste et pour les compteurs de familles.
+   skip permet d'ignorer un critere (la famille, pour son propre compteur). */
+function passe(p,skip){
+  if(skip!=='fam' && F.fam && p.app.famille!==F.fam) return false;
+  if(F.four&&p.inpulse.fournisseur!==F.four)return false;
+  if(F.marq&&p.app.marquage!==F.marq)return false;
+  if(F.comp==='lt50'&&p._comp>=50)return false;
+  if(F.comp==='lt80'&&p._comp>=80)return false;
+  if(F.comp==='eq100'&&p._comp<100)return false;
+  if(F.comp==='saisies'&&!OVR.records[p.id])return false;
+  if(F.flag){
+    const o=p._ord, st=p._stk;
+    if(F.flag==='cmd'     && !(o&&!o.vide)) return false;
+    if(F.flag==='nocmd'   && !(o&&o.vide))  return false;
+    if(F.flag==='couvlow' && !(st&&st.couv!=null&&st.couv<STOCK.alerte_jours)) return false;
+    if(F.flag==='noinv'   && !(st&&st.nInv===0)) return false;
+    if(F.flag==='nogab'   && p.design.gabarit_fournisseur) return false;
+    if(F.flag==='px0'     && p.inpulse.prix_ht) return false;
+    if(F.flag==='pxu'     && !(p.logistique.nombre_par_carton>1&&p.inpulse.prix_ht>0&&p.inpulse.prix_ht<1)) return false;
+    if(F.flag==='hs'      && !horsService(p)) return false;
+  }
+  if(F.q){const h=(p.nom+' '+intituleValue(p)+' '+p.app.famille+' '+p.inpulse.fournisseur+' '+
+    p.app.marquage+' '+(p.identification.sku_fournisseur||'')+' '+(p.usage_tfb.usage||'')).toLowerCase();
+    if(h.indexOf(F.q)<0)return false;}
+  return true;
+}
+const cacherHS = p => horsService(p) && F.masquerHS && F.flag!=='hs';
 
 function filtered(){
   nHS=0;
   return DB.packagings.filter(p=>{
-    if(F.fam&&p.app.famille!==F.fam)return false;
-    if(F.four&&p.inpulse.fournisseur!==F.four)return false;
-    if(F.marq&&p.app.marquage!==F.marq)return false;
-    if(F.comp==='lt50'&&p._comp>=50)return false;
-    if(F.comp==='lt80'&&p._comp>=80)return false;
-    if(F.comp==='eq100'&&p._comp<100)return false;
-    if(F.comp==='saisies'&&!OVR.records[p.id])return false;
-    if(F.q){const h=(p.nom+' '+p.app.famille+' '+p.inpulse.fournisseur+' '+p.app.marquage+' '+
-      (p.usage_tfb.usage||'')).toLowerCase();
-      if(h.indexOf(F.q)<0)return false;}
-    if(horsService(p)){ nHS++; if(F.masquerHS) return false; }
+    if(!passe(p)) return false;
+    if(horsService(p)){ nHS++; if(F.masquerHS && F.flag!=='hs') return false; }
     return true;
   });
 }
+function famCounts(){
+  const c={'':0};
+  DB.packagings.forEach(p=>{
+    if(!passe(p,'fam')) return;
+    if(cacherHS(p)) return;
+    c[p.app.famille]=(c[p.app.famille]||0)+1; c['']++;
+  });
+  return c;
+}
 
 function render(){
-  DB.packagings.forEach(p=>p._comp=comp(p));
+  DB.packagings.forEach(p=>{ p._comp=comp(p); p._ord=ordFor(p); p._stk=stockRef(p); });
   ROWS=filtered();
   const val=r=>sortK==='prix'?(r.inpulse.prix_ht||0):sortK==='comp'?r._comp
     :sortK==='dispo'?parseInt((r.inpulse.dispo||'0/0').split('/')[0],10)
+    :sortK==='intitule'?intituleValue(r)
+    :sortK==='cmd'?(r._ord?r._ord.tot.n:-1)
+    :sortK==='recu'?(r._ord?r._ord.tot.rq:-1)
+    :sortK==='stock'?(r._stk.total==null?-1:r._stk.total)
+    :sortK==='couv'?(r._stk.couv==null?-1:r._stk.couv)
     :sortK==='famille'?r.app.famille:sortK==='marquage'?r.app.marquage
     :sortK==='four'?r.inpulse.fournisseur:String(r[sortK]||'');
   ROWS.sort((a,b)=>{const x=val(a),y=val(b);
     return (typeof x==='number'?x-y:String(x).localeCompare(String(y),'fr'))*sortD;});
-  document.querySelectorAll('th[data-k]').forEach(th=>{th.className=th.dataset.k===sortK?(sortD>0?'asc':'desc'):'';});
-  renderMetrics(); renderList(); renderGrid();
+  document.querySelectorAll('#thead th[data-k]').forEach(th=>{
+    const n=th.classList.contains('num')?'num ':'';
+    th.className=n+(th.dataset.k===sortK?(sortD>0?'asc':'desc'):'');});
+  renderMetrics(); renderFamCounts(); renderList(); renderGrid();
   document.getElementById('view-list').style.display=view==='list'?'':'none';
   document.getElementById('view-grid').style.display=view==='grid'?'grid':'none';
-  document.getElementById('count').textContent=ROWS.length+' / '+DB.packagings.length+' références';
+  document.getElementById('count').textContent=ROWS.length+' / '+DB.packagings.length+' r\u00e9f\u00e9rences';
   if(PAGE==='stock') renderStock();
   const hsc=document.getElementById('f-hs-n');
   if(hsc){ hsc.textContent=nHS?' ('+nHS+')':''; document.getElementById('f-hs').title=
-    nHS?(nHS+' référence(s) dont la date de fin de service est passée'):'aucune référence hors service'; }
+    nHS?(nHS+' r\u00e9f\u00e9rence(s) dont la date de fin de service est pass\u00e9e'):'aucune r\u00e9f\u00e9rence hors service'; }
 }
 
+/* ============================================================
+   Indicateurs — deux niveaux.
+   1. quatre tuiles : ce qui sort de l'entrepot et ce qu'il reste.
+   2. pastilles de vigilance : chacune filtre la liste d'un clic.
+   ============================================================ */
 function renderMetrics(){
-  const a=DB.packagings,n=a.length;
-  const tfb=a.filter(p=>p.app.marquage==='TFB').length;
-  const moy=Math.round(a.reduce((s,p)=>s+p._comp,0)/n);
+  const a=DB.packagings, n=a.length;
+  const actifs=a.filter(p=>!horsService(p)), nA=actifs.length;
+
+  let nCmd=0, nRecu=0, tourne=0, jamais=0;
+  const ordPret=!!ORD;
+  actifs.forEach(p=>{ const o=p._ord; if(!o) return;
+    if(o.vide) jamais++; else { tourne++; nCmd+=o.tot.n; nRecu+=o.tot.rq; } });
+
+  let stockTot=0, avecInv=0, alerte=0, sansInv=0;
+  actifs.forEach(p=>{ const st=p._stk;
+    if(st.nInv){ avecInv++; stockTot+=st.total||0; } else sansInv++;
+    if(st.couv!=null&&st.couv<STOCK.alerte_jours) alerte++; });
+
+  const tiles=[
+    {cls:'gold', l:'Volume re\u00e7u 2026', v:ordPret?fmt(nRecu):'\u2026', u:'cartons',
+     s:ordPret?(nCmd.toLocaleString('fr-FR')+' commandes d\u00e9pouill\u00e9es depuis janvier')
+              :'historique Inpulse en cours de lecture'},
+    {k:'cmd', l:'R\u00e9f\u00e9rences qui tournent', v:ordPret?(tourne+' / '+nA):'\u2026',
+     s:ordPret?(jamais+' r\u00e9f. jamais command\u00e9e(s) \u2014 cliquer pour ne voir que celles qui tournent')
+              :'en attente de l\u2019historique'},
+    {k:'couvlow', cls:alerte?'alert':'', l:'Couverture sous '+STOCK.alerte_jours+' j', v:alerte,
+     s:alerte?'r\u00e9f\u00e9rences \u00e0 r\u00e9approvisionner \u2014 cliquer pour les isoler'
+             :'aucune alerte sur les r\u00e9f\u00e9rences inventori\u00e9es'},
+    {k:'noinv', l:'Stock estim\u00e9', v:fmt(stockTot), u:'unit\u00e9s',
+     s:avecInv+' / '+nA+' r\u00e9f. inventori\u00e9es \u2014 cliquer pour voir les '+sansInv+' sans inventaire'}
+  ];
+  document.getElementById('metrics').innerHTML=tiles.map(t=>{
+    const tag=t.k?'button':'div';
+    return '<'+tag+' class="hm '+(t.cls||'')+(t.k?' clic':'')+(t.k&&F.flag===t.k?' on':'')+'"'
+      +(t.k?' type="button" data-flag="'+t.k+'"':'')+'>'
+      +'<div class="hl">'+t.l+'</div>'
+      +'<div class="hv">'+t.v+(t.u?'<span class="un">'+t.u+'</span>':'')+'</div>'
+      +'<div class="hs">'+t.s+'</div></'+tag+'>';
+  }).join('');
+
+  const moy=Math.round(a.reduce((x,p)=>x+p._comp,0)/n);
   const den=a.map(p=>fieldsTFB(p).length);
   const dmin=Math.min.apply(null,den), dmax=Math.max.apply(null,den);
-  const denLb='moyenne sur '+(dmin===dmax?dmin:dmin+' à '+dmax)+' champs';
-  const px0=a.filter(p=>!p.inpulse.prix_ht).length;
-  const pxu=a.filter(p=>p.logistique.nombre_par_carton>1&&p.inpulse.prix_ht>0&&p.inpulse.prix_ht<1).length;
-  const gab=a.filter(p=>p.design.gabarit_fournisseur).length;
-  const sai=Object.keys(OVR.records).length;
-  document.getElementById('metrics').innerHTML=[
-    ['Références',n,R('famille').length+' familles',''],
-    ['Marquées TFB',tfb,Math.round(100*tfb/n)+' % du parc',''],
-    ['Fiches remplies',moy+' %',denLb,'accent'],
-    ['Fiches saisies',sai+' / '+n,'au moins un champ renseigné',''],
-    ['Gabarits joints',gab+' / '+n,'fichier fournisseur',''],
-    ['Prix à 0,00 €',px0,'dans Inpulse',''],
-    ['Prix incohérents',pxu,'prix unitaire saisi sur un carton','']
-  ].map(([l,v,s,c])=>'<div class="metric '+c+'"><div class="ml">'+l+'</div><div class="mv">'+v+
-     '</div><div class="msub">'+s+'</div></div>').join('');
+  const chips=[
+    {t:'info', l:'Fiches remplies', v:moy+' %',
+     ti:'moyenne sur '+(dmin===dmax?dmin:dmin+' \u00e0 '+dmax)+' champs TFB'},
+    {t:'info', l:'Fiches saisies', v:Object.keys(OVR.records).length+' / '+n,
+     ti:'au moins un champ renseign\u00e9 dans l\u2019app'},
+    {t:'comp', key:'lt50', l:'\u00c0 compl\u00e9ter', v:a.filter(p=>p._comp<50).length,
+     ti:'fiches remplies \u00e0 moins de 50 %'},
+    {t:'flag', key:'nogab', l:'Sans gabarit', v:a.filter(p=>!p.design.gabarit_fournisseur).length,
+     ti:'aucun fichier fournisseur joint'},
+    {t:'flag', key:'px0', ko:1, l:'Prix \u00e0 0,00 \u20ac', v:a.filter(p=>!p.inpulse.prix_ht).length,
+     ti:'prix absent dans Inpulse'},
+    {t:'flag', key:'pxu', ko:1, l:'Prix incoh\u00e9rents',
+     v:a.filter(p=>p.logistique.nombre_par_carton>1&&p.inpulse.prix_ht>0&&p.inpulse.prix_ht<1).length,
+     ti:'prix unitaire saisi sur un carton'},
+    {t:'flag', key:'nocmd', l:'Jamais command\u00e9es', v:jamais, ti:'aucune commande depuis janvier 2026'},
+    {t:'flag', key:'hs', ko:1, l:'Hors service', v:a.filter(horsService).length,
+     ti:'date de fin de service pass\u00e9e \u2014 cliquer pour ne voir que celles-ci'}
+  ];
+  document.getElementById('flags').innerHTML='<span class="flagl">Points de vigilance</span>'+chips.map(c=>{
+    if(c.t==='info') return '<span class="flag info" title="'+esc(c.ti)+'">'+c.l+' <b>'+c.v+'</b></span>';
+    const on = c.t==='flag' ? F.flag===c.key : F.comp===c.key;
+    return '<button type="button" class="flag'+(c.ko?' ko':'')+(on?' on':'')+'" title="'+esc(c.ti)+'" '
+      +(c.t==='flag'?'data-flag="':'data-comp="')+c.key+'">'+c.l+' <b>'+c.v+'</b></button>';
+  }).join('');
 }
 
 const pillMarq=m=>'<span class="pill '+(m==='TFB'?'p-tfb':m==='Co-branding'?'p-cob':'p-neutre')+'">'+esc(m)+'</span>';
@@ -651,30 +923,42 @@ const bar=v=>'<div class="bw"><div class="bb"><div class="bf" style="width:'+v+'
 
 function renderList(){
   const tb=document.getElementById('tb');
-  if(!ROWS.length){tb.innerHTML='<tr><td colspan="8"><div class="empty"><i class="ti ti-package-off"></i>'+
+  const cols=colsVisibles(), span=cols.length+1;
+  if(!ROWS.length){tb.innerHTML='<tr><td colspan="'+span+'"><div class="empty"><i class="ti ti-package-off"></i>'+
     '<p>Aucun packaging ne correspond aux filtres.</p></div></td></tr>';return;}
   tb.innerHTML=ROWS.map(p=>{
-    const ok=(p.inpulse.dispo||'').split('/')[0]!=='0';
-    const mode=EXP.get(p.id)||'';
-    const open=mode==='ord';
-    const o=ordFor(p);
-    const resume = !o ? '' : o.vide ? '<span class="ordnil">aucune commande</span>'
-      : '<span class="ordsum">'+o.tot.n+' cmd · '+fmt(o.tot.oq)+' → '+fmt(o.tot.rq)+' cartons</span>';
-    return '<tr class="mainrow'+(open?' open':'')+'" data-id="'+p.id+'">'
-      + '<td class="tb namecell" data-toggle="'+p.id+'">'
-        + '<span class="chev'+(open?' on':'')+'"><i class="ti ti-chevron-right"></i></span>'
-        + esc(p.nom) + (p._nouveau?' <i class="ti ti-sparkles edited" title="créée depuis Inpulse — fiche à compléter"></i>':'')
+    const mode=EXP.get(p.id)||'', open=mode==='ord';
+    const o=p._ord, st=p._stk;
+    const dispo=(p.inpulse.dispo||'').split('/')[0]!=='0';
+    const cov = st.couv==null?'<span class="cov na">\u2014</span>'
+      :'<span class="cov '+(st.couv<STOCK.alerte_jours?'low':st.couv<STOCK.confort_jours?'mid':'ok')+'">'+st.couv+' j</span>';
+    const C={
+      intitule:'<td class="tm">'+esc(intituleValue(p))+'</td>',
+      famille:'<td class="tm">'+esc(p.app.famille)+'</td>',
+      marquage:'<td>'+pillMarq(p.app.marquage)+'</td>',
+      four:'<td class="tm">'+esc(p.inpulse.fournisseur)+'</td>',
+      prix:'<td class="num">'+eur(p.inpulse.prix_ht)+'</td>',
+      cmd:'<td class="num cmdcell">'+(!o?'<span class="tm">\u00b7</span>'
+            :o.vide?'<span class="tm">\u2014</span>':'<strong>'+o.tot.n+'</strong>')+'</td>',
+      recu:'<td class="num">'+(!o||o.vide?'<span class="tm">\u2014</span>':fmt(o.tot.rq))+'</td>',
+      stock:'<td class="num">'+(st.total==null?'<span class="tm">\u2014</span>':'<strong>'+fmt(st.total)+'</strong>')+'</td>',
+      couv:'<td>'+cov+'</td>',
+      dispo:'<td class="dispocell" data-dispo="'+p.id+'" title="voir les boutiques exactes">'
+        +'<span class="pill '+(dispo?'p-ok':'p-warn')+'">'+esc(p.inpulse.dispo)+'</span>'
+        +'<i class="ti ti-'+(mode==='bq'?'chevron-up':'map-pin')+'"></i></td>',
+      comp:'<td>'+bar(p._comp)+'</td>'
+    };
+    return '<tr class="mainrow'+(open?' open':'')+'" data-id="'+p.id+'" data-open="'+p.id+'" title="Ouvrir la fiche">'
+      + '<td class="tb namecell">'
+        + '<span class="chev'+(open?' on':'')+'" data-toggle="'+p.id+'" '
+        + 'title="Historique des commandes, mois par mois"><i class="ti ti-chevron-right"></i></span>'
+        + esc(p.nom)
+        + (p._nouveau?' <i class="ti ti-sparkles edited" title="cr\u00e9\u00e9e depuis Inpulse \u2014 fiche \u00e0 compl\u00e9ter"></i>':'')
         + (OVR.records[p.id]?' <i class="ti ti-pencil edited" title="fiche saisie"></i>':'')
-        + '<div class="ordline">'+resume+'</div></td>'
-      + '<td><button class="btn btn-sm btn-fiche" data-open="'+p.id+'"><i class="ti ti-layout-sidebar-right-expand"></i>Ouvrir la fiche</button></td>'
-      + '<td class="tm">'+esc(p.app.famille)+'</td><td>'+pillMarq(p.app.marquage)+'</td>'
-      + '<td class="tm">'+esc(p.inpulse.fournisseur)+'</td>'
-      + '<td class="num">'+eur(p.inpulse.prix_ht)+'</td>'
-      + '<td class="dispocell" data-dispo="'+p.id+'" title="voir les boutiques exactes">'
-        + '<span class="pill '+(ok?'p-ok':'p-warn')+'">'+esc(p.inpulse.dispo)+'</span>'
-        + '<i class="ti ti-'+(mode==='bq'?'chevron-up':'map-pin')+'"></i></td>'
-      + '<td>'+bar(p._comp)+'</td></tr>'
-      + (mode?('<tr class="subrow"><td colspan="8">'+(mode==='bq'?dispoPanel(p):ordTable(p))+'</td></tr>'):'');
+      + '</td>'
+      + cols.map(c=>C[c.k]).join('')
+      + '</tr>'
+      + (mode?('<tr class="subrow"><td colspan="'+span+'">'+(mode==='bq'?dispoPanel(p):ordTable(p))+'</td></tr>'):'');
   }).join('');
   tb.querySelectorAll('[data-toggle]').forEach(el=>el.onclick=e=>{
     e.stopPropagation(); const id=el.dataset.toggle;
@@ -686,9 +970,8 @@ function renderList(){
     if(EXP.get(id)==='bq') EXP.delete(id); else EXP.set(id,'bq');
     renderList();
   });
-  tb.querySelectorAll('[data-open]').forEach(el=>el.onclick=e=>{
-    e.stopPropagation(); openDrawer(el.dataset.open);
-  });
+  /* la ligne entiere ouvre la fiche : plus de colonne « Ouvrir la fiche » */
+  tb.querySelectorAll('tr.mainrow[data-open]').forEach(el=>el.onclick=()=>openDrawer(el.dataset.open));
 }
 
 const fmt = n => (n==null||isNaN(n))?'—':(Math.round(n*100)/100).toLocaleString('fr-FR');
@@ -735,6 +1018,11 @@ function renderGrid(){
 /* ============================================================
    Fiche — champs Inpulse en lecture, champs TFB éditables
    ============================================================ */
+const AUTO_CALC = {
+  'dimensions.developpe_cm'        : r=>devAuto(r),
+  'dimensions.dimensions_a_plat_cm': r=>aPlatAuto(r),
+  'identification.intitule_complet': r=>intituleAuto(r)
+};
 const SRC_INP='<span class="src src-inp" title="piloté par Inpulse, non modifiable ici">Inpulse</span>';
 const SRC_TFB='<span class="src src-tfb" title="saisi par TFB">TFB</span>';
 const SRC_CALC='<span class="src src-calc" title="calculé à partir des dimensions saisies (config.js)">Calculé</span>';
@@ -746,12 +1034,14 @@ function control(r,f){
   const U=uOf(r,f);
   if(P==='inpulse.dispo') return dispoPanel(r);
   if(f.src==='inp'){
-    const txt=f.fmt?f.fmt(v):(v===true?'oui':v===false?'non':v);
+    const w=valOf(r,f);   // certains champs Inpulse sont recomposés (val:)
+    const txt=f.fmt?f.fmt(w):(w===true?'oui':w===false?'non':w);
     return isEmpty(txt)||txt==='—'?'<div class="fv void">—</div>'
       :'<div class="fv">'+esc(txt)+(U?' <span class="u">'+esc(U)+'</span>':'')+'</div>';
   }
   switch(f.type){
     case 'calc': return calcControl(r,f);
+    case 'calctext': return calcTextControl(r,f);
     case 'dec': {
       const sel=f.unitSel?uniteSelect(r,f):(U?'<span class="u">'+esc(U)+'</span>':'');
       return '<div class="ctl"><input class="ed" type="text" inputmode="decimal" data-dec="1" '+a+
@@ -820,6 +1110,35 @@ function uniteSelect(r,f){
 }
 
 /* ---- champs calculés : valeur, formule en légende, forçage manuel ---- */
+/* Intitulé complet : proposé par la règle de nommage, forçable à la main.
+   Même logique que les dimensions calculées, en texte. */
+function calcTextControl(r,f){
+  const modePath='identification.intitule_mode';
+  const mode=intituleMode(r), auto=intituleAuto(r);
+  const a='data-id="'+r.id+'" data-path="'+f.path+'"';
+  let html='';
+  if(mode==='manuel'){
+    html+='<div class="ctl"><input class="ed" type="text" '+a+
+      ' value="'+esc(getPath(r,f.path)||'')+'" placeholder="'+esc(auto||'intitulé complet')+'"></div>';
+  } else {
+    html+='<div class="fv'+(auto?'':' void')+'">'+(auto?esc(auto):'\u2014')+'</div>';
+  }
+  const v=versionDesign(r), leg=[];
+  if(INTITULE.mentions[r.app&&r.app.marquage]){
+    leg.push(v ? ('version lue dans le libellé Inpulse : '+v)
+               : ('aucune version dans le libellé Inpulse \u2014 '+INTITULE.version_absente+' à corriger'));
+  } else leg.push('marquage neutre \u2014 pas de version de design');
+  if(mode==='manuel') leg.push('valeur forcée à la main');
+  html+='<div class="calclegend">'+esc(leg.join(' · '))+'</div><div class="calcbtns">'
+    + (mode==='auto'
+      ? '<button class="btn btn-sm" data-calcforce="'+f.path+'" data-mode="'+modePath+'" data-id="'+r.id+
+        '"><i class="ti ti-pencil"></i>Corriger l\u2019intitulé</button>'
+      : '<button class="btn btn-sm" data-calcauto="'+f.path+'" data-mode="'+modePath+'" data-id="'+r.id+
+        '"><i class="ti ti-refresh"></i>Revenir à l\u2019intitulé automatique</button>')
+    + '</div>';
+  return html;
+}
+
 function calcControl(r,f){
   const dev = f.kind==='dev';
   const cfg = cfgAPlat(r);
@@ -879,6 +1198,7 @@ function fieldHTML(r,f){
     const mode=figee?'manuel':(dev?devMode(r):aPlatMode(r));
     badge=mode==='auto'?SRC_CALC:SRC_MAN;
   }
+  if(f.type==='calctext') badge=intituleMode(r)==='auto'?SRC_CALC:SRC_MAN;
   return '<div class="f'+(f.wide?' wide':'')+(f.src==='tfb'?' ed-f':'')+(filled?'':' vide')+'">'
     +'<div class="fl">'+esc(f.lb)+(f.src==='inp'?SRC_INP:SRC_TFB)+badge
     +(ovr?'<i class="ti ti-point-filled dotsaved" title="saisi dans l’app"></i>':'')+'</div>'
@@ -990,10 +1310,11 @@ function wire(root){
     el.addEventListener('keydown',e=>{ if(e.key==='Enter'&&el.tagName!=='TEXTAREA'){ e.preventDefault(); el.blur(); }});
   });
   /* boutons des champs calculés */
+  /* AUTO_CALC : où chaque champ calculé va chercher sa valeur proposée */
   root.querySelectorAll('[data-calcforce]').forEach(el=>el.onclick=()=>{
     const id=el.dataset.id, vp=el.dataset.calcforce, mp=el.dataset.mode;
     const r=DB.packagings.find(p=>p.id===id);
-    const suggestion = vp==='dimensions.developpe_cm' ? devAuto(r) : aPlatAuto(r);
+    const suggestion = (AUTO_CALC[vp]||aPlatAuto)(r);
     saveField(id,mp,'manuel');
     if(suggestion && isEmpty(getPath(r,vp))) saveField(id,vp,suggestion);
     openDrawer(id);
@@ -1173,7 +1494,11 @@ function trajetHTML(p){
    Stock — inventaire saisi + réceptions Inpulse - consommation
    ============================================================ */
 const DAY=86400000;
-const joursEntre=(a,b)=>Math.max(0,Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/DAY));
+/* memo : la liste recalcule le stock de chaque reference a chaque frappe */
+const _JE={};
+const joursEntre=(a,b)=>{ const k=a+'|'+b; let v=_JE[k];
+  if(v===undefined){ v=Math.max(0,Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/DAY)); _JE[k]=v; }
+  return v; };
 const invOf = (p,abr) => { const o=getPath(p,'stock.inv.'+abr)||{}; return {q:num(o.q), d:o.d||''}; };
 const stockFour = p => { const o=getPath(p,'stock.fournisseur')||{}; return {q:num(o.q), d:o.d||''}; };
 

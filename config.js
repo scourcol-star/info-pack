@@ -114,3 +114,38 @@ const STOCK = {
   alerte_jours: 15,                 // couverture sous laquelle on alerte
   confort_jours: 45                 // au-dessus, la couverture est confortable
 };
+
+/* ------------------------------------------------------------
+   6 · Intitulé complet — convention de nommage
+   Le libellé Inpulse est la matière première : on lui retire le
+   marquage et la version pour retrouver une base propre, puis on
+   recompose un intitulé homogène.
+     Neutre           → « <BASE> NEUTRE »
+     TFB / co-branding→ « <BASE> TFB MM/AAAA »
+   La version se lit dans le libellé Inpulse quand elle y figure
+   (GOBELET 25CL TFB 12/2025). Sinon XX/XXXX, à corriger dans la
+   fiche : l'intitulé reste rectifiable référence par référence.
+   ------------------------------------------------------------ */
+const INTITULE = {
+  mention_neutre : 'NEUTRE',
+  version_absente: 'XX/XXXX',
+  /* mention ajoutée selon le marquage ; null = pas de version attendue */
+  mentions: { 'Neutre':null, 'TFB':'TFB', 'Co-branding':'CO-BRANDING' },
+  /* morceaux retirés du libellé Inpulse pour obtenir la base */
+  retirer: [
+    /\s*\b\d{1,2}\s*\/\s*20\d{2}\b/g,   // la version : 12/2025, 1/2024
+    /\s+V\d+\b/gi,                       // V2, V3
+    /\s*\bNEUTRES?\b/gi,
+    /\s*\bCO-?BRANDING\b/gi,
+    /\s*\bTFB\b/gi
+  ]
+};
+
+/* ------------------------------------------------------------
+   7 · Unité à laquelle se rapporte le tarif unitaire Inpulse.
+   Inpulse donne un prix au conditionnement d'achat ; l'unité
+   dépend du produit (une boîte à la pièce, un papier à la
+   feuille, un adhésif au rouleau…).
+   ------------------------------------------------------------ */
+const UNITES_TARIF = ['pièce','feuille','rouleau','bobine','sachet','mètre','kg','litre'];
+const UNITE_TARIF_DEFAUT = UNITES_TARIF[0];
