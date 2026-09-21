@@ -12,6 +12,8 @@
 #      toute regle qui chercherait un app*.html a la racine.
 # L'app « Pilotage achats » n'est pas touchee : elle a son propre site,
 # ce fichier n'en etait qu'une copie.
+# Fonctions : /api/store et /api/proxy sont routes par les redirects ci-dessous,
+# /api/orders et /api/inventories declarent elles-memes leur chemin (config.path).
 [build]
   publish = "."
   functions = "netlify/functions"
