@@ -868,7 +868,8 @@ function renderMetrics(){
 
   const tiles=[
     {cls:'gold', l:'Volume re\u00e7u 2026', v:ordPret?fmt(nRecu):'\u2026', u:'cartons',
-     s:ordPret?(nCmd.toLocaleString('fr-FR')+' commandes d\u00e9pouill\u00e9es depuis janvier')
+     s:ordPret?(((ORDINFO&&ORDINFO.seen)||0).toLocaleString('fr-FR')+' commandes d\u00e9pouill\u00e9es \u00b7 '
+                +nCmd.toLocaleString('fr-FR')+' lignes depuis janvier')
               :'historique Inpulse en cours de lecture'},
     {k:'cmd', l:'R\u00e9f\u00e9rences qui tournent', v:ordPret?(tourne+' / '+nA):'\u2026',
      s:ordPret?(jamais+' r\u00e9f. jamais command\u00e9e(s) \u2014 cliquer pour ne voir que celles qui tournent')
