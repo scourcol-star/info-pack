@@ -169,6 +169,630 @@ select:focus{outline:none;border-color:var(--gold)}
   <div class="fb" id="f-b"></div>
 </aside>
 
-<script src="config.js"></script>
-<script src="app.js"></script>
+<script>
+/* --- config.js, en ligne --- */
+/* ============================================================
+   TFB — Info Pack · configuration métier
+   Tout ce qui est une règle d'entreprise vit ici, jamais dans app.js.
+   ============================================================ */
+
+/* Règle de nommage de l'intitulé complet.
+   Pas de design  → « … NEUTRE »
+   Design         → « … TFB 12/2025 », et « TFB XX/XXXX » tant que la
+                     version ne se lit pas dans le libellé Inpulse. */
+const INTITULE = {
+  mention_neutre : 'NEUTRE',
+  version_absente: 'XX/XXXX',
+  mentions: { 'Neutre':null, 'TFB':'TFB', 'Co-branding':'CO-BRANDING' },
+  /* morceaux retirés du libellé Inpulse pour obtenir la base */
+  retirer: [
+    /\s*\b\d{1,2}\s*\/\s*20\d{2}\b/g,   // la version : 12/2025, 1/2024
+    /\s+V\d+\b/gi,                       // V2, V3
+    /\s*\bNEUTRES?\b/gi,
+    /\s*\bCO-?BRANDING\b/gi,
+    /\s*\bTFB\b/gi
+  ]
+};
+const MARQUAGES = ['TFB','Neutre','Co-branding'];
+
+/* Unité à laquelle se rapporte le tarif unitaire.
+   Inpulse donne un prix au conditionnement ; l'unité dépend du produit. */
+const UNITE_TARIF_DEFAUT = 'pièce';
+const UNITES_TARIF = ['pièce','feuille','rouleau','sachet','mètre','kilo','litre','jeu'];
+
+/* Matières rencontrées chez Wellembal et ailleurs. Liste ouverte :
+   toute valeur saisie en clair est acceptée et rejoint le menu. */
+const MATIERES = [
+  'Kraft brun','Kraft blanc','Carton compact','Carton couché','Papier ingraissable',
+  'Carton + PE','PS / PP','PET','PLA','Grès / céramique','Bois','Coton',
+  'Ouate de cellulose','Papier adhésif'
+];
+
+/* Les trois documents attendus par référence. `cle` sert de préfixe de nom
+   de fichier dans le dossier Drive : TFB-BAT-*.pdf, TFB-GABARIT-*.pdf… */
+const DOCUMENTS = [
+  {k:'photos',  lb:'Photos',  manque:'photos',  cle:'PHOTO',   aide:'produit nu, produit garni, mise en situation'},
+  {k:'bat',     lb:'BAT',     manque:'le BAT',  cle:'BAT',     aide:'bon à tirer validé — marketing ou fournisseur'},
+  {k:'gabarit', lb:'Gabarit', manque:'le gabarit', cle:'GABARIT', aide:'gabarit à plat — marketing ou fournisseur'}
+];
+
+</script>
+<script>
+/* --- app.js, en ligne --- */
+/* ============================================================
+   TFB — Info Pack · base packaging
+   Une liste, une fiche. Douze informations, pas une de plus :
+     Inpulse   — intitulé complet, SKU fournisseur, fournisseur,
+                 conditionnement HA, tarif unitaire
+     Wellembal — dimensions L/l/h, matière, grammage, personnalisé TFB
+     Drive     — photos, BAT, gabarit
+   Trois couches de données, dans cet ordre de priorité :
+     1. data/packaging.json  — socle versionné dans le repo
+     2. /api/store           — saisies TFB (Netlify Blobs)
+     3. /api/proxy           — Inpulse, écrase ses propres champs
+   Les règles métier (nommage, unités, matières) vivent dans config.js.
+   ============================================================ */
+
+let DB=null, OVR={records:{}}, ROWS=[], current=null, storeOk=false;
+
+/* ---------- outils ---------- */
+const eur  = n => (n==null||isNaN(n))?'—':n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const esc  = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const isEmpty = v => v===''||v==null||(Array.isArray(v)&&!v.length);
+const num = v => { if(v===''||v==null) return null;
+  const x = typeof v==='number'?v:Number(String(v).replace(',','.').trim());
+  return isNaN(x)?null:x; };
+const todayISO = () => { const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const dateFR = iso => { const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||''); return m?m[3]+'/'+m[2]+'/'+m[1]:(iso||''); };
+function getPath(o,p){ return p.split('.').reduce((a,k)=>(a==null?a:a[k]), o); }
+function setPath(o,p,v){
+  const ks=p.split('.'); let a=o;
+  for(let i=0;i<ks.length-1;i++){ const k=ks[i]; if(a[k]==null) a[k]= /^\d+$/.test(ks[i+1])?[]:{}; a=a[k]; }
+  a[ks[ks.length-1]]=v;
+}
+const norm = s => String(s==null?'':s).toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+/* ---------- intitule ---------- */
+function calcMode(r,valuePath,modePath){
+  const m=getPath(r,modePath);
+  if(m==='manuel'||m==='auto') return m;
+  return isEmpty(getPath(r,valuePath))?'auto':'manuel';
+}
+const versionDesign = r => {
+  const m=/(?:^|[\s(\-])(\d{1,2})\s*\/\s*(20\d{2})(?![\d])/
+    .exec((r&&r.identification&&r.identification.intitule_inpulse)||'');
+  return m ? String(m[1]).padStart(2,'0')+'/'+m[2] : '';
+};
+function intituleBase(r){
+  let n=String((r&&r.identification&&r.identification.intitule_inpulse)||'').trim();
+  INTITULE.retirer.forEach(re=>{ n=n.replace(re,' '); });
+  return n.replace(/\s{2,}/g,' ').trim();
+}
+function intituleAuto(r){
+  const base=intituleBase(r); if(!base) return '';
+  const mention=INTITULE.mentions[r.app&&r.app.marquage];
+  if(!mention) return base+' '+INTITULE.mention_neutre;
+  return base+' '+mention+' '+(versionDesign(r)||INTITULE.version_absente);
+}
+const intituleMode  = r => calcMode(r,'identification.intitule_complet','identification.intitule_mode');
+const intituleValue = r => intituleMode(r)==='manuel'
+  ? (getPath(r,'identification.intitule_complet')||'') : intituleAuto(r);
+
+/* ---------- achat ---------- */
+const uniteCommande = n => { const u=(n||'').toUpperCase();
+  return u.indexOf('CARTON')===0?'Carton':u.indexOf('BOITE')===0?'Boîte':u.indexOf('ROULEAU')===0?'Rouleau'
+    :(u.indexOf("L'UNITE")>=0||u.indexOf('L UNITE')>=0)?'Unité':(n||''); };
+const uniteTarif = r => (r&&r.logistique&&r.logistique.unite_tarif) || UNITE_TARIF_DEFAUT;
+function conditionnementHA(r){
+  const u=String((r&&r.inpulse&&r.inpulse.unite_achat)||'').trim();
+  const n=num(r&&r.logistique&&r.logistique.nombre_par_carton);
+  const par=n?(fmt(n)+' '+uniteTarif(r)+(n>1?'s':'')):'';
+  if(u&&par) return u+' — '+par;
+  return u||par;
+}
+
+/* ---------- inpulse ---------- */
+const FAMILLE_REGLES = [
+  [/\bCOUVERCLE/,                                      'Couvercle'],
+  [/\bBAGUE/,                                          'Bague'],
+  [/\bBOUTEILLE/,                                      'Bouteille'],
+  [/\bBOWL|\bBOL\b/,                                   'Bowl'],
+  [/\bGOBELET/,                                        'Gobelet'],
+  [/\bSERVIETTE/,                                      'Serviette'],
+  [/\bETIQUETTE|\bÉTIQUETTE|\bCOLLERETTE/,             'Étiquette'],
+  [/\bSAC\b|\bSACHET|\bSACS\b|\bPOCHETTE|\bTOTE\b/,    'Sac'],
+  [/\bBOITE|\bBOÎTE|\bCAISSE|\bBARQUETTE|\bCOFANETTO|\bETUI|\bÉTUI/, 'Boîte'],
+  [/\bPAPIER|\bBOBINE|\bROULEAU|\bFILM\b|\bDEPLIANT|\bDÉPLIANT|\bTABLETTE/, 'Papier'],
+  [/\bCOUTEAU|\bFOURCHETTE|\bCUILLERE|\bCUILLÈRE|\bCOUVERTS|\bKIT\b/, 'Couverts'],
+  [/\bMUG\b|\bTASSE|\bASSIETTE|\bMOULE|\bCAISSETTE|\bTULIPCUP/, 'Vaisselle']
+];
+const familleDe = nom => { const n=String(nom||'').toUpperCase();
+  for(const [re,f] of FAMILLE_REGLES) if(re.test(n)) return f;
+  return 'Accessoire'; };
+const marquageDe = nom => { const n=String(nom||'').toUpperCase();
+  if(/\bTFB\b|THE FRENCH BASTARDS/.test(n)) return /\bX\b/.test(n)?'Co-branding':'TFB';
+  return 'Neutre'; };
+const slugId = nom => String(nom||'').normalize('NFD').replace(/[̀-ͯ]/g,'')
+  .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,90) || 'ref';
+function idUnique(base, pris){ let id=base, n=2;
+  while(pris[id]) id=base+'-'+(n++); pris[id]=1; return id; }
+function appliquerInpulse(p,m){
+  const pk=m.packaging||{};
+  p.inpulse.live=true;
+  if(m.price!=null)   p.inpulse.prix_ht=Number(m.price);
+  if(m.supplier)      p.inpulse.fournisseur=m.supplier;
+  if(m.subCategory)   p.inpulse.sous_categorie=m.subCategory;
+  p.inpulse.unite_achat=pk.name||'';
+  p.inpulse.actif=m.active;
+  p.identification.sku_fournisseur=(m.sku&&m.sku!=='?')?m.sku:'';
+  const q=pk.quantity;
+  p.logistique.nombre_par_carton=(q&&q>1)?q:null;
+  p.logistique.unite_commande=uniteCommande(pk.name);
+  p.logistique.prix_unitaire_ht=(q&&q>1&&m.price)?m.price/q:null;
+}
+function fichePackaging(m,id){
+  const nom=String(m.name||'').trim();
+  const p={
+    id:id, nom:nom, _nouveau:true,
+    app:{famille:familleDe(nom), marquage:marquageDe(nom), statut:'À compléter'},
+    inpulse:{prix_ht:null, dispo:null, fournisseur:'', categorie:m.category||'PACKAGING',
+             sous_categorie:'', ingredient:null, unite_achat:''},
+    identification:{intitule_inpulse:nom, sku_fournisseur:''},
+    dimensions:{longueur_cm:null, largeur_cm:null, profondeur_soufflet_cm:null,
+                hauteur_cm:null, dimensions_a_plat_cm:'', tolerance_mm:null},
+    matiere:{matiere:'', grammage_g_m2:null, epaisseur_um:null,
+             poids_unitaire_g:null, contact_alimentaire:null},
+    design:{design_valide_tfb:'', gabarit_fournisseur:'', logo:'',
+            couleurs:{pantone_principal:'', pantone_secondaire:'', pantone_tertiaire:'',
+                      nb_couleurs_impression:null},
+            support_rendu:{type_support:'', grammage_g_m2:null, finition:''},
+            bat:{valide_par:'', date_validation:'', fichier:''},
+            mentions_obligatoires:{denomination_produit:'', poids_contenance:'', allergenes:'',
+                                   ddm_dlc:'', adresse_raison_sociale:'', logo_tri_recyclabilite:''}},
+    logistique:{nombre_par_carton:null, cartons_par_palette:null, conditions_stockage:'',
+                moq:null, delai_reappro_jours:null, unite_commande:'', prix_unitaire_ht:null},
+    deploiement:{points_de_vente:[], date_mise_en_service:'', date_fin_service:'',
+                 points_de_vigilance:''},
+    usage_tfb:{recettes_concernees:[], usage:'', quantite_par_emballage:null},
+    photos:['','','','']
+  };
+  appliquerInpulse(p,m);
+  return p;
+}
+async function scanViaProxy(){
+  const PAGE=100, MAX=30; let rows=[];
+  for(let page=0;page<MAX;page++){
+    const r=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({endpoint:'/public/v2/supplier-products?limit='+PAGE+'&skip='+(page*PAGE),method:'GET'})});
+    if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error(e.error||('HTTP '+r.status)); }
+    const d=await r.json(); const batch=d.data||[];
+    rows=rows.concat(batch);
+    setConn('spin','Interrogation d’Inpulse…', rows.length+' / '+(d.total||'?')+' références lues');
+    if(batch.length<PAGE) break;
+  }
+  return rows.filter(x=>x&&x.category==='PACKAGING').map(x=>{
+    const p=(x.packagings||[]).find(q=>q.isUsedInOrder)||(x.packagings||[])[0]||{};
+    return {name:String(x.name||'').trim(), sku:String(x.sku||'').trim(),
+            price:x.price==null?null:Number(x.price), active:!!x.active,
+            category:x.category, subCategory:x.subCategory,
+            supplier:(x.supplier&&x.supplier.name)||'',
+            packaging:{name:String(p.name||'').trim(), quantity:p.quantity==null?null:Number(p.quantity), unit:p.unit||''}};
+  });
+}
+async function syncInpulse(){
+  setConn('spin','Interrogation d’Inpulse…','');
+  try{
+    let list=null, via='';
+    try{
+      const r=await fetch('/api/packaging',{cache:'no-store'});
+      if(r.ok){ const d=await r.json(); if(d.data&&d.data.length){ list=d.data; via='via /api/packaging'; } }
+    }catch(e){}
+    if(!list){ list=await scanViaProxy(); via='via /api/proxy'; }
+    if(!list.length) throw new Error('aucune référence PACKAGING renvoyée');
+
+    const by={}; list.forEach(x=>{ if(x.name) by[String(x.name).trim().toUpperCase()]=x; });
+    let hit=0; const orphans=[];
+    DB.packagings.forEach(p=>{
+      const m=by[p.identification.intitule_inpulse.trim().toUpperCase()];
+      if(!m){ orphans.push(p.nom); return; }
+      hit++;
+      appliquerInpulse(p,m);
+    });
+
+    /* Références Inpulse sans fiche : création. Inpulse pouvant renvoyer
+       deux fois le même libellé, la clé de rapprochement (le nom) fait foi. */
+    const known={}, pris={};
+    DB.packagings.forEach(p=>{ known[p.identification.intitule_inpulse.trim().toUpperCase()]=1; pris[p.id]=1; });
+    const nouvelles=[];
+    list.forEach(x=>{
+      const nom=String(x.name||'').trim(); if(!nom) return;
+      const cle=nom.toUpperCase(); if(known[cle]) return;
+      known[cle]=1;
+      DB.packagings.push(fichePackaging(x, idUnique(slugId(nom), pris)));
+      nouvelles.push(nom);
+    });
+    if(nouvelles.length){
+      hit+=nouvelles.length;
+      applyOverrides();     // saisies TFB déjà enregistrées sur ces nouvelles fiches
+      refreshFournisseurs();
+    }
+
+    let note='prix, SKU et conditionnements à jour — '+via;
+    if(nouvelles.length) note+=' · '+nouvelles.length+' réf. ajoutée(s) depuis Inpulse : '+nouvelles.join(', ');
+    if(orphans.length)   note+=' · non retrouvée(s) dans Inpulse : '+orphans.join(', ');
+    setConn(orphans.length?'warn':'ok',
+      '<strong>Inpulse connecté<\/strong> — '+hit+' / '+DB.packagings.length+' références rapprochées', note);
+    if(current) openDrawer(current.id);
+    render();
+  }catch(e){
+    setConn('err','<strong>Inpulse non joignable<\/strong> — affichage du dernier extrait','('+e.message+')');
+  }
+}
+
+/* ---------- stockage ---------- */
+async function loadOverrides(){
+  try{
+    const r=await fetch('/api/store',{cache:'no-store'});
+    if(!r.ok) throw new Error((await r.json().catch(()=>({}))).error||('HTTP '+r.status));
+    OVR = await r.json(); if(!OVR.records) OVR.records={};
+    storeOk=true;
+    applyOverrides();
+    setSave('ok', OVR.updated_at ? 'Dernière saisie ' + new Date(OVR.updated_at).toLocaleString('fr-FR') : 'Aucune saisie enregistrée');
+  }catch(e){
+    storeOk=false; OVR={records:{}};
+    setSave('err','Saisie non enregistrée — ' + e.message);
+  }
+}
+function applyOverrides(){
+  DB.packagings.forEach(p=>{
+    const o=OVR.records[p.id]; if(!o) return;
+    Object.keys(o).forEach(path=>setPath(p,path,o[path]));
+  });
+}
+function setConn(s,t,d){
+  document.getElementById('dot').className='dot '+s;
+  const box=document.getElementById('connbox'), det=document.getElementById('conn-d'),
+        more=document.getElementById('conn-more'), txt=String(d==null?'':d).trim();
+  const court = txt.length<=110;
+  document.getElementById('conn-t').innerHTML = t + (court&&txt?' <span class="sm">'+esc(txt)+'<\/span>':'');
+  if(!det||!more) return;
+  if(court){
+    det.textContent=''; det.classList.remove('on'); more.classList.remove('on');
+    more.style.display='none'; if(box) box.classList.remove('open');
+    return;
+  }
+  det.textContent=txt;
+  more.style.display='inline-flex';
+  const ouvert=det.classList.contains('on');
+  more.innerHTML=(ouvert?'Masquer le d\u00e9tail':'D\u00e9tail')+'<i class="ti ti-chevron-down"><\/i>';
+  more.classList.toggle('on',ouvert);
+  if(box) box.classList.toggle('open',ouvert);
+}
+function setSave(s,t){ const el=document.getElementById('save'); if(!el) return;
+  el.className='savebadge '+s; el.innerHTML='<i class="ti '+(s==='ok'?'ti-cloud-check':s==='wait'?'ti-cloud-upload':'ti-cloud-off')+'"><\/i>'+esc(t); }
+const QUEUE=[]; let flushT=null, inflight=false;
+function saveField(id,path,value){
+  const rec=DB.packagings.find(p=>p.id===id); if(rec) setPath(rec,path,value);
+  const o=OVR.records[id]||(OVR.records[id]={});
+  if(isEmpty(value)) delete o[path]; else o[path]=value;
+  if(!Object.keys(o).length) delete OVR.records[id];
+  if(!storeOk){ setSave('err','Saisie gardée en mémoire seulement — stockage indisponible'); refreshHeader(); render(); return; }
+  const i=QUEUE.findIndex(q=>q.id===id&&q.path===path);
+  const op={id,path,value:isEmpty(value)?null:value};
+  if(i>=0) QUEUE[i]=op; else QUEUE.push(op);
+  setSave('wait','Enregistrement…');
+  clearTimeout(flushT); flushT=setTimeout(flush,600);
+  refreshHeader(); render();
+}
+async function flush(){
+  if(inflight||!QUEUE.length) return;
+  const ops=QUEUE.splice(0,QUEUE.length); inflight=true;
+  try{
+    const r=await fetch('/api/store',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ops})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||('HTTP '+r.status));
+    OVR.updated_at=d.updated_at;
+    setSave('ok','Enregistré à '+new Date(d.updated_at).toLocaleTimeString('fr-FR')+' · '+d.fiches_modifiees+' fiche(s) saisie(s)');
+  }catch(e){
+    ops.forEach(o=>QUEUE.push(o));
+    setSave('err','Échec de l’enregistrement — '+e.message+' (nouvelle tentative dans 10 s)');
+    setTimeout(flush,10000);
+  }finally{ inflight=false; if(QUEUE.length){ clearTimeout(flushT); flushT=setTimeout(flush,800); } }
+}
+const eur4 = n => (n==null||isNaN(n))?'—':n.toLocaleString('fr-FR',{minimumFractionDigits:3,maximumFractionDigits:4})+' €';
+const fmt  = n => (n==null||isNaN(n))?'—':(Math.round(n*100)/100).toLocaleString('fr-FR');
+/* ============================================================
+   Interface — une liste, une fiche.
+   La fiche ne porte que les douze informations demandées :
+   cinq viennent d'Inpulse, six se saisissent ici, trois sont
+   des documents. Tout le reste a été retiré de l'app.
+   ============================================================ */
+
+/* ---------- documents ---------- */
+/* Deux sources, fusionnées : les liens collés à la main (enregistrés
+   dans /api/store) et, quand la fonction /api/drive est configurée,
+   le contenu du dossier Drive de la référence. */
+let DRIVE={pret:false, dossiers:{}, message:''};
+
+const liensManuels = (r,k) => { const v=getPath(r,'documents.'+k); return Array.isArray(v)?v:[]; };
+const fichiersDrive = (r,k) => {
+  const d=DRIVE.dossiers[r.id]; if(!d) return [];
+  return (d.fichiers||[]).filter(f=>f.k===k);
+};
+function documentsDe(r,k){
+  return fichiersDrive(r,k).concat(
+    liensManuels(r,k).map(u=>({nom:nomDeLien(u), url:u, vignette:null, manuel:true})));
+}
+const estImage = u => /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(u||'');
+function nomDeLien(u){
+  try{ const p=new URL(u).pathname.split('/').filter(Boolean); return decodeURIComponent(p[p.length-1]||u); }
+  catch(e){ return u; }
+}
+
+async function chargerDrive(){
+  try{
+    const r=await fetch('/api/drive',{cache:'no-store'});
+    if(r.status===501){ DRIVE.message=(await r.json().catch(()=>({}))).error||'Drive non configuré'; return; }
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    DRIVE.dossiers=d.dossiers||{}; DRIVE.pret=true;
+    render(); if(current) ouvrir(current.id);
+  }catch(e){ DRIVE.message=e.message; }
+}
+
+/* ---------- ce qui manque à une fiche ---------- */
+function manques(r){
+  const m=[];
+  const d=['longueur_cm','largeur_cm','hauteur_cm'].filter(k=>num(getPath(r,'dimensions.'+k))==null);
+  if(d.length) m.push('dimensions');
+  if(isEmpty(getPath(r,'matiere.matiere')))        m.push('matière');
+  if(num(getPath(r,'matiere.grammage_g_m2'))==null) m.push('grammage');
+  if(getPath(r,'matiere.personnalise_tfb')==null)   m.push('personnalisé TFB');
+  DOCUMENTS.forEach(x=>{ if(!documentsDe(r,x.k).length) m.push(x.manque); });
+  return m;
+}
+const tarifUnitaire = r => {
+  const v=getPath(r,'logistique.prix_unitaire_ht');
+  return (v==null||isNaN(v))?null:v;
+};
+
+/* ---------- liste ---------- */
+const F={q:'', four:'', todo:false};
+
+function passe(p){
+  if(F.four && p.inpulse.fournisseur!==F.four) return false;
+  if(F.todo && !manques(p).length) return false;
+  if(F.q){
+    const h=norm(intituleValue(p)+' '+p.nom+' '+(p.identification.sku_fournisseur||'')+' '+
+                 (p.inpulse.fournisseur||'')+' '+(getPath(p,'matiere.matiere')||''));
+    if(h.indexOf(norm(F.q))<0) return false;
+  }
+  return true;
+}
+
+function render(){
+  if(!DB) return;
+  ROWS=DB.packagings.filter(passe)
+       .sort((a,b)=>intituleValue(a).localeCompare(intituleValue(b),'fr'));
+  const ul=document.getElementById('list');
+  if(!ROWS.length){
+    ul.innerHTML='<li class="vide">Aucune référence ne correspond.<\/li>';
+  }else{
+    ul.innerHTML=ROWS.map(p=>{
+      const t=tarifUnitaire(p);
+      const sku=p.identification.sku_fournisseur;
+      return '<li class="row" tabindex="0" data-id="'+esc(p.id)+'">'
+        + '<div class="rm"><div class="rt">'+esc(intituleValue(p)||p.nom)+'<\/div>'
+        + '<div class="rs">'+esc(p.inpulse.fournisseur||'fournisseur inconnu')
+        + (sku?'<span class="sep">·<\/span>'+esc(sku):'')+'<\/div><\/div>'
+        + '<div class="docs">'+DOCUMENTS.map(d=>
+            '<span class="doc'+(documentsDe(p,d.k).length?' on':'')+'" title="'+esc(d.lb)+'">'
+            + '<i class="ti ti-'+(d.k==='photos'?'photo':d.k==='bat'?'file-check':'vector')+'"><\/i><\/span>').join('')
+        + '<\/div>'
+        + '<div class="rp">'+(t==null?'<span style="color:var(--tx3)">—<\/span>':eur4(t))
+        + '<small>par '+esc(uniteTarif(p))+'<\/small><\/div>'
+        + '<\/li>';
+    }).join('');
+    ul.querySelectorAll('.row').forEach(el=>{
+      el.onclick=()=>ouvrir(el.dataset.id);
+      el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); ouvrir(el.dataset.id); } };
+    });
+  }
+  const n=DB.packagings.length, incompletes=DB.packagings.filter(p=>manques(p).length).length;
+  document.getElementById('count').textContent =
+    ROWS.length===n ? (n+' références · '+incompletes+' à compléter')
+                    : (ROWS.length+' sur '+n+' références');
+}
+
+function refreshFournisseurs(){
+  const el=document.getElementById('f-four'); if(!el) return;
+  const sel=el.value;
+  el.innerHTML='<option value="">Tous les fournisseurs<\/option>'+
+    [...new Set(DB.packagings.map(p=>p.inpulse.fournisseur).filter(Boolean))].sort()
+      .map(f=>'<option'+(f===sel?' selected':'')+'>'+esc(f)+'<\/option>').join('');
+}
+
+/* ---------- fiche ---------- */
+function champ(lb,html,large){
+  return '<div class="f'+(large?' w':'')+'"><span class="fl">'+lb+'<\/span>'+html+'<\/div>';
+}
+const lecture = (v,u) => isEmpty(v)||v==='—'
+  ? '<div class="fv void">—<\/div>'
+  : '<div class="fv">'+esc(v)+(u?'<span class="u">'+esc(u)+'<\/span>':'')+'<\/div>';
+
+function saisieTexte(id,path,v,ph){
+  return '<input class="ed" type="text" data-id="'+id+'" data-path="'+path+'" value="'+esc(v==null?'':v)
+    +'" placeholder="'+esc(ph||'à compléter')+'">';
+}
+function saisieNombre(id,path,v,u,pas){
+  return '<div class="ctl"><input class="ed" type="text" inputmode="decimal" data-dec="1" data-id="'+id
+    +'" data-path="'+path+'" value="'+esc(v==null?'':String(v).replace('.',','))+'" placeholder="—">'
+    +(u?'<span class="u">'+esc(u)+'<\/span>':'')+'<\/div>';
+}
+function saisieListe(id,path,v,options){
+  const connue=options.indexOf(v)>=0;
+  return '<input class="ed" list="l-'+path.replace(/\W/g,'')+'" data-id="'+id+'" data-path="'+path
+    +'" value="'+esc(v==null?'':v)+'" placeholder="à compléter">'
+    +'<datalist id="l-'+path.replace(/\W/g,'')+'">'
+    + options.concat(connue||isEmpty(v)?[]:[v]).map(o=>'<option value="'+esc(o)+'">').join('')+'<\/datalist>';
+}
+function saisieOuiNon(id,path,v){
+  return '<select class="ed" data-id="'+id+'" data-path="'+path+'">'
+    +'<option value="">—<\/option>'
+    +'<option value="1"'+(v===true?' selected':'')+'>oui<\/option>'
+    +'<option value="0"'+(v===false?' selected':'')+'>non<\/option><\/select>';
+}
+
+function blocDocuments(r){
+  return DOCUMENTS.map(d=>{
+    const f=documentsDe(r,d.k);
+    const vign = f.length
+      ? '<div class="vign">'+f.map(x=>
+          '<a class="vg" href="'+esc(x.url)+'" target="_blank" rel="noopener" title="'+esc(x.nom)+'">'
+          + (x.vignette ? '<img src="'+esc(x.vignette)+'" alt="">'
+             : estImage(x.url) ? '<img src="'+esc(x.url)+'" alt="">'
+             : '<i class="ti ti-file"><\/i>')
+          + '<span class="nm">'+esc(x.nom)+'<\/span><\/a>').join('')+'<\/div>'
+      : '<div class="dzv">Aucun document. Colle un lien, ou dépose le fichier dans le dossier Drive de la référence.<\/div>';
+    return '<div class="dz"><div class="dzh"><b>'+esc(d.lb)+'<\/b>'
+      + '<span class="aide">'+esc(d.aide)+'<\/span>'
+      + '<span class="n">'+(f.length||'')+'<\/span><\/div>'
+      + vign
+      + '<input class="ed" data-lien="'+d.k+'" data-id="'+esc(r.id)+'" placeholder="Coller un lien Drive, puis Entrée">'
+      + '<\/div>';
+  }).join('');
+}
+
+function ouvrir(id){
+  const r=DB.packagings.find(p=>p.id===id); if(!r) return;
+  current=r;
+  const man=manques(r);
+  document.getElementById('f-t').textContent = intituleValue(r)||r.nom;
+  document.getElementById('f-s').innerHTML = man.length
+    ? '<span style="color:var(--warn)">Il manque : '+esc(man.join(', '))+'<\/span>'
+    : '<span style="color:var(--ok)">Fiche complète<\/span>';
+
+  const manuel = getPath(r,'identification.intitule_mode')==='manuel';
+  const regle  = (r.app&&r.app.marquage)==='Neutre'
+    ? 'Sans design : l’intitulé porte la mention NEUTRE.'
+    : 'Avec design : l’intitulé porte '+esc(INTITULE.mentions[r.app&&r.app.marquage]||'TFB')
+      +' et la version. XX/XXXX tant qu’elle ne se lit pas dans le libellé Inpulse.';
+
+  document.getElementById('f-b').innerHTML =
+    '<div class="blc"><div class="blt">Depuis Inpulse <span class="src">lecture seule<\/span><\/div><div class="gr">'
+    + champ('Intitulé complet',
+        (manuel ? saisieTexte(r.id,'identification.intitule_complet',getPath(r,'identification.intitule_complet'))
+                : '<div class="fv">'+esc(intituleValue(r)||'—')+'<\/div>')
+        + '<div class="regle">'+regle+'<\/div>'
+        + '<button class="lien" data-mode="'+esc(r.id)+'">'
+        + (manuel?'revenir à l’intitulé calculé':'corriger à la main')+'<\/button>', 1)
+    + champ('Design', '<select class="ed" data-id="'+esc(r.id)+'" data-path="app.marquage">'
+        + MARQUAGES.map(m=>'<option'+(m===(r.app&&r.app.marquage)?' selected':'')+'>'+esc(m)+'<\/option>').join('')
+        + '<\/select>')
+    + champ('SKU fournisseur', lecture(r.identification.sku_fournisseur))
+    + champ('Fournisseur', lecture(r.inpulse.fournisseur))
+    + champ('Conditionnement HA', lecture(conditionnementHA(r)), 1)
+    + champ('Tarif unitaire',
+        '<div class="ctl">'+lecture(tarifUnitaire(r)==null?null:eur4(tarifUnitaire(r)))
+        + '<select class="ed" style="width:auto" data-id="'+esc(r.id)+'" data-path="logistique.unite_tarif">'
+        + UNITES_TARIF.concat(UNITES_TARIF.indexOf(uniteTarif(r))<0?[uniteTarif(r)]:[])
+            .map(u=>'<option'+(u===uniteTarif(r)?' selected':'')+'>par '+esc(u)+'<\/option>').join('')
+        + '<\/select><\/div>', 1)
+    + '<\/div><\/div>'
+
+    + '<div class="blc"><div class="blt">Fiche technique <span class="src">saisi ici<\/span><\/div><div class="gr">'
+    + champ('Longueur', saisieNombre(r.id,'dimensions.longueur_cm',getPath(r,'dimensions.longueur_cm'),'cm'))
+    + champ('Largeur',  saisieNombre(r.id,'dimensions.largeur_cm', getPath(r,'dimensions.largeur_cm'),'cm'))
+    + champ('Hauteur',  saisieNombre(r.id,'dimensions.hauteur_cm', getPath(r,'dimensions.hauteur_cm'),'cm'))
+    + champ('Matière',  saisieListe(r.id,'matiere.matiere',getPath(r,'matiere.matiere'),MATIERES), 1)
+    + champ('Grammage', saisieNombre(r.id,'matiere.grammage_g_m2',getPath(r,'matiere.grammage_g_m2'),'g/m²'))
+    + champ('Personnalisé TFB', saisieOuiNon(r.id,'matiere.personnalise_tfb',getPath(r,'matiere.personnalise_tfb')))
+    + '<\/div><\/div>'
+
+    + '<div class="blc"><div class="blt">Documents'
+    + (DRIVE.pret && DRIVE.dossiers[r.id]
+        ? ' <a class="src" style="text-decoration:none" href="'+esc(DRIVE.dossiers[r.id].url)
+          +'" target="_blank" rel="noopener">ouvrir le dossier Drive<\/a>'
+        : DRIVE.message ? ' <span class="src" title="'+esc(DRIVE.message)+'">liens à coller<\/span>' : '')
+    + '<\/div>'+blocDocuments(r)+'<\/div>';
+
+  brancherFiche();
+  document.getElementById('fiche').classList.add('on');
+  document.getElementById('fiche').setAttribute('aria-hidden','false');
+  document.getElementById('ov').classList.add('on');
+}
+function fermer(){
+  current=null;
+  document.getElementById('fiche').classList.remove('on');
+  document.getElementById('fiche').setAttribute('aria-hidden','true');
+  document.getElementById('ov').classList.remove('on');
+}
+/* la fiche est redessinée à chaque saisie : on ne rouvre que si elle est ouverte */
+function refreshHeader(){ if(current) { /* l'en-tête de fiche suit le rendu */ } }
+
+function brancherFiche(){
+  const b=document.getElementById('f-b');
+  b.querySelectorAll('.ed[data-path]').forEach(el=>{
+    const fin=()=>{
+      const p=el.dataset.path; let v=el.value;
+      if(el.tagName==='SELECT' && p==='logistique.unite_tarif') v=v.replace(/^par\s+/,'');
+      if(el.dataset.dec){ v=num(v); }
+      else if(p==='matiere.personnalise_tfb'){ v = v===''?null : v==='1'; }
+      saveField(el.dataset.id,p,v);
+      if(/marquage|intitule|unite_tarif/.test(p)) ouvrir(el.dataset.id);
+    };
+    if(el.tagName==='SELECT') el.onchange=fin; else el.onchange=fin;
+  });
+  b.querySelectorAll('[data-mode]').forEach(el=>el.onclick=()=>{
+    const r=DB.packagings.find(p=>p.id===el.dataset.mode);
+    const manuel=getPath(r,'identification.intitule_mode')==='manuel';
+    saveField(r.id,'identification.intitule_mode', manuel?null:'manuel');
+    if(!manuel) saveField(r.id,'identification.intitule_complet', intituleValue(r));
+    ouvrir(r.id);
+  });
+  b.querySelectorAll('[data-lien]').forEach(el=>el.onkeydown=e=>{
+    if(e.key!=='Enter') return;
+    const u=el.value.trim(); if(!u) return;
+    const r=DB.packagings.find(p=>p.id===el.dataset.id), k=el.dataset.lien;
+    saveField(r.id,'documents.'+k, liensManuels(r,k).concat([u]));
+    el.value=''; ouvrir(r.id);
+  });
+}
+
+/* ---------- démarrage ---------- */
+async function load(){
+  setConn('spin','Chargement du référentiel…','');
+  let doc=null;
+  try{ const r=await fetch('data/packaging.json',{cache:'no-store'}); if(r.ok) doc=await r.json(); }catch(e){}
+  if(!doc && typeof EMBEDDED!=='undefined') doc=EMBEDDED;
+  if(!doc){ setConn('err','Référentiel introuvable',''); return; }
+  DB=doc;
+  await loadOverrides();
+  refreshFournisseurs();
+  brancher();
+  render();
+  syncInpulse();
+  chargerDrive();
+}
+
+function brancher(){
+  document.getElementById('q').oninput=e=>{ F.q=e.target.value; render(); };
+  document.getElementById('f-four').onchange=e=>{ F.four=e.target.value; render(); };
+  const t=document.getElementById('f-todo');
+  t.onclick=()=>{ F.todo=!F.todo; t.classList.toggle('on',F.todo); render(); };
+  document.getElementById('btn-sync').onclick=()=>loadOverrides().then(syncInpulse).then(chargerDrive);
+  document.getElementById('f-x').onclick=fermer;
+  document.getElementById('ov').onclick=fermer;
+  document.addEventListener('keydown',e=>{
+    const champ=/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName||'');
+    if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')){ e.preventDefault(); document.getElementById('q').focus(); document.getElementById('q').select(); return; }
+    if(e.key==='Escape'){ if(current) fermer(); else if(champ&&e.target.id==='q'){ e.target.value=''; F.q=''; render(); } }
+  });
+}
+
+load();
+
+</script>
 </body></html>

@@ -1,0 +1,48 @@
+# TFB — Info Pack
+# info-pack.html est publie tel quel : c'est la source, plus une copie.
+#
+# Historique : une ancienne regle de build copiait le app<AAAAMMJJHHMM>.html
+# le plus recent sur index.html. Le fichier app202609101205.html de l'app
+# « Pilotage achats », depose ici par erreur, etait donc publie a la place
+# d'Info Pack. Deux garde-fous sont en place :
+#   1. la commande de build est definie ICI (elle prend le pas sur le
+#      reglage « Build command » de l'interface Netlify, qui contenait
+#      encore l'ancienne regle de copie) ;
+#   2. app202609101205.html est range dans archives/, hors de portee de
+#      toute regle qui chercherait un app*.html a la racine.
+# L'app « Pilotage achats » n'est pas touchee : elle a son propre site,
+# ce fichier n'en etait qu'une copie.
+# Fonctions : /api/store et /api/proxy sont routes par les redirects ci-dessous,
+# /api/orders et /api/inventories declarent elles-memes leur chemin (config.path).
+[build]
+  publish = "."
+  functions = "netlify/functions"
+  command = "echo 'Info Pack : info-pack.html publie tel quel, aucune copie.'"
+
+[[redirects]]
+from = "/api/store"
+to = "/.netlify/functions/store"
+status = 200
+
+[[redirects]]
+from = "/api/proxy"
+to = "/.netlify/functions/proxy"
+status = 200
+
+# La page de l'app ne s'appelle pas index.html : le depot contient trop de
+# fichiers voisins (index (1).html, index-html-08-09.txt...) pour qu'un nom
+# aussi banal reste sans risque. C'est info-pack.html, et ces deux regles
+# l'envoient sur « / » comme sur n'importe quelle autre adresse.
+# force = true sur « / » : la redirection l'emporte meme si un ancien
+# index.html traine encore a la racine. Pas de force sur « /* », sinon
+# data/packaging.json et les autres fichiers reels seraient avales aussi.
+[[redirects]]
+from = "/"
+to = "/info-pack.html"
+status = 200
+force = true
+
+[[redirects]]
+from = "/*"
+to = "/info-pack.html"
+status = 200
