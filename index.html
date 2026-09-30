@@ -128,11 +128,6 @@ tbody tr:last-child td{border-bottom:none}
 .chip .nb{font-variant-numeric:tabular-nums;font-size:11px;opacity:.7;margin-left:2px}
 .chsp{flex:1}
 td.vd,.vd{color:var(--tx3)}
-.note{display:flex;gap:10px;align-items:flex-start;background:var(--sur);border:1px solid var(--bor);
-  border-left:3px solid var(--nav);border-radius:var(--r);padding:12px 15px;margin-bottom:14px;
-  font-size:12.5px;color:var(--tx2);line-height:1.5}
-.note i{color:var(--nav);font-size:15px;flex:none;margin-top:1px}
-.note strong{color:var(--tx);font-weight:600}
 
 /* ---------- fiche ---------- */
 .ov{position:fixed;inset:0;background:rgba(20,25,32,.34);opacity:0;pointer-events:none;
@@ -211,13 +206,6 @@ td.vd,.vd{color:var(--tx3)}
 <div class="main">
   <div class="hero" id="hero"></div>
   <div class="chips" id="chips" hidden></div>
-  <div class="note" id="note-stock" hidden><i class="ti ti-info-circle"></i><div>
-    Source : l'<strong>inventaire de début de mois</strong> saisi dans Inpulse par chaque boutique,
-    limité aux lignes de catégorie PACKAGING. Ce relevé fait foi ; l'estimation ne fait que le vieillir
-    des réceptions postérieures et de la consommation moyenne.
-    <strong>Sans inventaire, la case reste vide</strong> — un tiret vaut mieux qu'un chiffre inventé.
-    Survole une cellule pour lire le relevé d'origine et sa date.
-  </div></div>
   <div class="panel">
     <div class="ph"><span class="pt" id="pt">Base packaging</span><span class="pn" id="count"></span></div>
     <div class="tw"><table><thead id="thead"></thead><tbody id="tb"></tbody></table></div>
@@ -1208,7 +1196,6 @@ function setPage(k){
   PAGE=k;
   document.querySelectorAll('.rnav a').forEach(a=>a.classList.toggle('on',a.dataset.page===k));
   document.getElementById('pt').textContent = k==='stock' ? 'Stock par référence' : 'Base packaging';
-  document.getElementById('note-stock').hidden = k!=='stock';
   document.getElementById('chips').hidden = k!=='stock';
   if(k==='stock') renderStock(); else render();
 }
