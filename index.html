@@ -53,31 +53,25 @@ table{border-collapse:collapse;width:100%}
   font-size:12.5px;font-weight:500;white-space:nowrap}
 .btn:hover{background:var(--sur2)}
 .btn:focus-visible{outline:2px solid var(--nav);outline-offset:2px}
+.btn:disabled{opacity:.35;cursor:default}
+.btn:disabled:hover{background:var(--sur)}
 .btn-nav{background:var(--nav);border-color:var(--nav);color:#fff}
 .btn-nav:hover{background:var(--navh)}
 
-/* ---------- indicateurs ---------- */
+/* ---------- barre d'outils ---------- */
 .main{padding:18px 20px 60px;min-width:0}
-.hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:11px;margin-bottom:16px}
-.hm{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:13px 15px;
-  text-align:left;font-family:inherit;display:flex;flex-direction:column;gap:2px;min-width:0}
-.hm.clic{cursor:pointer}
-.hm.clic:hover{border-color:var(--bor2)}
-.hl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);
-  display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.hv{font-size:25px;font-weight:700;letter-spacing:-.7px;line-height:1.25;font-variant-numeric:tabular-nums}
-.hs{font-size:11px;color:var(--tx3);line-height:1.4}
-.hm.amb{background:var(--ambbg);border-color:var(--ambbor)}
-.hm.amb .hv{color:var(--amb)}
-.hm.amb.on{box-shadow:inset 0 0 0 1px var(--amb)}
-.tag{font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:3px;
-  background:#f7e3cc;color:#9a4a12;text-transform:uppercase}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.sw{position:relative;flex:0 1 300px;min-width:200px}
+.sw i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:14px}
+#q{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--bor2);border-radius:var(--rs);
+  background:var(--sur);font-size:13px}
+#q:focus{outline:none;border-color:var(--nav);box-shadow:0 0 0 3px rgba(27,58,83,.1)}
 
 /* ---------- panneau et tableau ---------- */
 .panel{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);overflow:hidden}
 .ph{display:flex;align-items:baseline;gap:10px;padding:13px 16px;border-bottom:1px solid var(--bor)}
 .pt{font-size:13.5px;font-weight:600}
-.pn{margin-left:auto;font-size:12px;color:var(--tx3);font-variant-numeric:tabular-nums}
+.cnt{margin-left:auto;font-size:12.5px;color:var(--tx3);font-variant-numeric:tabular-nums;white-space:nowrap}
 .tw{overflow-x:auto}
 th{text-align:left;padding:8px 14px;font-size:10px;font-weight:600;text-transform:uppercase;
   letter-spacing:.06em;color:var(--tx3);border-bottom:1px solid var(--bor);white-space:nowrap;
@@ -92,16 +86,11 @@ th.num,td.num{text-align:right}
 thead tr.tot th{background:var(--sur2);color:var(--tx);font-size:12.5px;font-weight:700;
   text-transform:none;letter-spacing:0;cursor:default;border-bottom:1px solid var(--bor2);padding:7px 14px}
 thead tr.tot th.lb{font-weight:600;color:var(--tx2)}
-thead tr.fr th{padding:5px 8px;background:var(--sur);cursor:default}
-.ff{position:relative;display:block}
-.ff i{position:absolute;left:7px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--tx3);
-  pointer-events:none}
-.ff input{width:100%;min-width:90px;padding:4px 7px 4px 22px;border:1px solid var(--bor);
-  border-radius:var(--rs);background:var(--sur3);font-size:11.5px}
-.ff input:focus{outline:none;border-color:var(--nav);background:var(--sur)}
 td{padding:9px 14px;border-bottom:1px solid var(--bor);font-size:13px}
 tbody tr{cursor:pointer}
 tbody tr:hover td{background:var(--sur3)}
+tbody tr.sel td{background:var(--navbg)}
+tbody tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--nav)}
 tbody tr:last-child td{border-bottom:none}
 .ref{font-weight:600;letter-spacing:-.1px}
 .tm{color:var(--tx2)}
@@ -120,13 +109,13 @@ tbody tr:last-child td{border-bottom:none}
 .couv.bas{background:#fdeaea;color:#b42318}
 .couv.moy{background:var(--ambbg);color:#9a4a12}
 .couv.ok{background:#e9f5ec;color:#15683a}
-.chips{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:13px}
-.chip{border:1px solid var(--bor2);background:var(--sur);border-radius:999px;padding:6px 13px;
+.chips{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+.chip{border:1px solid var(--bor2);background:var(--sur);border-radius:999px;padding:6px 12px;
   font-size:12.5px;color:var(--tx2);cursor:pointer;white-space:nowrap;font-family:inherit}
 .chip:hover{background:var(--sur2)}
 .chip.on{background:var(--nav);border-color:var(--nav);color:#fff;font-weight:500}
 .chip .nb{font-variant-numeric:tabular-nums;font-size:11px;opacity:.7;margin-left:2px}
-.chsp{flex:1}
+
 td.vd,.vd{color:var(--tx3)}
 
 /* ---------- fiche ---------- */
@@ -141,6 +130,9 @@ td.vd,.vd{color:var(--tx3)}
   align-items:flex-start;gap:14px;flex:none}
 .fh h2{font-size:16.5px;font-weight:600;letter-spacing:-.25px;line-height:1.3;overflow-wrap:anywhere}
 .fh .sub{font-size:12px;margin-top:2px}
+.fnav{display:flex;align-items:center;gap:4px;flex:none}
+.btn.ic{padding:6px 8px}
+.fpos{font-size:11.5px;color:var(--tx3);font-variant-numeric:tabular-nums;padding:0 2px;white-space:nowrap}
 .fb{overflow:auto;padding:20px;display:flex;flex-direction:column;gap:18px}
 .blc{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:16px 17px}
 .blt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);
@@ -204,10 +196,13 @@ td.vd,.vd{color:var(--tx3)}
 </aside>
 
 <div class="main">
-  <div class="hero" id="hero"></div>
-  <div class="chips" id="chips" hidden></div>
+  <div class="bar">
+    <span class="sw"><i class="ti ti-search"></i><input id="q" placeholder="Rechercher…" autocomplete="off"></span>
+    <span class="chips" id="chips"></span>
+    <span class="cnt" id="count"></span>
+  </div>
   <div class="panel">
-    <div class="ph"><span class="pt" id="pt">Base packaging</span><span class="pn" id="count"></span></div>
+    <div class="ph"><span class="pt" id="pt">Base packaging</span></div>
     <div class="tw"><table><thead id="thead"></thead><tbody id="tb"></tbody></table></div>
   </div>
 </div>
@@ -217,7 +212,12 @@ td.vd,.vd{color:var(--tx3)}
 <aside class="fiche" id="fiche" aria-hidden="true">
   <div class="fh">
     <div style="min-width:0;flex:1"><h2 id="f-t">—</h2><div class="sub" id="f-s"></div></div>
-    <button class="btn" id="f-x" aria-label="Fermer"><i class="ti ti-x"></i></button>
+    <div class="fnav">
+      <button class="btn ic" id="f-prev" title="Référence précédente (←)" aria-label="Référence précédente"><i class="ti ti-chevron-up"></i></button>
+      <span class="fpos" id="f-pos"></span>
+      <button class="btn ic" id="f-next" title="Référence suivante (→)" aria-label="Référence suivante"><i class="ti ti-chevron-down"></i></button>
+      <button class="btn ic" id="f-x" aria-label="Fermer"><i class="ti ti-x"></i></button>
+    </div>
   </div>
   <div class="fb" id="f-b"></div>
 </aside>
@@ -696,17 +696,47 @@ const COLS=[
 const barre = v => '<div class="bw"><div class="bb"><div class="bf" style="width:'+v+'%"><\/div><\/div>'
   + '<span class="bp">'+v+' %<\/span><\/div>';
 
-/* ---------- filtres et tri ---------- */
-const CF={};                 // filtre par colonne, saisi sous les en-tetes
-let todo=false;              // n'afficher que les fiches incompletes
+/* ---------- recherche, filtres, tri ---------- */
+/* Une seule recherche, qui balaie l'intitule, le SKU, le fournisseur et la
+   matiere. Les fournisseurs tiennent en pastilles tant qu'ils sont peu
+   nombreux ; au-dela c'est une liste deroulante. */
+let Q='', FOUR='', todo=false;
 let sortK='ref', sortD=1;
 
 function passe(p){
   if(todo && !detailManques(p).length) return false;
-  for(const k in CF){ const q=CF[k]; if(!q) continue;
-    const col=COLS.find(c=>c.k===k);
-    if(norm(col.t(p)).indexOf(norm(q))<0) return false; }
+  if(FOUR && p.inpulse.fournisseur!==FOUR) return false;
+  if(Q){
+    const h=norm(intituleValue(p)+' '+p.nom+' '+(p.identification.sku_fournisseur||'')+' '
+      +(p.inpulse.fournisseur||'')+' '+(getPath(p,'matiere.matiere')||''));
+    if(h.indexOf(norm(Q))<0) return false;
+  }
   return true;
+}
+
+const fournisseurs = () =>
+  [...new Set(DB.packagings.map(p=>p.inpulse.fournisseur).filter(Boolean))].sort();
+
+function renderChips(){
+  const el=document.getElementById('chips'); if(!el) return;
+  const four=fournisseurs();
+  const aCompleter=DB.packagings.filter(p=>detailManques(p).length).length;
+  let html='';
+  if(four.length<=6){
+    html += '<button class="chip'+(FOUR?'':' on')+'" data-four="">Tous<\/button>'
+          + four.map(f=>'<button class="chip'+(f===FOUR?' on':'')+'" data-four="'+esc(f)+'">'
+              +esc(f)+'<\/button>').join('');
+  }else{
+    html += '<select class="ed" style="width:auto" data-foursel><option value="">Tous les fournisseurs<\/option>'
+          + four.map(f=>'<option'+(f===FOUR?' selected':'')+'>'+esc(f)+'<\/option>').join('')+'<\/select>';
+  }
+  html += '<button class="chip'+(todo?' on':'')+'" data-todo>\u00c0 compl\u00e9ter <span class="nb">'
+        + aCompleter + '<\/span><\/button>';
+  el.innerHTML=html;
+  el.querySelectorAll('[data-four]').forEach(b=>b.onclick=()=>{ FOUR=b.dataset.four; render(); });
+  const sel=el.querySelector('[data-foursel]');
+  if(sel) sel.onchange=()=>{ FOUR=sel.value; render(); };
+  el.querySelector('[data-todo]').onclick=()=>{ todo=!todo; render(); };
 }
 
 function render(){
@@ -717,76 +747,44 @@ function render(){
     const x=col.n?col.n(a):col.t(a), y=col.n?col.n(b):col.t(b);
     return (typeof x==='number' ? x-y : String(x).localeCompare(String(y),'fr'))*sortD;
   });
-  renderHero(); renderHead(); renderCorps();
+  renderChips(); renderHead(); renderCorps();
   const n=DB.packagings.length;
   document.getElementById('count').textContent =
-    ROWS.length===n ? (n+' références') : (ROWS.length+' sur '+n+' références');
-}
-
-function renderHero(){
-  const a=DB.packagings, n=a.length;
-  const completes=a.filter(p=>!detailManques(p).length).length;
-  const four=new Set(a.map(p=>p.inpulse.fournisseur).filter(Boolean)).size;
-  const moy=n?Math.round(a.reduce((x,p)=>x+completude(p),0)/n):0;
-  const tuiles=[
-    {l:'Références', v:n, s:'rapprochées avec le catalogue Inpulse'},
-    {l:'Fiches complètes', v:completes+' / '+n, s:'complétude moyenne '+moy+' %'},
-    {l:'À compléter', v:n-completes, amb:1, clic:1,
-     tag: todo?'affichées':'', s:'cotes, matière, grammage ou document manquant'},
-    {l:'Fournisseurs', v:four, s:'le catalogue ne se limite plus à Wellembal'}
-  ];
-  document.getElementById('hero').innerHTML=tuiles.map(t=>{
-    const b=t.clic?'button':'div';
-    return '<'+b+' class="hm'+(t.amb?' amb':'')+(t.clic?' clic':'')+(t.clic&&todo?' on':'')+'"'
-      +(t.clic?' type="button" data-todo="1"':'')+'>'
-      +'<div class="hl">'+t.l+(t.tag?' <span class="tag">'+t.tag+'<\/span>':'')+'<\/div>'
-      +'<div class="hv">'+t.v+'<\/div><div class="hs">'+t.s+'<\/div><\/'+b+'>';
-  }).join('');
-  const b=document.querySelector('[data-todo]');
-  if(b) b.onclick=()=>{ todo=!todo; render(); };
+    ROWS.length===n ? (n+' r\u00e9f\u00e9rences') : (ROWS.length+' sur '+n+' r\u00e9f\u00e9rences');
+  if(current) majPosition();
 }
 
 function renderHead(){
   document.getElementById('thead').innerHTML=
-    '<tr class="hd">'+COLS.map(c=>'<th data-k="'+c.k+'"'+(c.num?' class="num'+(c.k===sortK?(sortD>0?' asc':' desc'):'')+'"'
-      :(c.k===sortK?' class="'+(sortD>0?'asc':'desc')+'"':''))+'>'+c.lb+'<span class="si"><\/span><\/th>').join('')+'<\/tr>'
+    '<tr class="hd">'+COLS.map(c=>'<th data-k="'+c.k+'" class="'+(c.num?'num ':'')
+      +(c.k===sortK?(sortD>0?'asc':'desc'):'')+'">'+c.lb+'<span class="si"><\/span><\/th>').join('')+'<\/tr>'
   + '<tr class="tot">'+COLS.map(c=>{
-      if(c.k==='ref')  return '<th class="lb">'+ROWS.length+' référence'+(ROWS.length>1?'s':'')+'<\/th>';
+      if(c.k==='ref')  return '<th class="lb">'+ROWS.length+' r\u00e9f\u00e9rence'+(ROWS.length>1?'s':'')+'<\/th>';
       if(c.k==='comp'){ const m=ROWS.length?Math.round(ROWS.reduce((x,p)=>x+completude(p),0)/ROWS.length):0;
                         return '<th class="num">'+m+' %<\/th>'; }
       if(c.k==='docs'){ const d=ROWS.reduce((x,p)=>x+DOCUMENTS.filter(y=>documentsDe(p,y.k).length).length,0);
                         return '<th>'+d+' / '+(ROWS.length*DOCUMENTS.length)+'<\/th>'; }
       return '<th'+(c.num?' class="num"':'')+'><\/th>';
-    }).join('')+'<\/tr>'
-  + '<tr class="fr">'+COLS.map(c=> c.filtre
-      ? '<th><span class="ff"><i class="ti ti-search"><\/i><input data-cf="'+c.k+'" value="'+esc(CF[c.k]||'')
-        +'" placeholder="Filtrer…" aria-label="Filtrer '+esc(c.lb)+'"><\/span><\/th>'
-      : '<th><\/th>').join('')+'<\/tr>';
-
+    }).join('')+'<\/tr>';
   document.querySelectorAll('#thead tr.hd th').forEach(el=>el.onclick=()=>{
     if(sortK===el.dataset.k) sortD=-sortD; else { sortK=el.dataset.k; sortD=1; }
     render();
-  });
-  document.querySelectorAll('#thead [data-cf]').forEach(el=>{
-    el.oninput=()=>{ CF[el.dataset.cf]=el.value; render();
-      const n=document.querySelector('#thead [data-cf="'+el.dataset.cf+'"]');
-      if(n && document.activeElement!==n){ n.focus(); n.setSelectionRange(n.value.length,n.value.length); } };
   });
 }
 
 function renderCorps(){
   const tb=document.getElementById('tb');
   if(!ROWS.length){
-    tb.innerHTML='<tr><td class="vide" colspan="'+COLS.length+'">Aucune référence ne correspond.<\/td><\/tr>';
+    tb.innerHTML='<tr><td class="vide" colspan="'+COLS.length+'">Aucune r\u00e9f\u00e9rence ne correspond.<\/td><\/tr>';
     return;
   }
-  tb.innerHTML=ROWS.map(p=>'<tr data-id="'+esc(p.id)+'" title="Ouvrir la fiche">'
-    + COLS.map(c=>c.c(p)).join('') + '<\/tr>').join('');
+  tb.innerHTML=ROWS.map(p=>'<tr data-id="'+esc(p.id)+'"'+(current&&current.id===p.id?' class="sel"':'')
+    +' title="Ouvrir la fiche">'+COLS.map(c=>c.c(p)).join('')+'<\/tr>').join('');
   tb.querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>ouvrir(el.dataset.id));
 }
 
 /* Conserve pour la synchronisation Inpulse, qui l'appelle apres avoir
-   ajoute des references : le filtre fournisseur vit dans l'en-tete. */
+   ajoute des references : les fournisseurs se redessinent avec la liste. */
 function refreshFournisseurs(){ }
 
 /* ---------- stock : commandes recues et inventaires Inpulse ---------- */
@@ -1034,7 +1032,6 @@ function stockRef(p){
   const couv = (total!=null&&conso>0) ? Math.round(total/conso) : null;
   return {ag, z, total, conso, recu, nInv, dernier, four, couv};
 }
-
 /* ---------- feuille Stock ---------- */
 /* Source : l'inventaire de debut de mois saisi dans Inpulse par chaque
    boutique — celui qui porte stockConvention « start » —, limite aux
@@ -1044,9 +1041,9 @@ function stockRef(p){
    Une colonne par boutique : a l'echelle d'une zone le tableau reste
    lisible, et c'est la question posee — combien il reste, et chez qui. */
 let PAGE='pack';
+let SROWS=[];
 let ZONE='Paris boutique';          // zone affichee en colonnes
 let RELEVEES=true;                  // n'afficher que les references inventoriees
-const SCF={};
 let sSortK='total', sSortD=-1;
 
 function setOrdInfo(s,t){ etatLigne('ord',s,t); }
@@ -1111,41 +1108,22 @@ function renderStock(){
   if(RELEVEES && nRelevees) lignes=lignes.filter(o=>o.relevee);
 
   const COLS_S=colonnesStock();
-  lignes=lignes.filter(o=>{
-    for(const k in SCF){ const q=SCF[k]; if(!q) continue;
-      const col=COLS_S.find(c=>c.k===k); if(!col) continue;
-      if(norm(col.t(o)).indexOf(norm(q))<0) return false; }
-    return true;
-  });
+  if(Q) lignes=lignes.filter(o=>norm(intituleValue(o.p)+' '+o.p.nom+' '
+    +(o.p.identification.sku_fournisseur||'')+' '+(o.p.inpulse.fournisseur||'')).indexOf(norm(Q))>=0);
   const col=COLS_S.find(c=>c.k===sSortK)||COLS_S[0];
   lignes.sort((a,b)=>{
     const x=col.n?col.n(a):col.t(a), y=col.n?col.n(b):col.t(b);
     return (typeof x==='number'?x-y:String(x).localeCompare(String(y),'fr'))*sSortD;
   });
 
-  /* ---- tuiles ---- */
   const totalZone=lignes.reduce((x,o)=>x+(o.tz||0),0);
-  const alerte=lignes.filter(o=>o.s.couv!=null&&o.s.couv<STOCK.alerte_jours).length;
-  const dernier=lignes.reduce((d,o)=>o.dz>d?o.dz:d,'');
-  const tuiles=[
-    {l:'Stock estimé — '+ZONE, v:fmt(totalZone), s:'unités, '+bqs.length+' boutiques'},
-    {l:'Références relevées', v:nRelevees+' / '+DB.packagings.length,
-     s:nRelevees?'comptées au moins une fois dans la zone':'aucun inventaire lu pour cette zone'},
-    {l:'Couverture sous '+STOCK.alerte_jours+' j', v:alerte, amb:1,
-     s:alerte?'à réapprovisionner':'aucune alerte'},
-    {l:'Dernier inventaire', v:dernier?dateFR(dernier):'—',
-     s:INVINFO&&INVINFO.refs?(INVINFO.refs+' références lues dans Inpulse'):'inventaires Inpulse non lus'}
-  ];
-  document.getElementById('hero').innerHTML=tuiles.map(t=>
-    '<div class="hm'+(t.amb&&t.v?' amb':'')+'"><div class="hl">'+esc(t.l)+'<\/div>'
-    +'<div class="hv">'+t.v+'<\/div><div class="hs">'+esc(t.s)+'<\/div><\/div>').join('');
 
-  /* ---- chips de zone et bascule ---- */
+  /* ---- pastilles de zone ---- */
   document.getElementById('chips').innerHTML =
     ZONES_ORDRE.map(z=>'<button class="chip'+(z===ZONE?' on':'')+'" data-zone="'+esc(z)+'">'
       +esc(z)+' <span class="nb">'+bqZone(z).length+'<\/span><\/button>').join('')
-    + '<span class="chsp"><\/span>'
-    + '<button class="chip'+(RELEVEES?' on':'')+'" data-relevees="1">Seulement les références relevées<\/button>';
+    + '<button class="chip'+(RELEVEES?' on':'')+'" data-relevees="1">Relevées seulement'
+    + (nRelevees?' <span class="nb">'+nRelevees+'<\/span>':'')+'<\/button>';
   document.querySelectorAll('#chips [data-zone]').forEach(el=>el.onclick=()=>{
     ZONE=el.dataset.zone; sSortK='total'; sSortD=-1; renderStock(); });
   const r=document.querySelector('#chips [data-relevees]');
@@ -1164,13 +1142,12 @@ function renderStock(){
       if(c.k==='total') return '<th class="num">'+fmt(totalZone)+'<\/th>';
       return '<th'+(c.num?' class="num"':'')+'><\/th>';
     }).join('')+'<\/tr>'
-  + '<tr class="fr">'+COLS_S.map(c=> c.filtre
-      ? '<th><span class="ff"><i class="ti ti-search"><\/i><input data-scf="'+c.k+'" value="'+esc(SCF[c.k]||'')
-        +'" placeholder="Filtrer…" aria-label="Filtrer '+esc(c.lb)+'"><\/span><\/th>'
-      : '<th><\/th>').join('')+'<\/tr>';
+  ;
 
+  SROWS=lignes.map(o=>o.p);
   document.getElementById('tb').innerHTML = lignes.length
-    ? lignes.map(o=>'<tr data-id="'+esc(o.p.id)+'" title="Ouvrir la fiche">'
+    ? lignes.map(o=>'<tr data-id="'+esc(o.p.id)+'"'+(current&&current.id===o.p.id?' class="sel"':'')
+        +' title="Ouvrir la fiche">'
         +COLS_S.map(c=>c.c(o)).join('')+'<\/tr>').join('')
     : '<tr><td class="vide" colspan="'+COLS_S.length+'">'
       +(nRelevees?'Aucune référence ne correspond.'
@@ -1184,12 +1161,8 @@ function renderStock(){
     if(sSortK===el.dataset.k) sSortD=-sSortD; else { sSortK=el.dataset.k; sSortD=el.dataset.k==='ref'?1:-1; }
     renderStock();
   });
-  document.querySelectorAll('#thead [data-scf]').forEach(el=>{
-    el.oninput=()=>{ SCF[el.dataset.scf]=el.value; renderStock();
-      const n=document.querySelector('#thead [data-scf="'+el.dataset.scf+'"]');
-      if(n && document.activeElement!==n){ n.focus(); n.setSelectionRange(n.value.length,n.value.length); } };
-  });
   document.querySelectorAll('#tb [data-id]').forEach(el=>el.onclick=()=>ouvrir(el.dataset.id));
+  if(current) majPosition();
 }
 
 function setPage(k){
@@ -1304,13 +1277,35 @@ function ouvrir(id){
         : DRIVE.message ? ' <span class="src" title="'+esc(DRIVE.message)+'">liens à coller<\/span>' : '')
     + '<\/div>'+blocDocuments(r)+'<\/div>';
 
-  brancherFiche();
+  brancherFiche(); majPosition();
   document.getElementById('fiche').classList.add('on');
   document.getElementById('fiche').setAttribute('aria-hidden','false');
   document.getElementById('ov').classList.add('on');
 }
+/* La fiche se parcourt : quand on remplit 143 references, passer a la
+   suivante sans repasser par la liste est le geste le plus frequent. */
+const visibles = () => PAGE==='stock' ? SROWS : ROWS;
+function majPosition(){
+  const l=visibles(), i=current?l.findIndex(p=>p.id===current.id):-1;
+  const el=document.getElementById('f-pos'); if(!el) return;
+  el.textContent = i<0 ? '' : (i+1)+' / '+l.length;
+  document.getElementById('f-prev').disabled = i<=0;
+  document.getElementById('f-next').disabled = i<0 || i>=l.length-1;
+  document.querySelectorAll('#tb tr').forEach(tr=>
+    tr.classList.toggle('sel', !!current && tr.dataset.id===current.id));
+}
+function voisine(pas){
+  const l=visibles(); if(!current||!l.length) return;
+  const i=l.findIndex(p=>p.id===current.id), j=i+pas;
+  if(i<0||j<0||j>=l.length) return;
+  ouvrir(l[j].id);
+  const tr=document.querySelector('#tb tr[data-id="'+l[j].id+'"]');
+  if(tr) tr.scrollIntoView({block:'nearest'});
+}
+
 function fermer(){
   current=null;
+  document.querySelectorAll('#tb tr.sel').forEach(tr=>tr.classList.remove('sel'));
   document.getElementById('fiche').classList.remove('on');
   document.getElementById('fiche').setAttribute('aria-hidden','true');
   document.getElementById('ov').classList.remove('on');
@@ -1369,17 +1364,21 @@ function brancher(){
     .then(syncInpulse).then(chargerDrive).then(()=>loadOrders(true)).then(()=>loadInventories(true));
   document.querySelectorAll('.rnav a[data-page]').forEach(a=>a.onclick=e=>{e.preventDefault();setPage(a.dataset.page);});
   document.getElementById('f-x').onclick=fermer;
+  document.getElementById('f-prev').onclick=()=>voisine(-1);
+  document.getElementById('f-next').onclick=()=>voisine(1);
+  document.getElementById('q').oninput=e=>{ Q=e.target.value; PAGE==='stock'?renderStock():render(); };
   document.getElementById('ov').onclick=fermer;
   document.addEventListener('keydown',e=>{
     const champ=/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName||'');
     if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')){
       e.preventDefault();
-      const el=document.querySelector('#thead [data-cf="ref"]'); if(el){ el.focus(); el.select(); }
+      const el=document.getElementById('q'); if(el){ el.focus(); el.select(); }
       return; }
+    if(current && !champ && (e.key==='ArrowDown'||e.key==='ArrowUp')){
+      e.preventDefault(); voisine(e.key==='ArrowDown'?1:-1); return; }
     if(e.key==='Escape'){
       if(current){ fermer(); return; }
-      if(champ && e.target.dataset && e.target.dataset.cf){
-        e.target.value=''; CF[e.target.dataset.cf]=''; render(); } }
+      if(champ && e.target.id==='q'){ e.target.value=''; Q=''; PAGE==='stock'?renderStock():render(); } }
   });
 }
 
