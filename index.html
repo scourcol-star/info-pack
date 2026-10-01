@@ -721,8 +721,6 @@ function detailManques(r){
   DOCUMENTS.forEach(x=>{ if(!documentsDe(r,x.k).length) m.push(x.manque); });
   return m;
 }
-const NB_ATTENDUS = 9;
-const completude = r => Math.round(100*(NB_ATTENDUS-detailManques(r).length)/NB_ATTENDUS);
 /* Meme liste, cotes regroupees : c'est ce que lit l'en-tete de fiche. */
 function manques(r){
   const d=detailManques(r), cotes=['longueur','largeur','hauteur'];
@@ -840,12 +838,7 @@ function renderHead(){
   document.getElementById('thead').innerHTML=
     '<tr class="hd">'+COLS.map(c=>'<th data-k="'+c.k+'" class="'+(c.num?'num ':'')
       +(c.k===sortK?(sortD>0?'asc':'desc'):'')+'">'+c.lb+'<span class="si"><\/span><\/th>').join('')+'<\/tr>'
-  + '<tr class="tot">'+COLS.map(c=>{
-      if(c.k==='ref')  return '<th class="lb">'+ROWS.length+' r\u00e9f\u00e9rence'+(ROWS.length>1?'s':'')+'<\/th>';
-      if(c.k==='docs'){ const d=ROWS.reduce((x,p)=>x+DOCUMENTS.filter(y=>documentsDe(p,y.k).length).length,0);
-                        return '<th>'+d+' / '+(ROWS.length*DOCUMENTS.length)+'<\/th>'; }
-      return '<th'+(c.num?' class="num"':'')+'><\/th>';
-    }).join('')+'<\/tr>';
+  ;
   document.querySelectorAll('#thead tr.hd th').forEach(el=>el.onclick=()=>{
     if(sortK===el.dataset.k) sortD=-sortD; else { sortK=el.dataset.k; sortD=1; }
     render();
