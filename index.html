@@ -179,6 +179,12 @@ td.vd,.vd{color:var(--tx3)}
 .vg .nm{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.93);font-size:8.5px;
   padding:2px 3px;text-align:center;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dzv{font-size:var(--t1);color:var(--tx3);padding:5px 0 8px}
+.dzw{display:flex;gap:7px;align-items:flex-start;font-size:var(--t1);color:var(--tx2);
+  background:var(--navbg);border:1px solid #d6dee6;border-radius:var(--rs);padding:9px 11px;margin-bottom:10px}
+.dzw i{color:var(--nav);font-size:14px;flex:none;margin-top:1px}
+.dzw.tm{background:var(--sur2);border-color:var(--bor);color:var(--tx3)}
+.dzw.tm i{color:var(--tx3)}
+.dzw b{color:var(--tx);font-weight:600}
 
 @media(max-width:1000px){
   .shell{grid-template-columns:minmax(0,1fr)}
@@ -682,11 +688,10 @@ function appliquerWellembal(){
   DB.packagings.forEach(p=>{
     const k=cleWel(p); p._welk=k; p._wel = k?WEL.refs[k]:null;
     const w=p._wel; if(!w) return;
-    if(w.cotes_cm){
-      setPath(p,'dimensions.longueur_cm', w.cotes_cm[0]);
-      setPath(p,'dimensions.largeur_cm',  w.cotes_cm[1]);
-      setPath(p,'dimensions.hauteur_cm',  w.cotes_cm[2]);
-    }
+    const c=w.cotes_cm||[null,null,null];
+    setPath(p,'dimensions.longueur_cm', c[0]);
+    setPath(p,'dimensions.largeur_cm',  c[1]);
+    setPath(p,'dimensions.hauteur_cm',  c[2]);
     if(w.matiere)        setPath(p,'matiere.matiere', w.matiere);
     if(w.grammage!=null) setPath(p,'matiere.grammage_g_m2', w.grammage);
     if(w.type)           setPath(p,'matiere.personnalise_tfb', w.type.indexOf('Personnalis')===0);
@@ -1278,7 +1283,13 @@ function saisieOuiNon(id,path,v){
 }
 
 function blocDocuments(r){
-  return DOCUMENTS.map(d=>{
+  const w=r._wel;
+  const chez = (w && w.bat_gabarit && r._welk)
+    ? '<div class="dzw"><i class="ti ti-folder"><\/i><span>BAT et gabarit disponibles chez Wellembal, '
+      + 'dans le dossier partagé, sous la référence <b>'+esc(r._welk)+'<\/b>.<\/span><\/div>'
+    : (w ? '<div class="dzw tm"><i class="ti ti-folder-off"><\/i><span>Référence neutre : Wellembal ne '
+         + 'fournit ni BAT ni gabarit.<\/span><\/div>' : '');
+  return chez + DOCUMENTS.map(d=>{
     const f=documentsDe(r,d.k);
     const vign = f.length
       ? '<div class="vign">'+f.map(x=>
@@ -1307,10 +1318,12 @@ function ouvrir(id){
     : '<span style="color:var(--ok)">Fiche complète<\/span>';
 
   const manuel = getPath(r,'identification.intitule_mode')==='manuel';
-  const regle  = (r.app&&r.app.marquage)==='Neutre'
+  const ver = versionDesign(r);
+  const regle = (r.app&&r.app.marquage)==='Neutre'
     ? 'Sans design : l’intitulé porte la mention NEUTRE.'
     : 'Avec design : l’intitulé porte '+esc(INTITULE.mentions[r.app&&r.app.marquage]||'TFB')
-      +' et la version. XX/XXXX tant qu’elle ne se lit pas dans le libellé Inpulse.';
+      + (ver ? ' et la version '+esc(ver)+', lue dans le libellé Inpulse.'
+             : '. Aucune version dans le libellé Inpulse — corrige à la main si tu la connais.');
 
   document.getElementById('f-b').innerHTML =
     '<div class="blc"><div class="blt">Depuis Inpulse <span class="src">lecture seule<\/span><\/div><div class="gr">'
@@ -1345,12 +1358,12 @@ function ouvrir(id){
     + champ('Hauteur',  saisieNombre(r.id,'dimensions.hauteur_cm', getPath(r,'dimensions.hauteur_cm'),'cm'))
     + champ('Matière',  saisieListe(r.id,'matiere.matiere',getPath(r,'matiere.matiere'),MATIERES), 1)
     + champ('Grammage', saisieNombre(r.id,'matiere.grammage_g_m2',getPath(r,'matiere.grammage_g_m2'),'g/m²'))
-    + (r._wel ? champ('Chez Wellembal',
+    + (r._wel ? champ('Au référentiel Wellembal',
         '<div class="fv">'+esc(r._wel.dimensions_texte||'—')+'<\/div>'
-        + '<div class="regle">Réf. '+esc(r._welk||'—')+' · '
+        + '<div class="regle">Réf. <b>'+esc(r._welk||'—')+'<\/b> · '+esc(r._wel.type||'')+' · '
         + (r._wel.archivee ? '<b>'+esc(r._wel.archivee)+'<\/b>'
            : 'stock '+fmt(r._wel.stock)+' colis · '+fmt(r._wel.conso6)+' sortis sur 6 mois')
-        + '<\/div>', 1) : '')
+        + ' · édition du '+esc(dateFR((WEL&&WEL.edition)||''))+'<\/div>', 1) : '')
     + champ('Personnalisé TFB', saisieOuiNon(r.id,'matiere.personnalise_tfb',getPath(r,'matiere.personnalise_tfb')))
     + '<\/div><\/div>'
 
