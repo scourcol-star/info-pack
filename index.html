@@ -111,6 +111,7 @@ tbody tr:last-child td{border-bottom:none}
 .p-a{background:#e9f5ec;color:#15683a;border-color:#c6e6d2}
 .p-i{background:var(--sur2);color:var(--tx2);border-color:var(--bor2)}
 .p-p{background:var(--ambbg);color:#9a4a12;border-color:var(--ambbor)}
+.pil.man{box-shadow:inset 0 0 0 1px currentColor}
 .sep{width:1px;height:17px;background:var(--bor2);flex:none;margin:0 3px}
 .chip.s-a.on{background:#15683a;border-color:#15683a}
 .chip.s-i.on{background:var(--tx2);border-color:var(--tx2)}
@@ -674,14 +675,24 @@ async function chargerWellembal(){
     appliquerWellembal(); applyOverrides(); render();
   }catch(e){ WEL=null; }
 }
+const code = s => String(s==null?'':s).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+  .replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+let WELIDX=null;
+function indexerWel(){
+  WELIDX={sku:{}, nom:{}};
+  for(const k in WEL.refs){
+    WELIDX.sku[code(k)]=k;
+    const n=WEL.refs[k].nom_inpulse;
+    if(n && !(code(n) in WELIDX.nom)) WELIDX.nom[code(n)]=k;
+  }
+}
 function cleWel(r){
   if(!WEL||!WEL.refs) return '';
-  const sku=String((r.identification&&r.identification.sku_fournisseur)||'').trim().toUpperCase();
-  if(sku && WEL.refs[sku]) return sku;
-  const nom=String((r.identification&&r.identification.intitule_inpulse)||'').trim().toUpperCase();
-  for(const k in WEL.refs){ const w=WEL.refs[k];
-    if(w.nom_inpulse && w.nom_inpulse.toUpperCase()===nom) return k; }
-  return '';
+  if(!WELIDX) indexerWel();
+  const sku=code((r.identification&&r.identification.sku_fournisseur));
+  if(sku && WELIDX.sku[sku]) return WELIDX.sku[sku];
+  const nom=code((r.identification&&r.identification.intitule_inpulse));
+  return WELIDX.nom[nom] || '';
 }
 function appliquerWellembal(){
   if(!WEL||!DB) return;
@@ -699,18 +710,46 @@ function appliquerWellembal(){
 }
 
 /* ---------- statut ---------- */
-function statutAuto(r){
-  if((r.app&&r.app.marquage)==='Co-branding') return 'Ponctuelle';
+/* Quatre sources, de la plus sure a la plus indirecte. Chacune dit
+   pourquoi : le statut d'une reference n'est jamais un verdict opaque.
+     1. le marquage        — co-brandee, donc ponctuelle
+     2. le referentiel Wellembal — archivage, stock, sorties sur six mois
+     3. l'historique Inpulse     — commandes depuis janvier
+     4. la disponibilite Inpulse — approvisionnable, ou plus du tout   */
+function statutSource(r){
+  if((r.app&&r.app.marquage)==='Co-branding')
+    return {v:'Ponctuelle', d:'co-brandée : TFB et une autre marque'};
   const w=r._wel;
-  if(!w) return '';
-  if(w.archivee) return 'Inactive';
-  if((w.stock||0)===0 && (w.conso6||0)===0) return 'Inactive';
-  return 'Active';
+  if(w){
+    if(w.archivee) return {v:'Inactive', d:'chez Wellembal : '+w.archivee.toLowerCase()};
+    if((w.stock||0)===0 && (w.conso6||0)===0)
+      return {v:'Inactive', d:'chez Wellembal : ni stock ni sortie sur six mois'};
+    return {v:'Active', d:'chez Wellembal : '+fmt(w.stock)+' colis en stock, '
+            +fmt(w.conso6)+' sortis sur six mois'};
+  }
+  if(r.inpulse && r.inpulse.actif===false)
+    return {v:'Inactive', d:'désactivée dans Inpulse'};
+  const o = (typeof ORD!=='undefined' && ORD) ? ordFor(r) : null;
+  if(o && o.vide) return {v:'Inactive', d:'aucune commande depuis janvier 2026'};
+  const dsp=String((r.inpulse&&r.inpulse.dispo)||'');
+  const m=/^(\d+)\s*\/\s*(\d+)/.exec(dsp);
+  if(m && +m[1]===0)
+    return {v:'Inactive', d:'approvisionnable dans aucune boutique ('+dsp+')'};
+  if(o && !o.vide)
+    return {v:'Active', d:o.tot.n+' commande'+(o.tot.n>1?'s':'')+' depuis janvier 2026'};
+  if(m && +m[1]>0)
+    return {v:'Active', d:'approvisionnable dans '+dsp+' boutiques'};
+  return {v:'', d:'ni ligne Wellembal, ni signal Inpulse'};
 }
+const statutAuto = r => statutSource(r).v;
 const statutDe = r => (r.app&&r.app.cycle) || statutAuto(r);
-const pilStatut = v => v
-  ? '<span class="pil '+(v==='Active'?'p-a':v==='Inactive'?'p-i':'p-p')+'">'+esc(v)+'<\/span>'
-  : '<span class="vd">\u2014<\/span>';
+function pilStatut(r){
+  const src=statutSource(r), man=(r.app&&r.app.cycle), v=man||src.v;
+  if(!v) return '<span class="vd" title="'+esc(src.d)+'">\u2014<\/span>';
+  const t = man ? 'fixé à la main (automatique : '+(src.v||'non déterminé')+')' : src.d;
+  return '<span class="pil '+(v==='Active'?'p-a':v==='Inactive'?'p-i':'p-p')
+    + (man?' man':'')+'" title="'+esc(t)+'">'+esc(v)+'<\/span>';
+}
 
 /* ---------- ce qui manque a une fiche ---------- */
 /* Neuf informations attendues : trois cotes, matiere, grammage,
@@ -769,7 +808,7 @@ const COLS=[
       ).join('')+'<\/div><\/td>'},
  {k:'statut', lb:'Statut',
   t:p=>statutDe(p),
-  c:p=>'<td>'+pilStatut(statutDe(p))+'<\/td>'}
+  c:p=>'<td>'+pilStatut(p)+'<\/td>'}
 ];
 
 /* ---------- recherche, filtres, tri ---------- */
@@ -1337,7 +1376,8 @@ function ouvrir(id){
         '<select class="ed" data-id="'+esc(r.id)+'" data-path="app.cycle">'
         + '<option value="">— '+(statutAuto(r)||'non déterminé')+' (automatique) —<\/option>'
         + STATUTS.map(v=>'<option'+(v===(r.app&&r.app.cycle)?' selected':'')+'>'+esc(v)+'<\/option>').join('')
-        + '<\/select>')
+        + '<\/select>'
+        + '<div class="regle">'+esc(statutSource(r).d)+'<\/div>')
     + champ('Design', '<select class="ed" data-id="'+esc(r.id)+'" data-path="app.marquage">'
         + MARQUAGES.map(m=>'<option'+(m===(r.app&&r.app.marquage)?' selected':'')+'>'+esc(m)+'<\/option>').join('')
         + '<\/select>')
