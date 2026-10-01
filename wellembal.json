@@ -1,0 +1,2159 @@
+{
+ "source": "Referentiel packaging TFB — WELLEMBAL",
+ "edition": "2026-09-14",
+ "cle": "reference Wellembal = SKU fournisseur Inpulse ; a defaut, NOM INPULSE",
+ "refs": {
+  "TFBBARQR300BS109": {
+   "nom_inpulse": "BARQUETTE RECTANGULAIRE TFB 300 ML",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "Base sup. 109x81 / base inf. 98x69 / H 45 mm",
+   "cotes_cm": [
+    9.8,
+    6.9,
+    4.5
+   ],
+   "matiere": "Carton blanc laminé intérieur 25u PE",
+   "grammage": 280.0,
+   "stock": 14,
+   "conso6": 150,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBBMAC4BMC": {
+   "nom_inpulse": "BOITE 4X BMC TFB",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "120x58x57 mm",
+   "cotes_cm": [
+    12.0,
+    5.8,
+    5.7
+   ],
+   "matiere": "Carton 1000 g/m² + carton blanchi 157 g/m² lamination mat ext.",
+   "grammage": 1157.0,
+   "stock": 73,
+   "conso6": 1,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBBMAC8BMC": {
+   "nom_inpulse": "BOITE 8X BMC TFB",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "118x118x57 mm",
+   "cotes_cm": [
+    11.8,
+    11.8,
+    5.7
+   ],
+   "matiere": "Carton 1000 g/m² + carton blanchi 157 g/m² lamination mat ext.",
+   "grammage": 1157.0,
+   "stock": 78,
+   "conso6": 1,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBBCIG572590PANAMECHOC": {
+   "nom_inpulse": "BOITE CIGARETTE 57x25x90 MM PANAME CHOCOLATE",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "57x25x90 mm",
+   "cotes_cm": [
+    5.7,
+    2.5,
+    9.0
+   ],
+   "matiere": "Carton blanc",
+   "grammage": 290.0,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBBECLAIR1605050": {
+   "nom_inpulse": "BOITE 1X ÉCLAIR 160x50x50 MM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "160x50x50 mm",
+   "cotes_cm": [
+    16.0,
+    5.0,
+    5.0
+   ],
+   "matiere": "Carton blanc GC1",
+   "grammage": 270.0,
+   "stock": 11,
+   "conso6": 39,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBBLUX650": {
+   "nom_inpulse": "BOITE LUXE TFB 650x420x110 MM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "650x420x110 mm",
+   "cotes_cm": [
+    65.0,
+    42.0,
+    11.0
+   ],
+   "matiere": "Carton 1500 g/m² + carton blanchi laminé 157 g/m² + lamination PP mat int./ext.",
+   "grammage": 1500.0,
+   "stock": 31,
+   "conso6": 10,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBBFA170170200": {
+   "nom_inpulse": "BOITE PANETTONE TFB 170x170x200 MM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "170x170x200 mm",
+   "cotes_cm": [
+    17.0,
+    17.0,
+    20.0
+   ],
+   "matiere": "Carton blanc",
+   "grammage": 350.0,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBBPAT220220100": {
+   "nom_inpulse": "BOITE 6X PATISSERIE TFB",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "220x220x100 mm",
+   "cotes_cm": [
+    22.0,
+    22.0,
+    10.0
+   ],
+   "matiere": "Carton blanc GC1",
+   "grammage": 285.0,
+   "stock": 7,
+   "conso6": 2,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBBPOI11010560V2": {
+   "nom_inpulse": "BOITE 1X PATISSERIE TFB 12/2025 V2",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "110x105x60 mm",
+   "cotes_cm": [
+    11.0,
+    10.5,
+    6.0
+   ],
+   "matiere": "Carton blanc",
+   "grammage": 275.0,
+   "stock": 128,
+   "conso6": 36,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBBPOI18010060": {
+   "nom_inpulse": "BOITE 2X PATISSERIE TFB",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "180x100x60 mm",
+   "cotes_cm": [
+    18.0,
+    10.0,
+    6.0
+   ],
+   "matiere": "Carton blanc",
+   "grammage": 280.0,
+   "stock": 0,
+   "conso6": 49,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBBPOI18010060V2": {
+   "nom_inpulse": "BOITE 2X PATISSERIE TFB V2",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "180x100x60 mm",
+   "cotes_cm": [
+    18.0,
+    10.0,
+    6.0
+   ],
+   "matiere": "Carton blanc",
+   "grammage": 275.0,
+   "stock": 90,
+   "conso6": 31,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "WEBPAT25025080BL": {
+   "nom_inpulse": "BOITE 6X PATISSERIE NEUTRE 250x250x80MM",
+   "type": "Neutre",
+   "dimensions_texte": "250x250x80 mm",
+   "cotes_cm": [
+    25.0,
+    25.0,
+    8.0
+   ],
+   "matiere": "Carton blanchi GC2",
+   "grammage": 260.0,
+   "stock": 102,
+   "conso6": 53,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEBPOI11010545BLP500": {
+   "nom_inpulse": "BOITE POIGNEE 110X105X45 MM NEUTRE",
+   "type": "Neutre",
+   "dimensions_texte": "110x105x45 mm",
+   "cotes_cm": [
+    11.0,
+    10.5,
+    4.5
+   ],
+   "matiere": "Carton blanc",
+   "grammage": 280.0,
+   "stock": 200,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEBPOI11010545BLP550": {
+   "nom_inpulse": "BOITE POIGNEE 110X105X45 MM NEUTRE",
+   "type": "Neutre",
+   "dimensions_texte": "110x105x45 mm",
+   "cotes_cm": [
+    11.0,
+    10.5,
+    4.5
+   ],
+   "matiere": "Carton blanc",
+   "grammage": 280.0,
+   "stock": 122,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEBPOI18018080BL": {
+   "nom_inpulse": "BOITE POIGNEE 180X180X80 MM BLANCHE",
+   "type": "Neutre",
+   "dimensions_texte": "180x180x80 mm",
+   "cotes_cm": [
+    18.0,
+    18.0,
+    8.0
+   ],
+   "matiere": "Carton blanc",
+   "grammage": 270.0,
+   "stock": 71,
+   "conso6": 2,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEBOL900D183KF": {
+   "nom_inpulse": "BOL 900 ML KRAFT D183",
+   "type": "Neutre",
+   "dimensions_texte": "Diam. haut 183 x diam. bas 164 x H 50 mm",
+   "cotes_cm": [
+    18.3,
+    16.4,
+    5.0
+   ],
+   "matiere": "Carton kraft brun avec lamination intérieure",
+   "grammage": 320.0,
+   "stock": 13,
+   "conso6": 34,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEBOUTOV250": {
+   "nom_inpulse": "BOUTEILLE OVALE 250 ML AVEC BOUCHON NOIR PREVISSE",
+   "type": "Neutre",
+   "dimensions_texte": "250 ml",
+   "cotes_cm": null,
+   "matiere": "PET",
+   "grammage": null,
+   "stock": 78,
+   "conso6": 10,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEBOUTOV330": {
+   "nom_inpulse": "BOUTEILLE OVALE 330 ML AVEC BOUCHON NOIR PRE-VISSE",
+   "type": "Neutre",
+   "dimensions_texte": "33 cl",
+   "cotes_cm": null,
+   "matiere": "PET",
+   "grammage": 22.0,
+   "stock": 165,
+   "conso6": 15,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEBOUTOV500": {
+   "nom_inpulse": "BOUTEILLE OVALE 500 ML + BOUCHON NOIR PREVISSE",
+   "type": "Neutre",
+   "dimensions_texte": "500 ml",
+   "cotes_cm": null,
+   "matiere": "PET",
+   "grammage": null,
+   "stock": 289,
+   "conso6": 4,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "CAISSEAME400300300": {
+   "nom_inpulse": "CAISSE AMERICAINE 400x300x300",
+   "type": "Neutre",
+   "dimensions_texte": "400x300x300 mm intérieur",
+   "cotes_cm": [
+    40.0,
+    30.0,
+    30.0
+   ],
+   "matiere": "Carton ondulé",
+   "grammage": null,
+   "stock": 233,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "CAMEDC600400140KF": {
+   "nom_inpulse": "CAISSE AMERICAINE DOUBLE CANNELURE 600x400x140",
+   "type": "Neutre",
+   "dimensions_texte": "600x400x140 mm",
+   "cotes_cm": [
+    60.0,
+    40.0,
+    14.0
+   ],
+   "matiere": "Carton ondulé double cannelure",
+   "grammage": 615.0,
+   "stock": 6165,
+   "conso6": 6880,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "CAMEDC600400180KF": {
+   "nom_inpulse": "CAISSES AMERICAINES 600X400X180",
+   "type": "Neutre",
+   "dimensions_texte": "600x400x180 mm",
+   "cotes_cm": [
+    60.0,
+    40.0,
+    18.0
+   ],
+   "matiere": "Carton ondulé double cannelure",
+   "grammage": 660.0,
+   "stock": 332,
+   "conso6": 425,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "CAMEDC600400280KF": {
+   "nom_inpulse": "CAISSES AMERICAINES 600X400X280",
+   "type": "Neutre",
+   "dimensions_texte": "600x400x280 mm",
+   "cotes_cm": [
+    60.0,
+    40.0,
+    28.0
+   ],
+   "matiere": "Carton ondulé",
+   "grammage": 760.0,
+   "stock": 231,
+   "conso6": 70,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "CAMEDC60040085": {
+   "nom_inpulse": "CAISSE AMERICAINE DOUBLE CANNELURE 600x400x85",
+   "type": "Neutre",
+   "dimensions_texte": "600x400x85 mm",
+   "cotes_cm": [
+    60.0,
+    40.0,
+    8.5
+   ],
+   "matiere": "Carton ondulé double cannelure",
+   "grammage": null,
+   "stock": 0,
+   "conso6": 8024,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "CAISSEBABAD210": {
+   "nom_inpulse": "CAISSE A BABA GRAND GATEAU",
+   "type": "Neutre",
+   "dimensions_texte": "Haut 210 / bas 200 / H 30 mm",
+   "cotes_cm": null,
+   "matiere": "PET",
+   "grammage": 25.0,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "TFBBAGUEBOL900D183": {
+   "nom_inpulse": "BAGUE TFB BOWL 900ML",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "D183 mm / hauteur 40 mm",
+   "cotes_cm": [
+    18.3,
+    18.3,
+    4.0
+   ],
+   "matiere": "Carton blanc avec lamination extérieure",
+   "grammage": 245.0,
+   "stock": 1,
+   "conso6": 10,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBCOLBABA85": {
+   "nom_inpulse": "COLLERETTE POUR CAISSETTE BABA INDIVIDUEL TFB",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "83x77x28 mm",
+   "cotes_cm": [
+    8.3,
+    7.7,
+    2.8
+   ],
+   "matiere": "Carton laminé double face",
+   "grammage": 235.0,
+   "stock": 4,
+   "conso6": 1,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBDEPLIANTBMC6060": {
+   "nom_inpulse": "DEPLIANT HARMONICA TFB 60x60MM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "60x60 mm",
+   "cotes_cm": [
+    6.0,
+    6.0,
+    null
+   ],
+   "matiere": "Papier couché blanc",
+   "grammage": 150.0,
+   "stock": 5,
+   "conso6": 0,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "CAL12RONDSD8.3H2": {
+   "nom_inpulse": "CALAGE 12 RONDS D8.3 H2",
+   "type": "Neutre",
+   "dimensions_texte": "D8.3 H2",
+   "cotes_cm": [
+    0.83,
+    0.83,
+    0.2
+   ],
+   "matiere": "PS blanc",
+   "grammage": 32.0,
+   "stock": 7,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "CAL12RONDSD9H3": {
+   "nom_inpulse": "CALAGE 12 RONDS D9 H3",
+   "type": "Neutre",
+   "dimensions_texte": "D9 H3",
+   "cotes_cm": [
+    0.9,
+    0.9,
+    0.3
+   ],
+   "matiere": "PS blanc",
+   "grammage": 46.25,
+   "stock": 12,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "CALAGE20MACCRISTAL": {
+   "nom_inpulse": "CALAGE 20 MACARON CRISTAL",
+   "type": "Neutre",
+   "dimensions_texte": "20 macarons",
+   "cotes_cm": null,
+   "matiere": "PET cristal",
+   "grammage": null,
+   "stock": 32,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "CALAGE20MACNOIR": {
+   "nom_inpulse": "CALAGE 20 MACARON NOIR",
+   "type": "Neutre",
+   "dimensions_texte": "20 macarons",
+   "cotes_cm": null,
+   "matiere": "PET",
+   "grammage": null,
+   "stock": 66,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "INSERTBMACARON8P1000": {
+   "nom_inpulse": "INSERT POUR BOITE 8X MACARONS",
+   "type": "Neutre",
+   "dimensions_texte": "114x114 mm",
+   "cotes_cm": [
+    11.4,
+    11.4,
+    null
+   ],
+   "matiere": "PET",
+   "grammage": 12.0,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "TFBCVBARQRBS109C": {
+   "nom_inpulse": "COUVERCLE CARTON POUR BARQUETTE RECTANGULAIRE TFB 200/300 ML BS109",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "109x81 mm / H 15 mm",
+   "cotes_cm": [
+    10.9,
+    8.1,
+    1.5
+   ],
+   "matiere": "Carton blanc double couche laminé intérieur",
+   "grammage": 5.0,
+   "stock": 14,
+   "conso6": 12,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "WECVBOLD183PP": {
+   "nom_inpulse": "COUVERCLE BOL 900-1300 ML MICRO-ONDABLE",
+   "type": "Neutre",
+   "dimensions_texte": "D183 mm / 900-1100-1300 ml",
+   "cotes_cm": [
+    18.3,
+    18.3,
+    null
+   ],
+   "matiere": "PP micro-ondable",
+   "grammage": 11.0,
+   "stock": 143,
+   "conso6": 7,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WECVBOLD183RPET": {
+   "nom_inpulse": "COUVERCLE BOL 900-1300 ML RPET",
+   "type": "Neutre",
+   "dimensions_texte": "D183 mm / compatible 900-1100-1300 ml",
+   "cotes_cm": [
+    18.3,
+    18.3,
+    null
+   ],
+   "matiere": "RPET anti buée",
+   "grammage": 12.0,
+   "stock": 1674,
+   "conso6": 26,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WECVGOBD90BLC": {
+   "nom_inpulse": "COUVERCLE GOBELET 12OZ BLANC",
+   "type": "Neutre",
+   "dimensions_texte": "D90 mm",
+   "cotes_cm": [
+    9.0,
+    9.0,
+    null
+   ],
+   "matiere": "Carton blanc home compost 0 plastic",
+   "grammage": 230.0,
+   "stock": 352,
+   "conso6": 18,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WECVGOBD62BLC": {
+   "nom_inpulse": "COUVERCLE GOBELET 4OZ BLANC",
+   "type": "Neutre",
+   "dimensions_texte": "D62 mm",
+   "cotes_cm": [
+    6.2,
+    6.2,
+    null
+   ],
+   "matiere": "Carton blanc laminé intérieur",
+   "grammage": 230.0,
+   "stock": 178,
+   "conso6": 14,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WECVGOBD80BLC": {
+   "nom_inpulse": "COUVERCLE GOBELET 8OZ BLANC",
+   "type": "Neutre",
+   "dimensions_texte": "D80 mm",
+   "cotes_cm": [
+    8.0,
+    8.0,
+    null
+   ],
+   "matiere": "Carton blanc home compost 0 plastic",
+   "grammage": 230.0,
+   "stock": 502,
+   "conso6": 95,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WECVGOBPLATCROISID98RPET": {
+   "nom_inpulse": "COUVERCLE PLAT AVEC CROISILLON POUR GOBELET RPET",
+   "type": "Neutre",
+   "dimensions_texte": "D98 mm",
+   "cotes_cm": [
+    9.8,
+    9.8,
+    null
+   ],
+   "matiere": "RPET",
+   "grammage": 4.0,
+   "stock": 139,
+   "conso6": 45,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WECVPOTD112RPET": {
+   "nom_inpulse": "COUVERCLE POT D112 RPET",
+   "type": "Neutre",
+   "dimensions_texte": "D112 mm",
+   "cotes_cm": [
+    11.2,
+    11.2,
+    null
+   ],
+   "matiere": "RPET",
+   "grammage": 4.0,
+   "stock": 131,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WECOUT165B": {
+   "nom_inpulse": "COUTEAU EN BOIS 165 MM",
+   "type": "Neutre",
+   "dimensions_texte": "165 mm",
+   "cotes_cm": null,
+   "matiere": "Bois",
+   "grammage": 2.5,
+   "stock": 824,
+   "conso6": 42,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WECUIL160B": {
+   "nom_inpulse": "CUILLERE EN BOIS 160 MM",
+   "type": "Neutre",
+   "dimensions_texte": "160 mm",
+   "cotes_cm": null,
+   "matiere": "Bois",
+   "grammage": 2.7,
+   "stock": 539,
+   "conso6": 88,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEFOUR160B": {
+   "nom_inpulse": "FOURCHETTE EN BOIS 160 MM",
+   "type": "Neutre",
+   "dimensions_texte": "160 mm",
+   "cotes_cm": null,
+   "matiere": "Bois",
+   "grammage": 2.6,
+   "stock": 583,
+   "conso6": 44,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEKIT2EN1BOIS": {
+   "nom_inpulse": "KIT 2/1 EN BOIS (FOURCHETTE / COUTEAU)",
+   "type": "Neutre",
+   "dimensions_texte": "2 en 1 (fourchette/couteau)",
+   "cotes_cm": null,
+   "matiere": "Bois",
+   "grammage": 11.5,
+   "stock": 78,
+   "conso6": 9,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEPAILLE21008BLS500": {
+   "nom_inpulse": "PAILLE NEUTRE BLANCHE",
+   "type": "Neutre",
+   "dimensions_texte": "D8 x 210 mm",
+   "cotes_cm": [
+    0.8,
+    21.0,
+    null
+   ],
+   "matiere": "Carton blanc quadruple couche sans plastique",
+   "grammage": null,
+   "stock": 16,
+   "conso6": 28,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "TFBGOB8OZD80": {
+   "nom_inpulse": "GOBELET 25CL TFB 12/2025",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "8OZ - D80 mm - 80x56x90 mm",
+   "cotes_cm": [
+    8.0,
+    5.6,
+    9.0
+   ],
+   "matiere": "Carton blanc home compost 0 plastic",
+   "grammage": 280.0,
+   "stock": 110,
+   "conso6": 204,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBGOB12OZD90": {
+   "nom_inpulse": "GOBELET 35CL TFB 12/2025",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "12OZ - D90 mm",
+   "cotes_cm": [
+    9.0,
+    9.0,
+    null
+   ],
+   "matiere": "Carton blanc home compost 0 plastic",
+   "grammage": 300.0,
+   "stock": 100,
+   "conso6": 0,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBGOB4OZD62": {
+   "nom_inpulse": "GOBELET 10CL TFB 12/2025",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "4 OZ - D62 mm",
+   "cotes_cm": [
+    6.2,
+    6.2,
+    null
+   ],
+   "matiere": "Carton blanc home compost 0 plastic",
+   "grammage": 210.0,
+   "stock": 113,
+   "conso6": 48,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "WEGOBSP12OZD90BLC": {
+   "nom_inpulse": "GOBELET 35CL NEUTRE",
+   "type": "Neutre",
+   "dimensions_texte": "12OZ - D90x60x112 mm",
+   "cotes_cm": [
+    9.0,
+    6.0,
+    11.2
+   ],
+   "matiere": "Carton blanc home compost 0 plastic",
+   "grammage": 300.0,
+   "stock": 360,
+   "conso6": 24,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEGOBSP4OZD62BLC": {
+   "nom_inpulse": "GOBELET 10CL NEUTRE",
+   "type": "Neutre",
+   "dimensions_texte": "4OZ - D62 mm",
+   "cotes_cm": [
+    6.2,
+    6.2,
+    null
+   ],
+   "matiere": "Carton blanc home compost 0 plastic",
+   "grammage": 210.0,
+   "stock": 175,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEGOBTS14OZD98": {
+   "nom_inpulse": "GOBELET TRANSPARENT 14OZ",
+   "type": "Neutre",
+   "dimensions_texte": "D98 x D60 x H108 mm",
+   "cotes_cm": [
+    9.8,
+    9.8,
+    10.8
+   ],
+   "matiere": "RPET",
+   "grammage": 11.0,
+   "stock": 0,
+   "conso6": 45,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEGOBTS16OZD98RPET": {
+   "nom_inpulse": "GOBELET TRANSPARENT 16OZ",
+   "type": "Neutre",
+   "dimensions_texte": "D98 x D60 x H123 mm",
+   "cotes_cm": [
+    9.8,
+    9.8,
+    12.3
+   ],
+   "matiere": "RPET",
+   "grammage": 13.5,
+   "stock": 62,
+   "conso6": 9,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEFILMA450": {
+   "nom_inpulse": "FILM ALIMENTAIRE",
+   "type": "Neutre",
+   "dimensions_texte": "450 mm x 300 m / 7,5 microns",
+   "cotes_cm": null,
+   "matiere": "PVC",
+   "grammage": null,
+   "stock": 17,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEGANTSNITRILARGE": {
+   "nom_inpulse": "GANTS NITRILE NOIR NON POUDRE L",
+   "type": "Neutre",
+   "dimensions_texte": "Large",
+   "cotes_cm": null,
+   "matiere": "Gants nitrile",
+   "grammage": null,
+   "stock": 524,
+   "conso6": 1833,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEGANTSNITRILMEDIUM": {
+   "nom_inpulse": "GANTS NITRILE NOIR NON POUDRE M",
+   "type": "Neutre",
+   "dimensions_texte": "Medium",
+   "cotes_cm": null,
+   "matiere": "Gants nitrile",
+   "grammage": null,
+   "stock": 607,
+   "conso6": 687,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEGANTSNITRILXL": {
+   "nom_inpulse": "GANTS NITRILE NOIR NON POUDRE XL",
+   "type": "Neutre",
+   "dimensions_texte": "XL",
+   "cotes_cm": null,
+   "matiere": "Gants nitrile",
+   "grammage": null,
+   "stock": 647,
+   "conso6": 1634,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "MOULEALUAA170": {
+   "nom_inpulse": "MOULE ALUMINIUM AA170 D174",
+   "type": "Neutre",
+   "dimensions_texte": "174 / 158 / 23 mm",
+   "cotes_cm": [
+    17.4,
+    15.8,
+    2.3
+   ],
+   "matiere": "Aluminium",
+   "grammage": null,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "MOULEALUGO250": {
+   "nom_inpulse": "MOULE AMUMINIUM GO250 D126MM",
+   "type": "Neutre",
+   "dimensions_texte": "126 / 110 / 34 mm",
+   "cotes_cm": [
+    12.6,
+    11.0,
+    3.4
+   ],
+   "matiere": "Aluminium",
+   "grammage": null,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "MOULEALUMO140": {
+   "nom_inpulse": "MOULE ALUMINIUM MO140",
+   "type": "Neutre",
+   "dimensions_texte": "100x64 mm",
+   "cotes_cm": [
+    10.0,
+    6.4,
+    null
+   ],
+   "matiere": "Aluminium",
+   "grammage": null,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "MOULEALUPLR500": {
+   "nom_inpulse": "MOULE ALUMINIUM PLR500",
+   "type": "Neutre",
+   "dimensions_texte": "159x120 mm",
+   "cotes_cm": [
+    15.9,
+    12.0,
+    null
+   ],
+   "matiere": "Aluminium",
+   "grammage": null,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "MOULEALUTO109": {
+   "nom_inpulse": "MOULE ALUMINIUM TO109 D109 MM",
+   "type": "Neutre",
+   "dimensions_texte": "109 / 100 / 18 mm",
+   "cotes_cm": [
+    10.9,
+    10.0,
+    1.8
+   ],
+   "matiere": "Aluminium",
+   "grammage": null,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "MOULEALUTO138": {
+   "nom_inpulse": "MOULE ALUMINIUM TO138 D138 MM",
+   "type": "Neutre",
+   "dimensions_texte": "138 / 124 / 20 mm",
+   "cotes_cm": [
+    13.8,
+    12.4,
+    2.0
+   ],
+   "matiere": "Aluminium",
+   "grammage": null,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "MOULEALUTO200H": {
+   "nom_inpulse": "MOULE ALUMINIUM TO200H D200 MM",
+   "type": "Neutre",
+   "dimensions_texte": "200 / 183 / 38 mm",
+   "cotes_cm": [
+    20.0,
+    18.3,
+    3.8
+   ],
+   "matiere": "Aluminium",
+   "grammage": null,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "TULIPCUP5080NOIR": {
+   "nom_inpulse": "MOULE TULIPCUP NOIR",
+   "type": "Neutre",
+   "dimensions_texte": "Diam. fond 50 x hauteur 80 mm / à plat 150x150 mm",
+   "cotes_cm": [
+    5.0,
+    5.0,
+    8.0
+   ],
+   "matiere": "Papier ingraissable",
+   "grammage": 50.0,
+   "stock": 5,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "TFBBOBINE500": {
+   "nom_inpulse": "BOBINE PAPIER INGRAISSABLE TFB 50MM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "500 mm",
+   "cotes_cm": null,
+   "matiere": "Kraft blanc ingraissable",
+   "grammage": 38.0,
+   "stock": 72,
+   "conso6": 51,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBPAPING330400_KRAFT": {
+   "nom_inpulse": "PAPIER INGRAISSABLE TFB 330X400 MM KRAFT",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "330x400 mm",
+   "cotes_cm": [
+    33.0,
+    40.0,
+    null
+   ],
+   "matiere": "Kraft brun ingraissable WS",
+   "grammage": 60.0,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBPAPING500660_CIABATTA": {
+   "nom_inpulse": "PAPIER INGRAISSABLE TFB 500X660 MM CIABATTA AVEC BANDE ADHESIVE",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "500x660 mm",
+   "cotes_cm": [
+    50.0,
+    66.0,
+    null
+   ],
+   "matiere": "Kraft brun ingraissable",
+   "grammage": 50.0,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "WEROULTHER80050012030M": {
+   "nom_inpulse": "BOBINETTE THERMIQUE IMPRIMANTE UBER EATS",
+   "type": "Neutre",
+   "dimensions_texte": "800x500x120 mm / 30 m",
+   "cotes_cm": [
+    80.0,
+    50.0,
+    12.0
+   ],
+   "matiere": "Papier thermique sans BPA",
+   "grammage": 55.0,
+   "stock": 22,
+   "conso6": 13,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEPAPING330400BL": {
+   "nom_inpulse": "PAPIER INGRAISSABLE NEUTRE 330X400",
+   "type": "Neutre",
+   "dimensions_texte": "330x400 mm",
+   "cotes_cm": [
+    33.0,
+    40.0,
+    null
+   ],
+   "matiere": "Kraft blanc",
+   "grammage": 45.0,
+   "stock": 11,
+   "conso6": 17,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEPAPING9001000KF": {
+   "nom_inpulse": "PAPIER INGRAISSABLE 900X1000 MM KRAFT",
+   "type": "Neutre",
+   "dimensions_texte": "900x1000 mm",
+   "cotes_cm": [
+    90.0,
+    100.0,
+    null
+   ],
+   "matiere": "Kraft brun ingraissable WS",
+   "grammage": 40.0,
+   "stock": 68,
+   "conso6": 32,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "TFBPLATRANSP570370": {
+   "nom_inpulse": "PLAQUE CARTON",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "570x370 mm",
+   "cotes_cm": [
+    57.0,
+    37.0,
+    null
+   ],
+   "matiere": "Carton ondulé",
+   "grammage": 925.0,
+   "stock": 2000,
+   "conso6": 15000,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "WEPLATPAT63742090KFP50": {
+   "nom_inpulse": "PLATEAU PATISSIER EMPILABLE 637X420X90 MM",
+   "type": "Neutre",
+   "dimensions_texte": "Int. 637x420x90 / Ext. 651x424x94 mm",
+   "cotes_cm": [
+    63.7,
+    42.0,
+    9.0
+   ],
+   "matiere": "Carton ondulé",
+   "grammage": 390.0,
+   "stock": 54,
+   "conso6": 54,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEPLATPAT64141688KF": {
+   "nom_inpulse": "PLATEAU PATISSIER EMPILABLE 641X416X88 MM",
+   "type": "Neutre",
+   "dimensions_texte": "641x416x88 mm",
+   "cotes_cm": [
+    64.1,
+    41.6,
+    8.8
+   ],
+   "matiere": "Carton ondulé kraft brun",
+   "grammage": 412.0,
+   "stock": 0,
+   "conso6": 1300,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEPORTEGOB24": {
+   "nom_inpulse": "PLATEAU PORTE GOBELETS 4/2 GOBELETS",
+   "type": "Neutre",
+   "dimensions_texte": "2/4 gobelets",
+   "cotes_cm": null,
+   "matiere": "Papier kraft recyclé",
+   "grammage": null,
+   "stock": 36,
+   "conso6": 16,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEROULTHER8012P30": {
+   "nom_inpulse": "ROULEAU THERMIQUE CAISSE SANS BPA",
+   "type": "Neutre",
+   "dimensions_texte": "80x12 mm / 75 m",
+   "cotes_cm": [
+    8.0,
+    1.2,
+    null
+   ],
+   "matiere": "Papier thermique sans BPA",
+   "grammage": 48.0,
+   "stock": 27,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEROULTHER8012G58": {
+   "nom_inpulse": "ROULEAU THERMIQUE CAISSE SANS BPA",
+   "type": "Neutre",
+   "dimensions_texte": "80x80x12 mm / 73 m",
+   "cotes_cm": [
+    8.0,
+    8.0,
+    1.2
+   ],
+   "matiere": "Papier thermique sans BPA",
+   "grammage": 58.0,
+   "stock": 46,
+   "conso6": 4,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WEROULTHER574018M": {
+   "nom_inpulse": "ROULEAU THERMIQUE TPE/CB",
+   "type": "Neutre",
+   "dimensions_texte": "57x40 / 18 M",
+   "cotes_cm": [
+    5.7,
+    4.0,
+    null
+   ],
+   "matiere": "Papier thermique sans BPA",
+   "grammage": 48.0,
+   "stock": 296,
+   "conso6": 19,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "TFBB2B2104040370": {
+   "nom_inpulse": "SAC B2B PAIN DE CAMPAGNE CARRE 210x40/40x370 MM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "210x40/40x370 mm",
+   "cotes_cm": [
+    21.0,
+    4.0,
+    37.0
+   ],
+   "matiere": "PEBD 30 microns",
+   "grammage": null,
+   "stock": 5,
+   "conso6": 2,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBB2B2108080610": {
+   "nom_inpulse": "SAC B2B PAIN DE MIE RECTANGULAIRE 210x80/80x610MM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "210x80/80x610 mm",
+   "cotes_cm": [
+    21.0,
+    8.0,
+    61.0
+   ],
+   "matiere": "PEBD 30 microns",
+   "grammage": null,
+   "stock": 0,
+   "conso6": 2,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBB2B1205050700": {
+   "nom_inpulse": "SAC B2B PAIN LONG 120x50/50x700 MM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "120x50/50x700 mm",
+   "cotes_cm": [
+    12.0,
+    5.0,
+    70.0
+   ],
+   "matiere": "PEBD 30 microns",
+   "grammage": null,
+   "stock": 7,
+   "conso6": 2,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSBAG09050310": {
+   "nom_inpulse": "SACHET BAGUETTE TFB",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "90x50x310 mm",
+   "cotes_cm": [
+    9.0,
+    5.0,
+    31.0
+   ],
+   "matiere": "Kraft blanc pure cellulose",
+   "grammage": 33.0,
+   "stock": 585,
+   "conso6": 45,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSCAB260170290CMYK": {
+   "nom_inpulse": "SAC CABAS TFB 26X17X29CM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "260x170x290 mm",
+   "cotes_cm": [
+    26.0,
+    17.0,
+    29.0
+   ],
+   "matiere": "Kraft blanc pure cellulose",
+   "grammage": 70.0,
+   "stock": 528,
+   "conso6": 733,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSCRO14080220": {
+   "nom_inpulse": "SAC CROISSANT T1 TFB 14X8X22CM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "140x80x220 mm",
+   "cotes_cm": [
+    14.0,
+    8.0,
+    22.0
+   ],
+   "matiere": "Kraft blanc ingraissable",
+   "grammage": 38.0,
+   "stock": 519,
+   "conso6": 786,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSCRO18080310": {
+   "nom_inpulse": "SAC CROISSANT T2 TFB 18X8X31CM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "180x80x310 mm",
+   "cotes_cm": [
+    18.0,
+    8.0,
+    31.0
+   ],
+   "matiere": "Kraft blanc ingraissable",
+   "grammage": 38.0,
+   "stock": 153,
+   "conso6": 172,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSCRO19080330": {
+   "nom_inpulse": "SAC CROISSANT T3 TFB 19X8X33CM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "190x80x330 mm",
+   "cotes_cm": [
+    19.0,
+    8.0,
+    33.0
+   ],
+   "matiere": "Kraft blanc ingraissable",
+   "grammage": 38.0,
+   "stock": 180,
+   "conso6": 239,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSTJ260120450": {
+   "nom_inpulse": "TOTE BAGUETTE TFB",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "260x120x450 mm",
+   "cotes_cm": [
+    26.0,
+    12.0,
+    45.0
+   ],
+   "matiere": "Toile de jute",
+   "grammage": null,
+   "stock": 8,
+   "conso6": 5,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSLUX250250300": {
+   "nom_inpulse": "SAC LUXE TFB 250x250x300 MM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "250x250x300 + 40 mm",
+   "cotes_cm": [
+    25.0,
+    25.0,
+    30.0
+   ],
+   "matiere": "Art paper avec lamination mat",
+   "grammage": 157.0,
+   "stock": 0,
+   "conso6": 8,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSPT2304040400": {
+   "nom_inpulse": "SAC PAIN TRANCHE 230x40/40x400MM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "230x40/40x400 mm",
+   "cotes_cm": [
+    23.0,
+    4.0,
+    40.0
+   ],
+   "matiere": "Papier ciré glassine",
+   "grammage": 40.0,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSSOS220120250": {
+   "nom_inpulse": "PETIT SAC PAIN TRANCHE TFB 22x12x25CM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "220x120x250 mm",
+   "cotes_cm": [
+    22.0,
+    12.0,
+    25.0
+   ],
+   "matiere": "Kraft blanc pure cellulose",
+   "grammage": 60.0,
+   "stock": 245,
+   "conso6": 298,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSSOS220120400": {
+   "nom_inpulse": "GRAND SAC PAIN TRANCHE TFB 22x12x40CM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "220x120x400 mm",
+   "cotes_cm": [
+    22.0,
+    12.0,
+    40.0
+   ],
+   "matiere": "Kraft blanc pure cellulose",
+   "grammage": 70.0,
+   "stock": 425,
+   "conso6": 215,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSTS2108080400": {
+   "nom_inpulse": "SACHET TRANSPARENT PANETTONE 210x80/80x400MM",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "210x80/80x400 mm",
+   "cotes_cm": [
+    21.0,
+    8.0,
+    40.0
+   ],
+   "matiere": "PEBD",
+   "grammage": 30.0,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "POCISO200250": {
+   "nom_inpulse": "POCHETTE ISOTHERME ZIPPE 200x250 mm",
+   "type": "Neutre",
+   "dimensions_texte": "200x250 mm",
+   "cotes_cm": [
+    20.0,
+    25.0,
+    null
+   ],
+   "matiere": "PET métallisé 12 + PE translucide 40",
+   "grammage": null,
+   "stock": 11,
+   "conso6": 31,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WESSOS220120340BL70P400": {
+   "nom_inpulse": "SAC SOS NEUTRE 220X120X340",
+   "type": "Neutre",
+   "dimensions_texte": "220x120x340 mm",
+   "cotes_cm": [
+    22.0,
+    12.0,
+    34.0
+   ],
+   "matiere": "Kraft blanc pure cellulose",
+   "grammage": 70.0,
+   "stock": 125,
+   "conso6": 111,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WESSOS220120340BL70": {
+   "nom_inpulse": "SAC SOS NEUTRE 220X120X340",
+   "type": "Neutre",
+   "dimensions_texte": "220x120x340 mm",
+   "cotes_cm": [
+    22.0,
+    12.0,
+    34.0
+   ],
+   "matiere": "Kraft blanc pure cellulose",
+   "grammage": 70.0,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "SOPPABA180180": {
+   "nom_inpulse": "SACHET TRANSPARENT SANS FOND 180X180 AVEC PATTE ADHESIVE 30MM",
+   "type": "Neutre",
+   "dimensions_texte": "180x180 mm + 30 mm",
+   "cotes_cm": [
+    18.0,
+    18.0,
+    null
+   ],
+   "matiere": "BOPP",
+   "grammage": 30.0,
+   "stock": 15,
+   "conso6": 1,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "TFBSAUCECESAR30ML": {
+   "nom_inpulse": "SAUCE CESAR THE FRENCH BASTARDS 30 ML",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "30 ml",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": 35,
+   "conso6": 23,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "TFBSAUCEVINAIGR30ML": {
+   "nom_inpulse": "SAUCE VINAIGRETTE TFB 30 ML",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "30 ml",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": 33,
+   "conso6": 25,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "WECARON180180": {
+   "nom_inpulse": "CARRE OR/NOIR 180X180 MM",
+   "type": "Neutre",
+   "dimensions_texte": "180x180 mm",
+   "cotes_cm": [
+    18.0,
+    18.0,
+    null
+   ],
+   "matiere": "Carton laminé double face",
+   "grammage": 1100.0,
+   "stock": 900,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WERECTON355110": {
+   "nom_inpulse": "RECTANGLE OR/NOIR 355X110 MM",
+   "type": "Neutre",
+   "dimensions_texte": "355x110 mm",
+   "cotes_cm": [
+    35.5,
+    11.0,
+    null
+   ],
+   "matiere": "Carton laminé double face",
+   "grammage": 1100.0,
+   "stock": 0,
+   "conso6": 144,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WERECTARON13045": {
+   "nom_inpulse": "RECTANGLE OR/NOIR 130X45 MM AVEC REBORD",
+   "type": "Neutre",
+   "dimensions_texte": "130x45x15 mm",
+   "cotes_cm": [
+    13.0,
+    4.5,
+    1.5
+   ],
+   "matiere": "Carton laminé double face",
+   "grammage": 670.0,
+   "stock": 1058,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WERONDALOND80": {
+   "nom_inpulse": "ROND OR/NOIR AVEC LANGUETTE",
+   "type": "Neutre",
+   "dimensions_texte": "D80 mm",
+   "cotes_cm": [
+    8.0,
+    8.0,
+    null
+   ],
+   "matiere": "Carton laminé double face",
+   "grammage": 670.0,
+   "stock": 3032,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "WERONDOND200": {
+   "nom_inpulse": "ROND OR/NOIR",
+   "type": "Neutre",
+   "dimensions_texte": "D200 mm",
+   "cotes_cm": [
+    20.0,
+    20.0,
+    null
+   ],
+   "matiere": "Carton laminé double face",
+   "grammage": 830.0,
+   "stock": 409,
+   "conso6": 155,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "SEMBUCHE165": {
+   "nom_inpulse": "SEMELLE POUR BUCHE",
+   "type": "Neutre",
+   "dimensions_texte": "165x105 mm",
+   "cotes_cm": [
+    16.5,
+    10.5,
+    null
+   ],
+   "matiere": "Carton laminé double face",
+   "grammage": 1200.0,
+   "stock": 0,
+   "conso6": 0,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "TFBSERV300300": {
+   "nom_inpulse": "SERVIETTE TFB",
+   "type": "Personnalisé TFB",
+   "dimensions_texte": "300x300 mm",
+   "cotes_cm": [
+    30.0,
+    30.0,
+    null
+   ],
+   "matiere": "Cellulose blanche 2 plis",
+   "grammage": 4.97,
+   "stock": 45,
+   "conso6": 361,
+   "bat_gabarit": true,
+   "archivee": null
+  },
+  "WESERV3030P2P14BL": {
+   "nom_inpulse": "SERVIETTE NEUTRE",
+   "type": "Neutre",
+   "dimensions_texte": "300x300 mm ouverte / pliage 1/4",
+   "cotes_cm": [
+    30.0,
+    30.0,
+    null
+   ],
+   "matiere": "Cellulose blanche 2 plis",
+   "grammage": 18.0,
+   "stock": 334,
+   "conso6": 26,
+   "bat_gabarit": false,
+   "archivee": null
+  },
+  "TFBBMAC12012060": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBBU171113": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBBGLACE75": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBBPATCOOKIEDESROIS232311": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBBPAT232311": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBBPOI11010560": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Remplacée par TFBBPOI11010560V2"
+  },
+  "TFBBTIR2656085": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETIBAC9035": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETILEVA9035": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETILEVI9035": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETINEU9035": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETIOBERK9035": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETIPIG9035": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETIRAM9035": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETISD9035": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETISAINTFER9035": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETISEV9035": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETITEM9035": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETIQMASCOTTE": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETIQ80153PANETTONEPAQUES": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETIPANCHO100100": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETIPANPIS100100": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBETIPANVAN100100": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBGOB8OZ": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Remplacée par TFBGOB8OZD80"
+  },
+  "FRENCHBASTARDSINSERTBABA210": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBPAPING330400": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Remplacée par TFBPAPING330400_KRAFT"
+  },
+  "TFBPAP190150ICECREAM": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBPAPABA82185PANAMECHOCOLATE": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBPAPABA82185PANCHOCV2026": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBPAPABA82185COOKIE": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Désactivée — encore livrée sur les 6 derniers mois"
+  },
+  "TFBPAPABA82185FRAMBOISE": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Désactivée — encore livrée sur les 6 derniers mois"
+  },
+  "TFBPAPABA82185PISTACHE": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Désactivée — encore livrée sur les 6 derniers mois"
+  },
+  "TFBPAPABA82185CACAHUETE": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBPAPABA82185SPECULOS": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBPAPABA82185VANILLE": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBPAPDUP250200": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBSCAB261729": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Remplacée par TFBSCAB260170290CMYK"
+  },
+  "TFBSCRO200835": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Remplacée par TFBSCRO19080330"
+  },
+  "TFBSCRO14070250": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Remplacée par TFBSCRO14080220"
+  },
+  "TFBSCRO14EARTHMONTH": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBSGAL23030320": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "TFBSLUX252530": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Remplacée par TFBSLUX250250300"
+  },
+  "WEAGIT140BOIS": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Référence désactivée"
+  },
+  "PLATPAT63742090KFP100": {
+   "nom_inpulse": "",
+   "type": "",
+   "dimensions_texte": "",
+   "cotes_cm": null,
+   "matiere": "",
+   "grammage": null,
+   "stock": null,
+   "conso6": null,
+   "bat_gabarit": false,
+   "archivee": "Remplacée par WEPLATPAT63742090KFP50"
+  }
+ }
+}
