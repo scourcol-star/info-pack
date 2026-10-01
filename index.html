@@ -19,11 +19,18 @@
   --nav:#1b3a53; --navh:#14293b; --navbg:#eef1f4;
   --amb:#d9601a; --ambbg:#fdf6ed; --ambbor:#f0dcc2;
   --ok:#16a34a; --red:#dc2626;
+  /* Echelle typographique : cinq tailles, trois graisses. Aucune valeur
+     de font-size n'est ecrite ailleurs que par ces jetons. */
+  --t0:10.5px;  /* etiquettes capitales, meta */
+  --t1:12.5px;  /* secondaire : sous-titres, pastilles, legendes */
+  --t2:13.5px;  /* courant : cellules, champs, navigation */
+  --t3:15px;    /* titre de section, valeur de champ en fiche */
+  --t4:17px;    /* titre de panneau et de fiche */
   --r:8px; --rs:5px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);
-  font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  font-size:var(--t2);line-height:1.5;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 table{border-collapse:collapse;width:100%}
 
@@ -33,16 +40,16 @@ table{border-collapse:collapse;width:100%}
   gap:4px;padding:16px 12px;position:sticky;top:0;height:100vh;overflow:auto;z-index:20}
 .rtop{padding:0 6px 15px;border-bottom:1px solid var(--bor);margin-bottom:11px}
 .brand{height:24px;width:auto;display:block}
-.rlb{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3);
+.rlb{font-size:var(--t0);font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3);
   padding:0 8px;margin-bottom:7px}
 .rnav{display:flex;flex-direction:column;gap:1px}
-.rnav a{font-size:13.5px;font-weight:500;padding:8px 11px;border-radius:var(--rs);color:var(--tx2);
+.rnav a{font-size:var(--t2);font-weight:500;padding:8px 11px;border-radius:var(--rs);color:var(--tx2);
   text-decoration:none;cursor:pointer}
 .rnav a.on{background:var(--navbg);color:var(--nav);font-weight:600}
 .rnav a.off{color:var(--tx3);font-style:italic;cursor:default}
 .rsp{flex:1 1 auto;min-height:14px}
 .rbot{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--bor)}
-.etat{display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--tx2);line-height:1.4}
+.etat{display:flex;align-items:flex-start;gap:7px;font-size:var(--t1);color:var(--tx2);line-height:1.4}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--tx3);flex:none;margin-top:4px}
 .dot.ok{background:var(--ok)}.dot.err{background:var(--red)}.dot.warn{background:var(--amb)}
 .dot.spin{background:var(--amb);animation:puls 1.1s infinite}
@@ -50,7 +57,7 @@ table{border-collapse:collapse;width:100%}
 .sm{color:var(--tx3)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 13px;
   border-radius:var(--rs);border:1px solid var(--bor2);background:var(--sur);cursor:pointer;
-  font-size:12.5px;font-weight:500;white-space:nowrap}
+  font-size:var(--t2);font-weight:500;white-space:nowrap}
 .btn:hover{background:var(--sur2)}
 .btn:focus-visible{outline:2px solid var(--nav);outline-offset:2px}
 .btn:disabled{opacity:.35;cursor:default}
@@ -64,16 +71,16 @@ table{border-collapse:collapse;width:100%}
 .sw{position:relative;flex:0 1 300px;min-width:200px}
 .sw i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:14px}
 #q{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--bor2);border-radius:var(--rs);
-  background:var(--sur);font-size:13px}
+  background:var(--sur);font-size:var(--t2)}
 #q:focus{outline:none;border-color:var(--nav);box-shadow:0 0 0 3px rgba(27,58,83,.1)}
 
 /* ---------- panneau et tableau ---------- */
 .panel{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);overflow:hidden}
 .ph{display:flex;align-items:baseline;gap:10px;padding:13px 16px;border-bottom:1px solid var(--bor)}
-.pt{font-size:13.5px;font-weight:600}
-.cnt{margin-left:auto;font-size:12.5px;color:var(--tx3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pt{font-size:var(--t3);font-weight:600;letter-spacing:-.15px}
+.cnt{margin-left:auto;font-size:var(--t1);color:var(--tx3);font-variant-numeric:tabular-nums;white-space:nowrap}
 .tw{overflow-x:auto}
-th{text-align:left;padding:8px 14px;font-size:10px;font-weight:600;text-transform:uppercase;
+th{text-align:left;padding:8px 14px;font-size:var(--t0);font-weight:600;text-transform:uppercase;
   letter-spacing:.06em;color:var(--tx3);border-bottom:1px solid var(--bor);white-space:nowrap;
   user-select:none}
 thead tr.hd th{cursor:pointer}
@@ -83,10 +90,10 @@ th.asc .si::after{content:'↑';opacity:1;color:var(--nav)}
 th.desc .si::after{content:'↓';opacity:1;color:var(--nav)}
 th .si::after{content:'↕'}
 th.num,td.num{text-align:right}
-thead tr.tot th{background:var(--sur2);color:var(--tx);font-size:12.5px;font-weight:700;
+thead tr.tot th{background:var(--sur2);color:var(--tx);font-size:var(--t1);font-weight:700;
   text-transform:none;letter-spacing:0;cursor:default;border-bottom:1px solid var(--bor2);padding:7px 14px}
 thead tr.tot th.lb{font-weight:600;color:var(--tx2)}
-td{padding:9px 14px;border-bottom:1px solid var(--bor);font-size:13px}
+td{padding:9px 14px;border-bottom:1px solid var(--bor);font-size:var(--t2)}
 tbody tr{cursor:pointer}
 tbody tr:hover td{background:var(--sur3)}
 tbody tr.sel td{background:var(--navbg)}
@@ -99,22 +106,27 @@ tbody tr:last-child td{border-bottom:none}
 .doc{width:20px;height:20px;border-radius:4px;display:grid;place-items:center;font-size:11px;
   background:var(--sur2);color:var(--tx3);border:1px solid var(--bor)}
 .doc.on{background:var(--navbg);color:var(--nav);border-color:#d6dee6}
-.bw{display:flex;align-items:center;gap:8px;justify-content:flex-end}
-.bb{width:74px;height:5px;border-radius:3px;background:var(--sur2);overflow:hidden;flex:none}
-.bf{height:100%;background:var(--nav);border-radius:3px}
-.bp{font-size:11.5px;color:var(--tx2);font-variant-numeric:tabular-nums;min-width:32px;text-align:right}
+.pil{display:inline-block;padding:2px 9px;border-radius:999px;font-size:var(--t1);font-weight:500;
+  border:1px solid transparent;white-space:nowrap}
+.p-a{background:#e9f5ec;color:#15683a;border-color:#c6e6d2}
+.p-i{background:var(--sur2);color:var(--tx2);border-color:var(--bor2)}
+.p-p{background:var(--ambbg);color:#9a4a12;border-color:var(--ambbor)}
+.sep{width:1px;height:17px;background:var(--bor2);flex:none;margin:0 3px}
+.chip.s-a.on{background:#15683a;border-color:#15683a}
+.chip.s-i.on{background:var(--tx2);border-color:var(--tx2)}
+.chip.s-p.on{background:var(--amb);border-color:var(--amb)}
 .vide{padding:44px 16px;text-align:center;color:var(--tx3)}
-.couv{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:600;
+.couv{display:inline-block;padding:1px 8px;border-radius:999px;font-size:var(--t1);font-weight:600;
   font-variant-numeric:tabular-nums}
 .couv.bas{background:#fdeaea;color:#b42318}
 .couv.moy{background:var(--ambbg);color:#9a4a12}
 .couv.ok{background:#e9f5ec;color:#15683a}
 .chips{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
 .chip{border:1px solid var(--bor2);background:var(--sur);border-radius:999px;padding:6px 12px;
-  font-size:12.5px;color:var(--tx2);cursor:pointer;white-space:nowrap;font-family:inherit}
+  font-size:var(--t1);color:var(--tx2);cursor:pointer;white-space:nowrap;font-family:inherit}
 .chip:hover{background:var(--sur2)}
 .chip.on{background:var(--nav);border-color:var(--nav);color:#fff;font-weight:500}
-.chip .nb{font-variant-numeric:tabular-nums;font-size:11px;opacity:.7;margin-left:2px}
+.chip .nb{font-variant-numeric:tabular-nums;font-size:var(--t0);opacity:.7;margin-left:2px}
 
 td.vd,.vd{color:var(--tx3)}
 
@@ -128,37 +140,37 @@ td.vd,.vd{color:var(--tx3)}
 .fiche.on{transform:none}
 .fh{background:var(--sur);border-bottom:1px solid var(--bor);padding:15px 20px;display:flex;
   align-items:flex-start;gap:14px;flex:none}
-.fh h2{font-size:16.5px;font-weight:600;letter-spacing:-.25px;line-height:1.3;overflow-wrap:anywhere}
-.fh .sub{font-size:12px;margin-top:2px}
+.fh h2{font-size:var(--t4);font-weight:600;letter-spacing:-.25px;line-height:1.3;overflow-wrap:anywhere}
+.fh .sub{font-size:var(--t1);margin-top:2px}
 .fnav{display:flex;align-items:center;gap:4px;flex:none}
 .btn.ic{padding:6px 8px}
-.fpos{font-size:11.5px;color:var(--tx3);font-variant-numeric:tabular-nums;padding:0 2px;white-space:nowrap}
+.fpos{font-size:var(--t1);color:var(--tx3);font-variant-numeric:tabular-nums;padding:0 2px;white-space:nowrap}
 .fb{overflow:auto;padding:20px;display:flex;flex-direction:column;gap:18px}
 .blc{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:16px 17px}
-.blt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);
+.blt{font-size:var(--t0);font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);
   margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.src{font-weight:600;letter-spacing:.02em;text-transform:none;font-size:10.5px;padding:1px 7px;
+.src{font-weight:600;letter-spacing:.02em;text-transform:none;font-size:var(--t0);padding:1px 7px;
   border-radius:999px;background:var(--sur2);color:var(--tx2);border:1px solid var(--bor)}
 .gr{display:grid;grid-template-columns:repeat(auto-fit,minmax(164px,1fr));gap:12px}
 .f{min-width:0}.f.w{grid-column:1/-1}
-.fl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);
+.fl{font-size:var(--t0);font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);
   margin-bottom:4px;display:block}
-.fv{font-size:13.5px;padding:2px 0;overflow-wrap:anywhere}
+.fv{font-size:var(--t2);padding:2px 0;overflow-wrap:anywhere}
 .fv.void{color:var(--tx3)}
-.fv .u{font-size:11.5px;color:var(--tx3);margin-left:3px}
+.fv .u{font-size:var(--t1);color:var(--tx3);margin-left:3px}
 .ed{width:100%;padding:7px 9px;border:1px solid var(--bor2);border-radius:var(--rs);background:var(--sur)}
 .ed:focus{outline:none;border-color:var(--nav);box-shadow:0 0 0 3px rgba(27,58,83,.1)}
 .ctl{display:flex;align-items:center;gap:7px}
-.ctl .u{font-size:12px;color:var(--tx3);flex:none}
-.lien{font-size:11.5px;color:var(--nav);background:none;border:none;cursor:pointer;padding:2px 0;
+.ctl .u{font-size:var(--t1);color:var(--tx3);flex:none}
+.lien{font-size:var(--t1);color:var(--nav);background:none;border:none;cursor:pointer;padding:2px 0;
   text-decoration:underline;text-underline-offset:2px}
-.regle{font-size:11.5px;color:var(--tx2);margin-top:5px}
+.regle{font-size:var(--t1);color:var(--tx2);margin-top:5px}
 .dz{border:1px solid var(--bor);border-radius:var(--rs);padding:11px;margin-bottom:9px;background:var(--sur3)}
 .dz:last-child{margin-bottom:0}
 .dzh{display:flex;align-items:baseline;gap:8px;margin-bottom:7px;flex-wrap:wrap}
-.dzh b{font-size:12.5px;font-weight:600}
-.dzh .aide{font-size:11px;color:var(--tx3);min-width:0}
-.dzh .n{margin-left:auto;font-size:11px;color:var(--tx3);font-variant-numeric:tabular-nums}
+.dzh b{font-size:var(--t2);font-weight:600}
+.dzh .aide{font-size:var(--t1);color:var(--tx3);min-width:0}
+.dzh .n{margin-left:auto;font-size:var(--t0);color:var(--tx3);font-variant-numeric:tabular-nums}
 .vign{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px}
 .vg{width:70px;height:70px;border-radius:var(--rs);border:1px solid var(--bor);background:var(--sur);
   overflow:hidden;display:grid;place-items:center;position:relative;text-decoration:none;color:var(--tx3)}
@@ -166,7 +178,7 @@ td.vd,.vd{color:var(--tx3)}
 .vg i{font-size:20px}
 .vg .nm{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.93);font-size:8.5px;
   padding:2px 3px;text-align:center;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dzv{font-size:12px;color:var(--tx3);padding:5px 0 8px}
+.dzv{font-size:var(--t1);color:var(--tx3);padding:5px 0 8px}
 
 @media(max-width:1000px){
   .shell{grid-template-columns:minmax(0,1fr)}
@@ -235,7 +247,6 @@ td.vd,.vd{color:var(--tx3)}
                      version ne se lit pas dans le libellé Inpulse. */
 const INTITULE = {
   mention_neutre : 'NEUTRE',
-  version_absente: 'XX/XXXX',
   mentions: { 'Neutre':null, 'TFB':'TFB', 'Co-branding':'CO-BRANDING' },
   /* morceaux retirés du libellé Inpulse pour obtenir la base */
   retirer: [
@@ -252,6 +263,13 @@ const MARQUAGES = ['TFB','Neutre','Co-branding'];
    Inpulse donne un prix au conditionnement ; l'unité dépend du produit. */
 const UNITE_TARIF_DEFAUT = 'pièce';
 const UNITES_TARIF = ['pièce','feuille','rouleau','sachet','mètre','kilo','litre','jeu'];
+
+/* Statut d'une référence, déduit du référentiel Wellembal puis
+   rectifiable à la main dans la fiche.
+     Active      — du stock chez le fournisseur, ou des sorties sur 6 mois
+     Inactive    — archivée chez Wellembal, ou stock nul et aucune sortie
+     Ponctuelle  — co-brandée : TFB et une autre marque */
+const STATUTS = ['Active','Inactive','Ponctuelle'];
 
 /* Matières rencontrées chez Wellembal et ailleurs. Liste ouverte :
    toute valeur saisie en clair est acceptée et rejoint le menu. */
@@ -364,7 +382,8 @@ function intituleAuto(r){
   const base=intituleBase(r); if(!base) return '';
   const mention=INTITULE.mentions[r.app&&r.app.marquage];
   if(!mention) return base+' '+INTITULE.mention_neutre;
-  return base+' '+mention+' '+(versionDesign(r)||INTITULE.version_absente);
+  const v=versionDesign(r);
+  return base+' '+mention+(v?' '+v:'');
 }
 const intituleMode  = r => calcMode(r,'identification.intitule_complet','identification.intitule_mode');
 const intituleValue = r => intituleMode(r)==='manuel'
@@ -505,6 +524,7 @@ async function syncInpulse(){
     });
     if(nouvelles.length){
       hit+=nouvelles.length;
+      appliquerWellembal();
       applyOverrides();     // saisies TFB déjà enregistrées sur ces nouvelles fiches
       refreshFournisseurs();
     }
@@ -632,6 +652,61 @@ async function chargerDrive(){
   }catch(e){ DRIVE.message=e.message; }
 }
 
+/* ---------- referentiel Wellembal ---------- */
+/* Le fournisseur tient a jour un referentiel : dimensions, matiere,
+   grammage, type, stock et sorties sur six mois. On le rapproche sur la
+   reference Wellembal, qui est le SKU fournisseur d'Inpulse ; a defaut
+   sur le libelle Inpulse. Ses valeurs servent de socle : une saisie TFB
+   les recouvre toujours. */
+let WEL=null;
+async function chargerWellembal(){
+  if(typeof EMBEDDED_WEL!=='undefined'){ WEL=EMBEDDED_WEL; appliquerWellembal(); applyOverrides(); render(); return; }
+  try{
+    const r=await fetch('data/wellembal.json',{cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    WEL=await r.json();
+    appliquerWellembal(); applyOverrides(); render();
+  }catch(e){ WEL=null; }
+}
+function cleWel(r){
+  if(!WEL||!WEL.refs) return '';
+  const sku=String((r.identification&&r.identification.sku_fournisseur)||'').trim().toUpperCase();
+  if(sku && WEL.refs[sku]) return sku;
+  const nom=String((r.identification&&r.identification.intitule_inpulse)||'').trim().toUpperCase();
+  for(const k in WEL.refs){ const w=WEL.refs[k];
+    if(w.nom_inpulse && w.nom_inpulse.toUpperCase()===nom) return k; }
+  return '';
+}
+function appliquerWellembal(){
+  if(!WEL||!DB) return;
+  DB.packagings.forEach(p=>{
+    const k=cleWel(p); p._welk=k; p._wel = k?WEL.refs[k]:null;
+    const w=p._wel; if(!w) return;
+    if(w.cotes_cm){
+      setPath(p,'dimensions.longueur_cm', w.cotes_cm[0]);
+      setPath(p,'dimensions.largeur_cm',  w.cotes_cm[1]);
+      setPath(p,'dimensions.hauteur_cm',  w.cotes_cm[2]);
+    }
+    if(w.matiere)        setPath(p,'matiere.matiere', w.matiere);
+    if(w.grammage!=null) setPath(p,'matiere.grammage_g_m2', w.grammage);
+    if(w.type)           setPath(p,'matiere.personnalise_tfb', w.type.indexOf('Personnalis')===0);
+  });
+}
+
+/* ---------- statut ---------- */
+function statutAuto(r){
+  if((r.app&&r.app.marquage)==='Co-branding') return 'Ponctuelle';
+  const w=r._wel;
+  if(!w) return '';
+  if(w.archivee) return 'Inactive';
+  if((w.stock||0)===0 && (w.conso6||0)===0) return 'Inactive';
+  return 'Active';
+}
+const statutDe = r => (r.app&&r.app.cycle) || statutAuto(r);
+const pilStatut = v => v
+  ? '<span class="pil '+(v==='Active'?'p-a':v==='Inactive'?'p-i':'p-p')+'">'+esc(v)+'<\/span>'
+  : '<span class="vd">\u2014<\/span>';
+
 /* ---------- ce qui manque a une fiche ---------- */
 /* Neuf informations attendues : trois cotes, matiere, grammage,
    personnalise TFB, et un document de chaque type. */
@@ -689,23 +764,22 @@ const COLS=[
         '<span class="doc'+(documentsDe(p,d.k).length?' on':'')+'" title="'+esc(d.lb)+'">'
         +'<i class="ti ti-'+(d.k==='photos'?'photo':d.k==='bat'?'file-check':'vector')+'"><\/i><\/span>'
       ).join('')+'<\/div><\/td>'},
- {k:'comp', lb:'Complétude', num:1,
-  n:p=>completude(p), t:p=>completude(p)+' %',
-  c:p=>'<td class="num">'+barre(completude(p))+'<\/td>'}
+ {k:'statut', lb:'Statut',
+  t:p=>statutDe(p),
+  c:p=>'<td>'+pilStatut(statutDe(p))+'<\/td>'}
 ];
-const barre = v => '<div class="bw"><div class="bb"><div class="bf" style="width:'+v+'%"><\/div><\/div>'
-  + '<span class="bp">'+v+' %<\/span><\/div>';
 
 /* ---------- recherche, filtres, tri ---------- */
 /* Une seule recherche, qui balaie l'intitule, le SKU, le fournisseur et la
    matiere. Les fournisseurs tiennent en pastilles tant qu'ils sont peu
    nombreux ; au-dela c'est une liste deroulante. */
-let Q='', FOUR='', todo=false;
+let Q='', FOUR='', STAT='', todo=false;
 let sortK='ref', sortD=1;
 
 function passe(p){
   if(todo && !detailManques(p).length) return false;
   if(FOUR && p.inpulse.fournisseur!==FOUR) return false;
+  if(STAT && statutDe(p)!==STAT) return false;
   if(Q){
     const h=norm(intituleValue(p)+' '+p.nom+' '+(p.identification.sku_fournisseur||'')+' '
       +(p.inpulse.fournisseur||'')+' '+(getPath(p,'matiere.matiere')||''));
@@ -730,12 +804,20 @@ function renderChips(){
     html += '<select class="ed" style="width:auto" data-foursel><option value="">Tous les fournisseurs<\/option>'
           + four.map(f=>'<option'+(f===FOUR?' selected':'')+'>'+esc(f)+'<\/option>').join('')+'<\/select>';
   }
-  html += '<button class="chip'+(todo?' on':'')+'" data-todo>\u00c0 compl\u00e9ter <span class="nb">'
+  const cpt={}; STATUTS.forEach(v=>cpt[v]=DB.packagings.filter(p=>statutDe(p)===v).length);
+  html += '<span class="sep"><\/span>'
+        + STATUTS.map(v=>'<button class="chip s-'+(v==='Active'?'a':v==='Inactive'?'i':'p')
+            +(v===STAT?' on':'')+'" data-stat="'+esc(v)+'">'+esc(v)
+            +' <span class="nb">'+cpt[v]+'<\/span><\/button>').join('')
+        + '<span class="sep"><\/span>'
+        + '<button class="chip'+(todo?' on':'')+'" data-todo>\u00c0 compl\u00e9ter <span class="nb">'
         + aCompleter + '<\/span><\/button>';
   el.innerHTML=html;
   el.querySelectorAll('[data-four]').forEach(b=>b.onclick=()=>{ FOUR=b.dataset.four; render(); });
   const sel=el.querySelector('[data-foursel]');
   if(sel) sel.onchange=()=>{ FOUR=sel.value; render(); };
+  el.querySelectorAll('[data-stat]').forEach(b=>b.onclick=()=>{
+    STAT = STAT===b.dataset.stat ? '' : b.dataset.stat; render(); });
   el.querySelector('[data-todo]').onclick=()=>{ todo=!todo; render(); };
 }
 
@@ -760,8 +842,6 @@ function renderHead(){
       +(c.k===sortK?(sortD>0?'asc':'desc'):'')+'">'+c.lb+'<span class="si"><\/span><\/th>').join('')+'<\/tr>'
   + '<tr class="tot">'+COLS.map(c=>{
       if(c.k==='ref')  return '<th class="lb">'+ROWS.length+' r\u00e9f\u00e9rence'+(ROWS.length>1?'s':'')+'<\/th>';
-      if(c.k==='comp'){ const m=ROWS.length?Math.round(ROWS.reduce((x,p)=>x+completude(p),0)/ROWS.length):0;
-                        return '<th class="num">'+m+' %<\/th>'; }
       if(c.k==='docs'){ const d=ROWS.reduce((x,p)=>x+DOCUMENTS.filter(y=>documentsDe(p,y.k).length).length,0);
                         return '<th>'+d+' / '+(ROWS.length*DOCUMENTS.length)+'<\/th>'; }
       return '<th'+(c.num?' class="num"':'')+'><\/th>';
@@ -1247,6 +1327,11 @@ function ouvrir(id){
         + '<div class="regle">'+regle+'<\/div>'
         + '<button class="lien" data-mode="'+esc(r.id)+'">'
         + (manuel?'revenir à l’intitulé calculé':'corriger à la main')+'<\/button>', 1)
+    + champ('Statut',
+        '<select class="ed" data-id="'+esc(r.id)+'" data-path="app.cycle">'
+        + '<option value="">— '+(statutAuto(r)||'non déterminé')+' (automatique) —<\/option>'
+        + STATUTS.map(v=>'<option'+(v===(r.app&&r.app.cycle)?' selected':'')+'>'+esc(v)+'<\/option>').join('')
+        + '<\/select>')
     + champ('Design', '<select class="ed" data-id="'+esc(r.id)+'" data-path="app.marquage">'
         + MARQUAGES.map(m=>'<option'+(m===(r.app&&r.app.marquage)?' selected':'')+'>'+esc(m)+'<\/option>').join('')
         + '<\/select>')
@@ -1267,6 +1352,12 @@ function ouvrir(id){
     + champ('Hauteur',  saisieNombre(r.id,'dimensions.hauteur_cm', getPath(r,'dimensions.hauteur_cm'),'cm'))
     + champ('Matière',  saisieListe(r.id,'matiere.matiere',getPath(r,'matiere.matiere'),MATIERES), 1)
     + champ('Grammage', saisieNombre(r.id,'matiere.grammage_g_m2',getPath(r,'matiere.grammage_g_m2'),'g/m²'))
+    + (r._wel ? champ('Chez Wellembal',
+        '<div class="fv">'+esc(r._wel.dimensions_texte||'—')+'<\/div>'
+        + '<div class="regle">Réf. '+esc(r._welk||'—')+' · '
+        + (r._wel.archivee ? '<b>'+esc(r._wel.archivee)+'<\/b>'
+           : 'stock '+fmt(r._wel.stock)+' colis · '+fmt(r._wel.conso6)+' sortis sur 6 mois')
+        + '<\/div>', 1) : '')
     + champ('Personnalisé TFB', saisieOuiNon(r.id,'matiere.personnalise_tfb',getPath(r,'matiere.personnalise_tfb')))
     + '<\/div><\/div>'
 
@@ -1322,7 +1413,7 @@ function brancherFiche(){
       if(el.dataset.dec){ v=num(v); }
       else if(p==='matiere.personnalise_tfb'){ v = v===''?null : v==='1'; }
       saveField(el.dataset.id,p,v);
-      if(/marquage|intitule|unite_tarif/.test(p)) ouvrir(el.dataset.id);
+      if(/marquage|intitule|unite_tarif|cycle/.test(p)) ouvrir(el.dataset.id);
     };
     if(el.tagName==='SELECT') el.onchange=fin; else el.onchange=fin;
   });
@@ -1353,6 +1444,7 @@ async function load(){
   await loadOverrides();
   brancher();
   render();
+  chargerWellembal();
   syncInpulse();
   chargerDrive();
   loadOrders();
