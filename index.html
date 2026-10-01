@@ -150,8 +150,9 @@ td.vd,.vd{color:var(--tx3)}
 .blc{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:16px 17px}
 .blt{font-size:var(--t0);font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);
   margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.src{font-weight:600;letter-spacing:.02em;text-transform:none;font-size:var(--t0);padding:1px 7px;
-  border-radius:999px;background:var(--sur2);color:var(--tx2);border:1px solid var(--bor)}
+.src{font-weight:600;letter-spacing:.02em;text-transform:none;font-size:var(--t0);
+  color:var(--amb);text-decoration:none;border-bottom:1px solid transparent}
+.src:hover{border-bottom-color:var(--amb)}
 .gr{display:grid;grid-template-columns:repeat(auto-fit,minmax(164px,1fr));gap:12px}
 .f{min-width:0}.f.w{grid-column:1/-1}
 .fl{font-size:var(--t0);font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);
@@ -186,6 +187,43 @@ td.vd,.vd{color:var(--tx3)}
 .dzw.tm{background:var(--sur2);border-color:var(--bor);color:var(--tx3)}
 .dzw.tm i{color:var(--tx3)}
 .dzw b{color:var(--tx);font-weight:600}
+
+/* ---------- bouton et page d'impression ---------- */
+.expo{width:100%;justify-content:center;padding:11px 16px;font-size:var(--t2)}
+#impr{display:none}
+
+@media print{
+  /* La page imprimee est la fiche, et rien d'autre. */
+  body > *{display:none !important}
+  body{background:#fff;color:#000;font-size:10.5pt}
+  #impr{display:block !important}
+  @page{size:A4 portrait;margin:15mm 16mm}
+  #impr h1{font-size:17pt;font-weight:700;letter-spacing:-.3pt;line-height:1.2;margin:0 0 2mm}
+  #impr h2{font-size:8pt;font-weight:700;text-transform:uppercase;letter-spacing:.9pt;color:#6b6760;
+    margin:7mm 0 2.5mm;padding-bottom:1.2mm;border-bottom:.4pt solid #c9c5bc}
+  .ph-t{display:flex;align-items:flex-start;justify-content:space-between;
+    padding-bottom:4mm;margin-bottom:6mm;border-bottom:.8pt solid #1b3a53}
+  .ph-t .brand{height:9mm;width:auto}
+  .ph-r{text-align:right;line-height:1.5}
+  .ph-r b{display:block;font-size:9pt;letter-spacing:.4pt;text-transform:uppercase}
+  .ph-r span{font-size:8pt;color:#6b6760}
+  .ph-s{font-size:9.5pt;color:#44413b;margin-bottom:1mm}
+  .pg{display:grid;grid-template-columns:1fr 1fr;gap:2.5mm 8mm}
+  .pl{display:flex;flex-direction:column;gap:.6mm;break-inside:avoid}
+  .pl.w{grid-column:1/-1}
+  .pl span{font-size:7.5pt;text-transform:uppercase;letter-spacing:.5pt;color:#8a867d}
+  .pl b{font-size:10.5pt;font-weight:600;line-height:1.35}
+  .pdl{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm}
+  .pd{break-inside:avoid}
+  .pd span{display:block;font-size:7.5pt;text-transform:uppercase;letter-spacing:.5pt;color:#8a867d;
+    margin-bottom:.8mm}
+  .pd a{font-size:8.5pt;color:#1b3a53;word-break:break-all}
+  .pd i{font-size:8.5pt;color:#8a867d}
+  .pim{display:flex;gap:3mm;margin-top:4mm}
+  .pim img{height:34mm;width:auto;border:.4pt solid #c9c5bc;border-radius:1mm}
+  .pf{position:fixed;bottom:0;left:0;right:0;font-size:7.5pt;color:#8a867d;
+    padding-top:2mm;border-top:.4pt solid #d8d4cb}
+}
 
 @media(max-width:1000px){
   .shell{grid-template-columns:minmax(0,1fr)}
@@ -228,6 +266,7 @@ td.vd,.vd{color:var(--tx3)}
 </div>
 
 <div class="ov" id="ov"></div>
+<div id="impr" aria-hidden="true"></div>
 <aside class="fiche" id="fiche" aria-hidden="true">
   <div class="fh">
     <div style="min-width:0;flex:1"><h2 id="f-t">—</h2><div class="sub" id="f-s"></div></div>
@@ -1365,7 +1404,7 @@ function ouvrir(id){
              : '. Aucune version dans le libellé Inpulse — corrige à la main si tu la connais.');
 
   document.getElementById('f-b').innerHTML =
-    '<div class="blc"><div class="blt">Depuis Inpulse <span class="src">lecture seule<\/span><\/div><div class="gr">'
+    '<div class="blc"><div class="blt">Depuis Inpulse<\/div><div class="gr">'
     + champ('Intitulé complet',
         (manuel ? saisieTexte(r.id,'identification.intitule_complet',getPath(r,'identification.intitule_complet'))
                 : '<div class="fv">'+esc(intituleValue(r)||'—')+'<\/div>')
@@ -1392,7 +1431,7 @@ function ouvrir(id){
         + '<\/select><\/div>', 1)
     + '<\/div><\/div>'
 
-    + '<div class="blc"><div class="blt">Fiche technique <span class="src">saisi ici<\/span><\/div><div class="gr">'
+    + '<div class="blc"><div class="blt">Fiche technique<\/div><div class="gr">'
     + champ('Longueur', saisieNombre(r.id,'dimensions.longueur_cm',getPath(r,'dimensions.longueur_cm'),'cm'))
     + champ('Largeur',  saisieNombre(r.id,'dimensions.largeur_cm', getPath(r,'dimensions.largeur_cm'),'cm'))
     + champ('Hauteur',  saisieNombre(r.id,'dimensions.hauteur_cm', getPath(r,'dimensions.hauteur_cm'),'cm'))
@@ -1409,12 +1448,15 @@ function ouvrir(id){
 
     + '<div class="blc"><div class="blt">Documents'
     + (DRIVE.pret && DRIVE.dossiers[r.id]
-        ? ' <a class="src" style="text-decoration:none" href="'+esc(DRIVE.dossiers[r.id].url)
+        ? ' <a class="src" href="'+esc(DRIVE.dossiers[r.id].url)
           +'" target="_blank" rel="noopener">ouvrir le dossier Drive<\/a>'
-        : DRIVE.message ? ' <span class="src" title="'+esc(DRIVE.message)+'">liens à coller<\/span>' : '')
-    + '<\/div>'+blocDocuments(r)+'<\/div>';
+        : '')
+    + '<\/div>'+blocDocuments(r)+'<\/div>'
+    + '<button class="btn btn-nav expo" id="f-pdf"><i class="ti ti-file-type-pdf"><\/i>'
+    + 'Exporter cette fiche en PDF<\/button>';
 
   brancherFiche(); majPosition();
+  document.getElementById('f-pdf').onclick=exporterPDF;
   document.getElementById('fiche').classList.add('on');
   document.getElementById('fiche').setAttribute('aria-hidden','false');
   document.getElementById('ov').classList.add('on');
@@ -1477,6 +1519,91 @@ function brancherFiche(){
     saveField(r.id,'documents.'+k, liensManuels(r,k).concat([u]));
     el.value=''; ouvrir(r.id);
   });
+}
+
+
+/* ---------- export PDF d'une fiche ---------- */
+/* Pas de bibliotheque : on compose une page d'impression et on laisse le
+   navigateur faire le PDF. C'est ce qu'il sait faire de mieux, le rendu
+   est net a n'importe quelle taille, et le fichier ne grossit pas d'un
+   octet. Le bouton ouvre la boite d'impression ; « Enregistrer au format
+   PDF » y est la destination par defaut sur tous les navigateurs. */
+const lignePDF = (lb,v,large) => isEmpty(v)||v==='—' ? '' :
+  '<div class="pl'+(large?' w':'')+'"><span>'+esc(lb)+'<\/span><b>'+esc(v)+'<\/b><\/div>';
+
+function fichePDF(r){
+  const w=r._wel, st=statutSource(r), statut=(r.app&&r.app.cycle)||st.v;
+  const cote = k => { const v=num(getPath(r,'dimensions.'+k)); return v==null?null:fmt(v); };
+  const L=cote('longueur_cm'), l=cote('largeur_cm'), h=cote('hauteur_cm');
+  const dims = (L||l||h) ? [L,l,h].map(x=>x==null?'?':x).join(' × ')+' cm' : null;
+  const perso = getPath(r,'matiere.personnalise_tfb');
+  const logo = (document.querySelector('.brand')||{}).outerHTML || '';
+
+  const docs = DOCUMENTS.map(d=>{
+    const f=documentsDe(r,d.k);
+    return '<div class="pd"><span>'+esc(d.lb)+'<\/span>'
+      + (f.length ? f.map(x=>'<a href="'+esc(x.url)+'">'+esc(x.nom)+'<\/a>').join('<br>')
+         : (w && w.bat_gabarit && d.k!=='photos'
+            ? '<i>chez Wellembal, dossier partagé, réf. '+esc(r._welk)+'<\/i>'
+            : '<i>aucun document<\/i>'))
+      + '<\/div>';
+  }).join('');
+
+  const images = DOCUMENTS.reduce((a,d)=>a.concat(documentsDe(r,d.k)
+      .filter(x=>x.vignette||estImage(x.url))), [])
+    .slice(0,4)
+    .map(x=>'<img src="'+esc(x.vignette||x.url)+'" alt="">').join('');
+
+  return '<div class="ph-t">'+logo+'<div class="ph-r"><b>Fiche packaging<\/b>'
+      + '<span>Éditée le '+esc(dateFR(todayISO()))+'<\/span><\/div><\/div>'
+    + '<h1>'+esc(intituleValue(r)||r.nom)+'<\/h1>'
+    + '<div class="ph-s">'+esc(r.inpulse.fournisseur||'fournisseur inconnu')
+      + (r.identification.sku_fournisseur?' · '+esc(r.identification.sku_fournisseur):'')
+      + (statut?' · '+esc(statut):'')+'<\/div>'
+
+    + '<h2>Identification<\/h2><div class="pg">'
+    + lignePDF('Intitulé Inpulse', r.identification.intitule_inpulse, 1)
+    + lignePDF('SKU fournisseur', r.identification.sku_fournisseur)
+    + lignePDF('Fournisseur', r.inpulse.fournisseur)
+    + lignePDF('Design', r.app&&r.app.marquage)
+    + lignePDF('Statut', statut ? statut+' — '+st.d : '')
+    + (r._welk ? lignePDF('Référence Wellembal', r._welk) : '')
+    + '<\/div>'
+
+    + '<h2>Achat<\/h2><div class="pg">'
+    + lignePDF('Conditionnement', conditionnementHA(r), 1)
+    + lignePDF('Tarif unitaire', tarifUnitaire(r)==null?'' : eur4(tarifUnitaire(r))+' par '+uniteTarif(r))
+    + lignePDF('Prix HT', r.inpulse.prix_ht==null?'':eur(r.inpulse.prix_ht))
+    + (w && !w.archivee ? lignePDF('Chez Wellembal',
+        fmt(w.stock)+' colis en stock · '+fmt(w.conso6)+' sortis sur 6 mois', 1) : '')
+    + (w && w.archivee ? lignePDF('Chez Wellembal', w.archivee, 1) : '')
+    + '<\/div>'
+
+    + '<h2>Fiche technique<\/h2><div class="pg">'
+    + lignePDF('Dimensions (L × l × h)', dims, 1)
+    + (w && w.dimensions_texte ? lignePDF('Au référentiel fournisseur', w.dimensions_texte, 1) : '')
+    + lignePDF('Matière', getPath(r,'matiere.matiere'), 1)
+    + lignePDF('Grammage', getPath(r,'matiere.grammage_g_m2')==null?'' :
+               fmt(getPath(r,'matiere.grammage_g_m2'))+' g/m²')
+    + lignePDF('Personnalisé TFB', perso==null?'' : (perso?'oui':'non'))
+    + '<\/div>'
+
+    + '<h2>Documents<\/h2><div class="pdl">'+docs+'<\/div>'
+    + (images ? '<div class="pim">'+images+'<\/div>' : '')
+
+    + '<div class="pf">The French Bastards · Info Pack · données Inpulse'
+    + (WEL&&WEL.edition ? ' · référentiel Wellembal du '+esc(dateFR(WEL.edition)) : '')
+    + '<\/div>';
+}
+
+function exporterPDF(){
+  if(!current) return;
+  const z=document.getElementById('impr');
+  z.innerHTML=fichePDF(current);
+  const avant=document.title;
+  document.title='Fiche packaging — '+(intituleValue(current)||current.nom);
+  window.print();
+  setTimeout(()=>{ document.title=avant; }, 400);
 }
 
 /* ---------- démarrage ---------- */
