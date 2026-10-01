@@ -717,21 +717,40 @@ async function chargerWellembal(){
 const code = s => String(s==null?'':s).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
   .replace(/[^A-Za-z0-9]/g,'').toUpperCase();
 let WELIDX=null;
+/* Inpulse et Wellembal n'ecrivent pas les references pareil :
+   WEBOL900D183KF / BOL900D183KF, TFBBECLAIR... / STARDSBECLAIR...
+   On rapproche en quatre temps, du plus sur au moins sur. */
+const racine = c => String(c||'')
+  .replace(/^(?:THEFRENCHBASTARDS|BASTARDS|STARDS|TFB|WE)/,'')
+  .replace(/V\d+$/,'');
+const chiffres = c => (String(c||'').match(/\d+/g)||[]).join('');
 function indexerWel(){
-  WELIDX={sku:{}, nom:{}};
+  WELIDX={sku:{}, rac:{}, nom:{}, nb:{}};
+  const nbDouble={};
   for(const k in WEL.refs){
-    WELIDX.sku[code(k)]=k;
+    const c=code(k);
+    WELIDX.sku[c]=k;
+    const ra=racine(c); if(ra && !(ra in WELIDX.rac)) WELIDX.rac[ra]=k;
     const n=WEL.refs[k].nom_inpulse;
     if(n && !(code(n) in WELIDX.nom)) WELIDX.nom[code(n)]=k;
+    const d=chiffres(c);
+    if(d.length>=5){ nbDouble[d]=(nbDouble[d]||0)+1; WELIDX.nb[d]=k; }
   }
+  /* une signature chiffree ne vaut que si elle ne designe qu'une reference */
+  Object.keys(nbDouble).forEach(d=>{ if(nbDouble[d]>1) delete WELIDX.nb[d]; });
 }
 function cleWel(r){
   if(!WEL||!WEL.refs) return '';
   if(!WELIDX) indexerWel();
   const sku=code((r.identification&&r.identification.sku_fournisseur));
   if(sku && WELIDX.sku[sku]) return WELIDX.sku[sku];
+  const ra=racine(sku);
+  if(ra && WELIDX.rac[ra]) return WELIDX.rac[ra];
   const nom=code((r.identification&&r.identification.intitule_inpulse));
-  return WELIDX.nom[nom] || '';
+  if(nom && WELIDX.nom[nom]) return WELIDX.nom[nom];
+  const d=chiffres(sku);
+  if(d.length>=5 && WELIDX.nb[d]) return WELIDX.nb[d];
+  return '';
 }
 function appliquerWellembal(){
   if(!WEL||!DB) return;
@@ -946,6 +965,29 @@ function refreshFournisseurs(){ }
 /* ---------- stock : commandes recues et inventaires Inpulse ---------- */
 let ORD=null, ORDINFO=null, BYSTORE=null, SNAMES={}, BQ_SID={};
 let INV=null, INVDATES={}, INVNAMES={}, INV_SID={}, INVINFO=null;
+let BQ_ORPHELINS=[];
+
+/* Rapprocher un nom de depot Inpulse d'une de nos boutiques.
+   Inpulse ecrit « TFB RESEAU Sevres », « TFB RESEAU  Sevres  », « Sevres »
+   selon les exports : on compare sur une clef sans accent, sans ponctuation,
+   sans le prefixe TFB RESEAU / TFB LAB / TFB. */
+function clefBq(n){
+  return String(n||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toUpperCase().replace(/[^A-Z0-9]+/g,' ').trim();
+}
+function noyauBq(n){
+  return clefBq(n).replace(/^TFB\s+(RESEAU|LAB|LABO|BOUTIQUE)\s+/,'')
+                  .replace(/^TFB\s+/,'').trim();
+}
+/* deux entrees par boutique : le nom complet et son noyau */
+const BQ_INP = (()=>{ const o={};
+  BOUTIQUES.forEach(b=>{
+    o[clefBq(b.inpulse)]=b;
+    const n=noyauBq(b.inpulse); if(n && !o[n]) o[n]=b;
+    const a=noyauBq(b.nom);     if(a && !o[a]) o[a]=b;
+  });
+  return o; })();
+const trouverBq = n => BQ_INP[clefBq(n)] || BQ_INP[noyauBq(n)] || null;
 const MONTHS = (()=>{ const out=[]; const now=new Date();
   for(let y=2026,m=1;;m++){ if(m>12){m=1;y++;}
     out.push(y+'-'+String(m).padStart(2,'0'));
@@ -1021,16 +1063,17 @@ function bqAgg(p){
 function indexStores(){
   BQ_SID={}; BQ_ORPHELINS=[];
   Object.keys(SNAMES||{}).forEach(sid=>{
-    const n=String(SNAMES[sid]||'').trim().toUpperCase();
-    const b=BQ_INP[n];
-    if(b) BQ_SID[sid]=b; else if(n) BQ_ORPHELINS.push(SNAMES[sid]);
+    const b=trouverBq(SNAMES[sid]);
+    if(b) BQ_SID[sid]=b; else if(clefBq(SNAMES[sid])) BQ_ORPHELINS.push(SNAMES[sid]);
   });
 }
 function indexInvStores(){
   INV_SID={};
   Object.keys(INVNAMES||{}).forEach(sid=>{
-    const b=BQ_INP[String(INVNAMES[sid]||'').trim().toUpperCase()];
+    const b=trouverBq(INVNAMES[sid]);
     if(b) INV_SID[sid]=b.abr;
+    else if(clefBq(INVNAMES[sid]) && BQ_ORPHELINS.indexOf(INVNAMES[sid])<0)
+      BQ_ORPHELINS.push(INVNAMES[sid]);
   });
 }
 async function loadInventories(force){
@@ -1221,6 +1264,21 @@ function colonnesStock(){
   const cols=[
    {k:'ref', lb:'Référence', filtre:1, t:o=>intituleValue(o.p)||o.p.nom,
     c:o=>'<td class="ref">'+esc(intituleValue(o.p)||o.p.nom)+'<\/td>'}
+  ,/* seconde source : le referentiel que Wellembal tient a jour */
+   {k:'wel', lb:'Wellembal', num:1, titre:'Colis disponibles chez le fournisseur'
+      + (WEL&&WEL.edition?' — relevé du '+dateFR(WEL.edition):''),
+    n:o=>o.p._wel&&o.p._wel.stock!=null?o.p._wel.stock:-1,
+    t:o=>o.p._wel&&o.p._wel.stock!=null?String(o.p._wel.stock):'',
+    c:o=>{
+      const w=o.p._wel;
+      if(!w||w.stock==null) return '<td class="num vd">—<\/td>';
+      const t=fmt(w.stock)+' colis chez Wellembal'
+        + (w.en_cours ? ', '+fmt(w.en_cours)+' en cours d’achat' : '')
+        + (w.delai_reappro ? ' · réappro '+fmt(w.delai_reappro)+' jours' : '')
+        + (WEL&&WEL.edition ? ' (relevé du '+dateFR(WEL.edition)+')' : '');
+      return '<td class="num mono" title="'+esc(t)+'">'
+        + (w.stock?fmt(w.stock):'<span class="couv bas">0<\/span>')+'<\/td>';
+    }}
   ];
   bqZone(ZONE).forEach(b=>cols.push({
     k:'b'+b.abr, lb:b.abr, num:1, bq:b, titre:b.nom,
@@ -1311,8 +1369,19 @@ function renderStock(){
          +'Le relevé de début de mois de chaque boutique alimente ce tableau.')
       +'<\/td><\/tr>';
 
-  document.getElementById('count').textContent =
-    lignes.length+' références · '+bqs.length+' boutiques';
+  /* combien de boutiques de la zone ont effectivement rendu un inventaire */
+  const bqOk=bqs.filter(b=>Object.keys(INV_SID||{}).some(sid=>INV_SID[sid]===b.abr)).length;
+  const c=document.getElementById('count');
+  c.textContent = lignes.length+' références · '+bqOk+' / '+bqs.length+' boutiques relevées'
+    + (BQ_ORPHELINS.length ? ' · '+BQ_ORPHELINS.length+' dépôt(s) Inpulse non rattaché(s)' : '');
+  c.title = (bqOk<bqs.length
+      ? 'Sans inventaire de fin de mois : '
+        + bqs.filter(b=>!Object.keys(INV_SID||{}).some(sid=>INV_SID[sid]===b.abr))
+             .map(b=>b.nom).join(', ')+'. '
+      : '')
+    + (BQ_ORPHELINS.length
+      ? 'Dépôts Inpulse sans boutique correspondante : '+BQ_ORPHELINS.join(', ')+'.'
+      : '');
   document.querySelectorAll('#thead tr.hd th').forEach(el=>el.onclick=()=>{
     if(sSortK===el.dataset.k) sSortD=-sSortD; else { sSortK=el.dataset.k; sSortD=el.dataset.k==='ref'?1:-1; }
     renderStock();
