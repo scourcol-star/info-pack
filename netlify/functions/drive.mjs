@@ -22,7 +22,41 @@
 let CACHE = null;                 // { t, corps }
 const DUREE = 10 * 60 * 1000;
 
+/* Adresse du script, avec le mot de passe et d'eventuels parametres. */
+function cible(extra) {
+  const url = process.env.APPS_SCRIPT_URL;
+  const jeton = process.env.APPS_SCRIPT_JETON || '';
+  const p = new URLSearchParams(Object.assign({ jeton: jeton }, extra || {}));
+  return url + (url.indexOf('?') < 0 ? '?' : '&') + p.toString();
+}
+
+/* /api/image?id=… : la vignette d'un fichier Drive.
+   Les adresses drive.google.com/thumbnail exigent que le navigateur
+   soit authentifie aupres de Google, ce qui ne marche pas dans une
+   page. On passe donc par le script, qui a les droits, et qui renvoie
+   l'image en base64. On la redonne ici en vraies donnees binaires. */
+async function image(req) {
+  const id = new URL(req.url).searchParams.get('id');
+  if (!id) return new Response('id manquant', { status: 400 });
+  if (!process.env.APPS_SCRIPT_URL) return new Response('non configure', { status: 501 });
+  try {
+    const r = await fetch(cible({ img: id }), { redirect: 'follow' });
+    const d = await r.json();
+    if (!d || !d.b64) throw new Error(d && d.error || 'vignette absente');
+    return new Response(Buffer.from(d.b64, 'base64'), {
+      status: 200,
+      headers: {
+        'Content-Type': d.mime || 'image/png',
+        'Cache-Control': 'public, max-age=86400'
+      }
+    });
+  } catch (e) {
+    return new Response('', { status: 404 });
+  }
+}
+
 export default async (req) => {
+  if (new URL(req.url).pathname === '/api/image') return image(req);
   const sortie = (o, code = 200) =>
     new Response(JSON.stringify(o), {
       status: code,
@@ -30,7 +64,6 @@ export default async (req) => {
     });
 
   const url = process.env.APPS_SCRIPT_URL;
-  const jeton = process.env.APPS_SCRIPT_JETON || '';
   if (!url)
     return sortie({ error: 'Drive non configuré — il manque APPS_SCRIPT_URL' }, 501);
 
@@ -40,9 +73,7 @@ export default async (req) => {
     return sortie({ ...CACHE.corps, cache: true });
 
   try {
-    const cible = url + (url.indexOf('?') < 0 ? '?' : '&')
-                + 'jeton=' + encodeURIComponent(jeton);
-    const r = await fetch(cible, { redirect: 'follow' });
+    const r = await fetch(cible(), { redirect: 'follow' });
     if (!r.ok) throw new Error('Apps Script a répondu HTTP ' + r.status);
 
     const txt = await r.text();
@@ -64,4 +95,4 @@ export default async (req) => {
   }
 };
 
-export const config = { path: '/api/drive' };
+export const config = { path: ['/api/drive', '/api/image'] };
