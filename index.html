@@ -682,23 +682,44 @@ const fichiersDrive = (r,k) => (DRIVE.par[r.id]||[]).filter(f=>f.k===k);
    nom d'un dossier qui le contient, porte le SKU fournisseur, la
    reference Wellembal ou l'intitule Inpulse. Le repere le plus long
    l'emporte, pour qu'un code court n'attrape pas la voisine. */
+/* Ressemblance de deux libelles : coefficient de Dice sur les paires
+   de lettres. Insensible a l'ordre des mots, tolerant aux fautes.
+   « GOBLET 10 CL TFB » et « GOBELET 10CL TFB » valent 0,88 ;
+   « ROULEAU ETIQUETTE CAKE MARBRE » et « ETIQUETTES EN ROULEAU CAKE
+   MARBRE » 0,84 ; deux produits differents restent sous 0,60. */
+function paires(s){
+  const m=new Map();
+  for(let i=0;i<s.length-1;i++){ const k=s.slice(i,i+2); m.set(k,(m.get(k)||0)+1); }
+  return m;
+}
+function dice(a,A,b,B){
+  if(!a||!b) return 0;
+  let c=0,na=0,nb=0;
+  A.forEach(v=>na+=v); B.forEach(v=>nb+=v);
+  A.forEach((v,k)=>{ const w=B.get(k); if(w) c+=Math.min(v,w); });
+  return (na+nb) ? 2*c/(na+nb) : 0;
+}
+/* Seuils mesures sur les 31 dossiers reels du Drive packaging :
+   toutes les bonnes paires passent, aucune mauvaise ne passe. */
+const RESSEMBLANCE = 0.70;   // en dessous, ce n'est pas le meme produit
+const ECART        = 0.09;   // ecart minimum avec la deuxieme candidate
+
 function indexerDrive(){
   DRIVE.par={};
   if(!DB||!DRIVE.fichiers.length) return;
-  const cles=DB.packagings.map(r=>({ r, cs:[
+  const cles=DB.packagings.map(r=>{
+    const cs=[
       code(r.identification&&r.identification.sku_fournisseur),
       code(r._welk),
       code(r.identification&&r.identification.intitule_inpulse),
-      code(r.nom)
-    ].filter((c,i,t)=>c && c.length>=5 && t.indexOf(c)===i) }));
+      code(r.nom),
+      code(intituleValue(r)),
+      code(intituleBase(r))
+    ].filter((c,i,t)=>c && c.length>=5 && t.indexOf(c)===i);
+    return {r, cs, pp:cs.map(paires)};
+  });
 
-  /* Le dossier porte rarement le nom exact de la reference : le Drive
-     dit « BOITE 1X ECLAIR » la ou Inpulse dit « BOITE 1X ECLAIR TFB »,
-     et « BAGUE » pour « BAGUE TFB BOWL 900ML ». On accepte donc les
-     deux sens d'inclusion, en privilegiant toujours le rapprochement
-     le plus precis : egalite d'abord, puis le repere le plus long. */
-  /* « BAGUE » ne vaut comme abrege que s'il ne designe qu'une reference :
-     sinon on prefere ne rien rattacher plutot que de se tromper. */
+  /* Un abrege court ne vaut que s'il ne designe qu'une seule reference. */
   const compte={};
   const unique = b => {
     if(!(b in compte))
@@ -707,22 +728,38 @@ function indexerDrive(){
   };
 
   DRIVE.fichiers.forEach(f=>{
-    const bouts=(f.chemin||[]).concat([f.nom]).map(code).filter(c=>c.length>=5);
+    const bruts=(f.chemin||[]).concat([String(f.nom||'').replace(/\.[a-z0-9]{1,5}$/i,'')]);
+    const bouts=bruts.map(code).filter(c=>c.length>=5);
     const foin=code((f.chemin||[]).join(' ')+' '+f.nom);
+
+    /* 1. le nom porte la reference, ou l'abrege : rapprochement sur */
     let gagnant=null, score=0;
     cles.forEach(o=>o.cs.forEach(c=>{
       let n=0;
-      if(bouts.indexOf(c)>=0)        n=2000+c.length;   // le dossier EST la reference
-      else if(foin.indexOf(c)>=0)    n=1000+c.length;   // la reference est citee
-      else {                                            // le dossier abrege la reference
-        bouts.forEach(b=>{
-          if(b.length>=5 && c.indexOf(b)>=0 && b.length>n && unique(b)) n=b.length; });
-      }
+      if(bouts.indexOf(c)>=0)        n=2000+c.length;
+      else if(foin.indexOf(c)>=0)    n=1000+c.length;
+      else bouts.forEach(b=>{
+        if(b.length>=5 && c.indexOf(b)>=0 && b.length>n && unique(b)) n=b.length; });
       if(n>score){ score=n; gagnant=o.r; }
     }));
-    if(gagnant) (DRIVE.par[gagnant.id]||(DRIVE.par[gagnant.id]=[])).push(f);
+    if(gagnant){ (DRIVE.par[gagnant.id]||(DRIVE.par[gagnant.id]=[])).push(f); return; }
+
+    /* 2. sinon, la ressemblance, a condition qu'elle soit nette */
+    const bp=bouts.map(paires);
+    let m1=0, r1=null, m2=0;
+    cles.forEach(o=>{
+      let m=0;
+      for(let i=0;i<bouts.length;i++)
+        for(let j=0;j<o.cs.length;j++){
+          const d=dice(bouts[i],bp[i],o.cs[j],o.pp[j]); if(d>m) m=d;
+        }
+      if(m>m1){ m2=m1; m1=m; r1=o.r; } else if(m>m2) m2=m;
+    });
+    if(r1 && m1>=RESSEMBLANCE && m1-m2>=ECART)
+      (DRIVE.par[r1.id]||(DRIVE.par[r1.id]=[])).push(f);
   });
 }
+
 /* les fichiers du Drive qu'aucune reference ne reclame */
 function orphelinsDrive(){
   if(!DRIVE.pret) return [];
@@ -744,9 +781,12 @@ function nomDeLien(u){
   catch(e){ return u; }
 }
 
-async function chargerDrive(){
+/* frais=1 : on redemande au Drive sans attendre la fin du cache de la
+   fonction. C'est ce que fait le bouton Synchroniser, pour qu'une photo
+   deposee a l'instant apparaisse tout de suite. */
+async function chargerDrive(frais){
   try{
-    const r=await fetch('/api/drive',{cache:'no-store'});
+    const r=await fetch('/api/drive'+(frais?'?frais=1':''),{cache:'no-store'});
     if(r.status===501){ DRIVE.message=(await r.json().catch(()=>({}))).error||'Drive non configuré'; return; }
     if(!r.ok) throw new Error('HTTP '+r.status);
     const d=await r.json();
@@ -1802,7 +1842,7 @@ async function load(){
 
 function brancher(){
   document.getElementById('btn-sync').onclick=()=>loadOverrides()
-    .then(syncInpulse).then(chargerDrive).then(()=>loadOrders(true)).then(()=>loadInventories(true));
+    .then(syncInpulse).then(()=>chargerDrive(true)).then(()=>loadOrders(true)).then(()=>loadInventories(true));
   document.querySelectorAll('.rnav a[data-page]').forEach(a=>a.onclick=e=>{e.preventDefault();setPage(a.dataset.page);});
   document.getElementById('f-x').onclick=fermer;
   document.getElementById('f-prev').onclick=()=>voisine(-1);
