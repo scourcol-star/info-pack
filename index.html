@@ -810,13 +810,165 @@ async function chargerDrive(frais){
    sur le libelle Inpulse. Ses valeurs servent de socle : une saisie TFB
    les recouvre toujours. */
 let WEL=null;
-async function chargerWellembal(){
-  if(typeof EMBEDDED_WEL!=='undefined'){ WEL=EMBEDDED_WEL; appliquerWellembal(); applyOverrides(); indexerDrive(); render(); return; }
+
+/* ---------- lecture du classeur fournisseur ---------- */
+/* Wellembal tient son referentiel dans un classeur Drive. Le script
+   Apps Script nous le rend feuille par feuille, en lignes brutes ;
+   la mise en forme se fait ici, pour que les regles restent dans
+   l'app et pas dans le script. */
+
+const NB_WEL = '\\d+(?:[.,]\\d+)?';
+const nbWel = x => { const v=parseFloat(String(x==null?'':x).replace(',','.'));
+                     return isFinite(v)?v:null; };
+const txtWel = x => { const v=String(x==null?'':x).replace(/\s+/g,' ').trim(); return v||null; };
+
+function diviseurWel(t){
+  const b=String(t).toLowerCase();
+  if(b.indexOf('mm')>=0) return 10;
+  if(/\bcm\b/.test(b)||/cm$/.test(b.trim())) return 1;
+  return null;
+}
+/* Rend [L, l, h] en centimetres. Sept notations couvertes, des
+   « 120x58x57 mm » aux « Diam. haut 183 x diam. bas 164 x H 50 mm ». */
+function cotesWel(t){
+  if(!t) return [null,null,null];
+  t=String(t).trim();
+  let div=diviseurWel(t);
+  if(div==null) div=new RegExp('\\bD\\s*'+NB_WEL+'\\s*H\\s*'+NB_WEL,'i').test(t)?1:null;
+  if(div==null) return [null,null,null];
+  const u=v=>Math.round(nbWel(v)/div*100)/100;
+
+  let m=t.match(new RegExp('Ext\\.?\\s*('+NB_WEL+')\\s*[x\u00d7]\\s*('+NB_WEL+')\\s*[x\u00d7]\\s*('+NB_WEL+')','i'));
+  if(m) return [u(m[1]),u(m[2]),u(m[3])];
+
+  const d=t.match(new RegExp('(?:diam\\.?|D|haut|bas)\\s*\\.?\\s*('+NB_WEL+')','gi'))||[];
+  const h=t.match(new RegExp('(?:\\bH|hauteur)\\s*\\.?\\s*('+NB_WEL+')','i'));
+  if(d.length>=2&&h){
+    const g=Math.max.apply(null,d.map(x=>nbWel((x.match(new RegExp(NB_WEL))||[0])[0])));
+    const c=Math.round(g/div*100)/100;
+    return [c,c,u(h[1])];
+  }
+
+  const p=t.replace(new RegExp('('+NB_WEL+')\\s*/\\s*'+NB_WEL,'g'),'$1');
+  m=p.match(new RegExp('('+NB_WEL+')\\s*[x\u00d7]\\s*('+NB_WEL+')\\s*[x\u00d7]\\s*('+NB_WEL+')'));
+  if(m) return [u(m[1]),u(m[2]),u(m[3])];
+
+  m=t.match(new RegExp('(?:^|[^x\u00d7\\d])('+NB_WEL+')\\s*/\\s*('+NB_WEL+')\\s*/\\s*('+NB_WEL+')'));
+  if(m) return [u(m[1]),u(m[2]),u(m[3])];
+
+  const dd=t.match(new RegExp('\\bD\\s*\\.?\\s*('+NB_WEL+')'));
+  if(dd){ const g=u(dd[1]); return [g,g,h?u(h[1]):null]; }
+
+  m=p.match(new RegExp('('+NB_WEL+')\\s*[x\u00d7]\\s*('+NB_WEL+')'));
+  if(m) return [u(m[1]),u(m[2]),h?u(h[1]):null];
+
+  return [null,null,null];
+}
+
+/* Retrouver les colonnes par leur intitule, pour que l'app survive a
+   un deplacement de colonne chez le fournisseur. */
+function enteteWel(lignes){
+  for(let i=0;i<Math.min(lignes.length,25);i++)
+    if(lignes[i].some(c=>code(c).indexOf('REFERENCEWELLEMBAL')>=0)) return i;
+  return -1;
+}
+function colWel(entete, motifs){
+  for(let i=0;i<entete.length;i++){
+    const h=code(entete[i]);
+    if(h && motifs.some(m=>h.indexOf(m)>=0)) return i;
+  }
+  return -1;
+}
+function construireWel(brut){
+  const F=(brut&&brut.feuilles)||{};
+  const actives=F['Referentiel packaging']||[];
+  const archives=F['References archivees']||[];
+  const refs={};
+
+  const ia=enteteWel(actives);
+  if(ia>=0){
+    const e=actives[ia];
+    const C={
+      ref:colWel(e,['REFERENCEWELLEMBAL']), des:colWel(e,['DESIGNATION']),
+      typ:colWel(e,['TYPE']), inp:colWel(e,['NOMINPULSE']),
+      fam:colWel(e,['FAMILLE']), dim:colWel(e,['DIMENSION']),
+      mat:colWel(e,['MATIERE']), gra:colWel(e,['GRAMMAGE']),
+      con:colWel(e,['CONDITIONNEMENT']), poi:colWel(e,['POIDSCOLIS']),
+      prx:colWel(e,['PRIXHT']), stk:colWel(e,['STOCKDISPO']),
+      enc:colWel(e,['ENCOURS']), del:colWel(e,['DELAIREAPPRO']),
+      cs6:colWel(e,['CONSO6MOIS']), bat:colWel(e,['BATGABARIT']),
+      obs:colWel(e,['OBSERVATION'])
+    };
+    const g=(l,k)=>C[k]>=0?l[C[k]]:null;
+    for(let i=ia+1;i<actives.length;i++){
+      const l=actives[i], r=txtWel(g(l,'ref'));
+      if(!r) continue;
+      refs[r]={
+        designation:txtWel(g(l,'des')), type:txtWel(g(l,'typ')),
+        nom_inpulse:txtWel(g(l,'inp')), famille:txtWel(g(l,'fam')),
+        dimensions_texte:txtWel(g(l,'dim')), cotes_cm:cotesWel(g(l,'dim')),
+        matiere:txtWel(g(l,'mat')), grammage:nbWel(g(l,'gra')),
+        conditionnement:txtWel(g(l,'con')), poids_colis_kg:nbWel(g(l,'poi')),
+        prix_colis:nbWel(g(l,'prx')), stock:nbWel(g(l,'stk')),
+        en_cours:nbWel(g(l,'enc')), delai_reappro:nbWel(g(l,'del')),
+        conso6:nbWel(g(l,'cs6')),
+        bat_gabarit:/^OUI/.test(code(g(l,'bat'))), observations:txtWel(g(l,'obs')),
+        archivee:null
+      };
+    }
+  }
+
+  const ib=enteteWel(archives);
+  if(ib>=0){
+    const e=archives[ib];
+    const C={ ref:colWel(e,['REFERENCEWELLEMBAL']), des:colWel(e,['DESIGNATION']),
+      typ:colWel(e,['TYPE']), dim:colWel(e,['DIMENSION']), mat:colWel(e,['MATIERE']),
+      con:colWel(e,['CONDITIONNEMENT']), cs6:colWel(e,['SORTIES6MOIS']),
+      sta:colWel(e,['STATUT']) };
+    const g=(l,k)=>C[k]>=0?l[C[k]]:null;
+    for(let i=ib+1;i<archives.length;i++){
+      const l=archives[i], r=txtWel(g(l,'ref'));
+      if(!r||refs[r]) continue;
+      refs[r]={
+        designation:txtWel(g(l,'des')), type:txtWel(g(l,'typ')), nom_inpulse:null,
+        famille:null, dimensions_texte:txtWel(g(l,'dim')), cotes_cm:cotesWel(g(l,'dim')),
+        matiere:txtWel(g(l,'mat')), grammage:null, conditionnement:txtWel(g(l,'con')),
+        poids_colis_kg:null, prix_colis:null, stock:null, en_cours:null,
+        delai_reappro:null, conso6:nbWel(g(l,'cs6')), bat_gabarit:false,
+        observations:null, archivee:txtWel(g(l,'sta'))||'Référence désactivée'
+      };
+    }
+  }
+
+  /* la date d'edition est annoncee dans les premieres lignes */
+  let ed='';
+  for(let i=0;i<Math.min(actives.length,5);i++){
+    const m=actives[i].join(' ').match(/(\d{2})\/(\d{2})\/(\d{4})/);
+    if(m){ ed=m[3]+'-'+m[2]+'-'+m[1]; break; }
+  }
+  return {source:'Référentiel packaging TFB — WELLEMBAL', edition:ed,
+          lu_le:(brut&&brut.genere)||'', refs};
+}
+
+async function chargerWellembal(frais){
+  const poser = () => { appliquerWellembal(); applyOverrides(); indexerDrive(); render(); };
+  if(typeof EMBEDDED_WEL!=='undefined'){ WEL=EMBEDDED_WEL; poser(); return; }
+  /* 1. le classeur vivant, par le script */
+  try{
+    const r=await fetch('/api/wellembal'+(frais?'?frais=1':''),{cache:'no-store'});
+    if(r.ok){
+      const b=await r.json();
+      if(!b.error && b.feuilles){
+        const w=construireWel(b);
+        if(Object.keys(w.refs).length){ WEL=w; poser(); return; }
+      }
+    }
+  }catch(e){}
+  /* 2. a defaut, la copie figee deposee avec l'app */
   try{
     const r=await fetch('data/wellembal.json',{cache:'no-store'});
     if(!r.ok) throw new Error('HTTP '+r.status);
-    WEL=await r.json();
-    appliquerWellembal(); applyOverrides(); indexerDrive(); render();
+    WEL=await r.json(); poser();
   }catch(e){ WEL=null; }
 }
 const code = s => String(s==null?'':s).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
@@ -956,12 +1108,6 @@ const COLS=[
   t:p=>getPath(p,'matiere.matiere')||'',
   c:p=>{const v=getPath(p,'matiere.matiere');
         return '<td class="tm">'+(v?esc(v):'<span style="color:var(--tx3)">—<\/span>')+'<\/td>';}},
- {k:'tarif',lb:'Tarif unitaire',  num:1,
-  n:p=>tarifUnitaire(p),
-  t:p=>tarifUnitaire(p)==null?'':eur4(tarifUnitaire(p)),
-  c:p=>{const v=tarifUnitaire(p);
-        return '<td class="num mono">'+(v==null?'<span style="color:var(--tx3)">—<\/span>'
-          :esc(eur4(v))+' <span class="sm">/ '+esc(uniteTarif(p))+'<\/span>')+'<\/td>';}},
  {k:'docs', lb:'Documents',
   n:p=>DOCUMENTS.filter(d=>documentsDe(p,d.k).length).length,
   t:p=>DOCUMENTS.filter(d=>documentsDe(p,d.k).length).map(d=>d.lb).join(' '),
@@ -1846,7 +1992,7 @@ async function load(){
 
 function brancher(){
   document.getElementById('btn-sync').onclick=()=>loadOverrides()
-    .then(syncInpulse).then(()=>chargerDrive(true)).then(()=>loadOrders(true)).then(()=>loadInventories(true));
+    .then(syncInpulse).then(()=>chargerDrive(true)).then(()=>chargerWellembal(true)).then(()=>loadOrders(true)).then(()=>loadInventories(true));
   document.querySelectorAll('.rnav a[data-page]').forEach(a=>a.onclick=e=>{e.preventDefault();setPage(a.dataset.page);});
   document.getElementById('f-x').onclick=fermer;
   document.getElementById('f-prev').onclick=()=>voisine(-1);
