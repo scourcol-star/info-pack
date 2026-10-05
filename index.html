@@ -173,12 +173,12 @@ td.vd,.vd{color:var(--tx3)}
 .dzh b{font-size:var(--t2);font-weight:600}
 .dzh .aide{font-size:var(--t1);color:var(--tx3);min-width:0}
 .dzh .n{margin-left:auto;font-size:var(--t0);color:var(--tx3);font-variant-numeric:tabular-nums}
-.vign{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px}
-.vg{width:70px;height:70px;border-radius:var(--rs);border:1px solid var(--bor);background:var(--sur);
+.vign{display:flex;gap:9px;flex-wrap:wrap}
+.vg{width:112px;height:112px;border-radius:var(--rs);border:1px solid var(--bor);background:var(--sur);
   overflow:hidden;display:grid;place-items:center;position:relative;text-decoration:none;color:var(--tx3)}
 .vg img{width:100%;height:100%;object-fit:cover;display:block}
 .vg i{font-size:20px}
-.vg .nm{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.93);font-size:8.5px;
+.vg .nm{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.93);font-size:9.5px;
   padding:2px 3px;text-align:center;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dzv{font-size:var(--t1);color:var(--tx3);padding:5px 0 8px}
 .dzw{display:flex;gap:7px;align-items:flex-start;font-size:var(--t1);color:var(--tx2);
@@ -776,6 +776,12 @@ function documentsDe(r,k){
     liensManuels(r,k).map(u=>({nom:nomDeLien(u), url:u, vignette:null, manuel:true})));
 }
 const estImage = u => /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(u||'');
+/* Le script renvoie l'identifiant du fichier ; la vignette passe par
+   notre propre fonction, parce qu'une adresse Drive directe exige une
+   session Google que la page n'a pas. Un lien colle a la main garde
+   son adresse telle quelle. */
+const vignetteURL = x => /^https?:/i.test(x.vignette||'')
+  ? x.vignette : '/api/image?id='+encodeURIComponent(x.vignette);
 function nomDeLien(u){
   try{ const p=new URL(u).pathname.split('/').filter(Boolean); return decodeURIComponent(p[p.length-1]||u); }
   catch(e){ return u; }
@@ -1580,18 +1586,16 @@ function blocDocuments(r){
     const vign = f.length
       ? '<div class="vign">'+f.map(x=>
           '<a class="vg" href="'+esc(x.url)+'" target="_blank" rel="noopener" title="'+esc(x.nom)+'">'
-          + (x.vignette ? '<img src="'+esc(x.vignette)+'" alt="">'
-             : estImage(x.url) ? '<img src="'+esc(x.url)+'" alt="">'
+          + (x.vignette ? '<img loading="lazy" src="'+esc(vignetteURL(x))+'" alt="">'
+             : estImage(x.url) ? '<img loading="lazy" src="'+esc(x.url)+'" alt="">'
              : '<i class="ti ti-file"><\/i>')
           + '<span class="nm">'+esc(x.nom)+'<\/span><\/a>').join('')+'<\/div>'
-      : '<div class="dzv">Aucun document. Colle un lien ci-dessous, ou dépose le fichier dans le '
-        + 'Drive packaging : il se rattache tout seul si son nom, ou celui de son dossier, '
-        + 'porte le SKU, la référence Wellembal ou l’intitulé de la référence.<\/div>';
+      : '<div class="dzv">Aucun document. Dépose-le dans le Drive packaging, '
+        + 'il se rattachera tout seul.<\/div>';
     return '<div class="dz"><div class="dzh"><b>'+esc(d.lb)+'<\/b>'
       + '<span class="aide">'+esc(d.aide)+'<\/span>'
       + '<span class="n">'+(f.length||'')+'<\/span><\/div>'
       + vign
-      + '<input class="ed" data-lien="'+d.k+'" data-id="'+esc(r.id)+'" placeholder="Coller un lien Drive, puis Entrée">'
       + '<\/div>';
   }).join('');
 }
@@ -1760,7 +1764,7 @@ function fichePDF(r){
   const images = DOCUMENTS.reduce((a,d)=>a.concat(documentsDe(r,d.k)
       .filter(x=>x.vignette||estImage(x.url))), [])
     .slice(0,4)
-    .map(x=>'<img src="'+esc(x.vignette||x.url)+'" alt="">').join('');
+    .map(x=>'<img src="'+esc(x.vignette?vignetteURL(x):x.url)+'" alt="">').join('');
 
   return '<div class="ph-t">'+logo+'<div class="ph-r"><b>Fiche packaging<\/b>'
       + '<span>Éditée le '+esc(dateFR(todayISO()))+'<\/span><\/div><\/div>'
