@@ -19,8 +19,10 @@
    solliciter Apps Script à chaque ouverture de l'app.
    ============================================================ */
 
-let CACHE = null;                 // { t, corps }
+let CACHE = null;                 // documents : { t, corps }
+let CACHE_W = null;               // referentiel : { t, corps }
 const DUREE = 10 * 60 * 1000;
+const DUREE_W = 30 * 60 * 1000;
 
 /* Adresse du script, avec le mot de passe et d'eventuels parametres. */
 function cible(extra) {
@@ -55,8 +57,42 @@ async function image(req) {
   }
 }
 
+/* /api/wellembal : le referentiel fournisseur, tel que le script l'a lu
+   dans le classeur que Wellembal met a jour. L'app le met en forme. */
+async function wellembal(req) {
+  const sortie = (o, code = 200) =>
+    new Response(JSON.stringify(o), {
+      status: code, headers: { 'Content-Type': 'application/json' }
+    });
+  if (!process.env.APPS_SCRIPT_URL)
+    return sortie({ error: 'Référentiel non configuré — il manque APPS_SCRIPT_URL' }, 501);
+
+  const frais = new URL(req.url).searchParams.get('frais') === '1';
+  if (!frais && CACHE_W && Date.now() - CACHE_W.t < DUREE_W)
+    return sortie({ ...CACHE_W.corps, cache: true });
+
+  try {
+    const q = { wel: '1' };
+    if (frais) q.frais = '1';
+    const r = await fetch(cible(q), { redirect: 'follow' });
+    if (!r.ok) throw new Error('Apps Script a répondu HTTP ' + r.status);
+    const txt = await r.text();
+    let d;
+    try { d = JSON.parse(txt); }
+    catch (e) { throw new Error('réponse inattendue — vérifie que le déploiement '
+      + 'est publié avec « Tout le monde » comme accès'); }
+    if (d.error) throw new Error(d.error);
+    CACHE_W = { t: Date.now(), corps: d };
+    return sortie(d);
+  } catch (e) {
+    return sortie({ error: 'Référentiel injoignable — ' + e.message }, 502);
+  }
+}
+
 export default async (req) => {
-  if (new URL(req.url).pathname === '/api/image') return image(req);
+  const chemin = new URL(req.url).pathname;
+  if (chemin === '/api/image') return image(req);
+  if (chemin === '/api/wellembal') return wellembal(req);
   const sortie = (o, code = 200) =>
     new Response(JSON.stringify(o), {
       status: code,
@@ -95,4 +131,4 @@ export default async (req) => {
   }
 };
 
-export const config = { path: ['/api/drive', '/api/image'] };
+export const config = { path: ['/api/drive', '/api/image', '/api/wellembal'] };
