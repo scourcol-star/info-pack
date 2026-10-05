@@ -305,6 +305,18 @@ const INTITULE = {
 };
 const MARQUAGES = ['TFB','Neutre','Co-branding'];
 
+/* ---------- documents : correspondances validees a la main ----------
+   Quand le Drive et Inpulse nomment le meme produit trop differemment
+   pour que l'app les rapproche seule, on l'ecrit ici. A gauche un
+   morceau du nom du dossier Drive, a droite l'intitule Inpulse ou le
+   SKU. Ces correspondances passent avant toute autre regle.
+   Validees avec Alice, 5 octobre 2026. */
+const CORRESPONDANCES = [
+  { dossier:'SACHET VIENNOISERIE T1', reference:'SAC CROISSANT T1 TFB 14X8X22CM' },
+  { dossier:'SACHET VIENNOISERIE T2', reference:'SAC CROISSANT T2 TFB 18X8X31CM' },
+  { dossier:'SAC BOITE GRAND CAKE',   reference:'SAC GRANDS GATEAUX' }
+];
+
 /* Unité à laquelle se rapporte le tarif unitaire.
    Inpulse donne un prix au conditionnement ; l'unité dépend du produit. */
 const UNITE_TARIF_DEFAUT = 'pièce';
@@ -719,6 +731,15 @@ function indexerDrive(){
     return {r, cs, pp:cs.map(paires)};
   });
 
+  /* Les correspondances ecrites a la main passent avant tout le reste. */
+  const manuelles=[];
+  (typeof CORRESPONDANCES!=='undefined'?CORRESPONDANCES:[]).forEach(c=>{
+    const cible=code(c.reference); if(!cible) return;
+    const o = cles.find(o=>o.cs.indexOf(cible)>=0)
+           || cles.find(o=>o.cs.some(x=>x.indexOf(cible)>=0));
+    if(o) manuelles.push({d:code(c.dossier), r:o.r});
+  });
+
   /* Un abrege court ne vaut que s'il ne designe qu'une seule reference. */
   const compte={};
   const unique = b => {
@@ -731,6 +752,10 @@ function indexerDrive(){
     const bruts=(f.chemin||[]).concat([String(f.nom||'').replace(/\.[a-z0-9]{1,5}$/i,'')]);
     const bouts=bruts.map(code).filter(c=>c.length>=5);
     const foin=code((f.chemin||[]).join(' ')+' '+f.nom);
+
+    /* 0. une correspondance validee a la main */
+    const mm=manuelles.find(x=>x.d && (foin.indexOf(x.d)>=0 || bouts.some(b=>b.indexOf(x.d)>=0)));
+    if(mm){ (DRIVE.par[mm.r.id]||(DRIVE.par[mm.r.id]=[])).push(f); return; }
 
     /* 1. le nom porte la reference, ou l'abrege : rapprochement sur */
     let gagnant=null, score=0;
