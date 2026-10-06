@@ -78,7 +78,35 @@ table{border-collapse:collapse;width:100%}
 .panel{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);overflow:hidden}
 .ph{display:flex;align-items:baseline;gap:10px;padding:13px 16px;border-bottom:1px solid var(--bor)}
 .pt{font-size:var(--t3);font-weight:600;letter-spacing:-.15px}
-.cnt{margin-left:auto;font-size:var(--t1);color:var(--tx3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cnt{font-size:var(--t1);color:var(--tx3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.fin{margin-left:auto;display:flex;align-items:center;gap:12px;flex:none}
+.ex{padding:6px 11px;font-size:var(--t1);gap:6px;white-space:nowrap}
+.ex i{font-size:15px}
+
+/* choix des colonnes avant extraction */
+#ov-x{z-index:40}
+.dlg{position:fixed;z-index:41;left:50%;top:50%;transform:translate(-50%,-48%) scale(.99);
+  width:min(620px,calc(100vw - 32px));max-height:min(78vh,760px);display:none;flex-direction:column;
+  background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);
+  box-shadow:0 18px 50px rgba(20,30,40,.22)}
+.dlg.on{display:flex;animation:dlgin .14s ease-out forwards}
+@keyframes dlgin{to{transform:translate(-50%,-50%) scale(1)}}
+.dh{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--bor)}
+.dh b{font-size:var(--t3);font-weight:650}
+.dh .ic{margin-left:auto}
+.db{padding:14px 16px;overflow:auto;flex:1}
+.df{display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:1px solid var(--bor);
+  background:var(--sur3);border-radius:0 0 var(--r) var(--r)}
+.df .cnt{margin-right:auto}
+.xg{margin-bottom:15px}
+.xg:last-child{margin-bottom:0}
+.xgt{display:flex;align-items:baseline;gap:9px;margin-bottom:7px}
+.xgt b{font-size:var(--t0);font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3)}
+.xl{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:3px 12px}
+.xc{display:flex;align-items:center;gap:7px;font-size:var(--t1);padding:3px 0;cursor:pointer;min-width:0}
+.xc input{flex:none;accent-color:var(--nav);width:14px;height:14px;cursor:pointer}
+.xc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xc:hover span{color:var(--amb)}
 .tw{overflow-x:auto}
 th{text-align:left;padding:8px 14px;font-size:var(--t0);font-weight:600;text-transform:uppercase;
   letter-spacing:.06em;color:var(--tx3);border-bottom:1px solid var(--bor);white-space:nowrap;
@@ -256,7 +284,8 @@ td.vd,.vd{color:var(--tx3)}
   <div class="bar">
     <span class="sw"><i class="ti ti-search"></i><input id="q" placeholder="Rechercher…" autocomplete="off"></span>
     <span class="chips" id="chips"></span>
-    <span class="cnt" id="count"></span>
+    <span class="fin"><span class="cnt" id="count"></span>
+      <button class="btn ex" id="exp" title="Télécharger ce tableau, filtres et tri compris, dans un fichier que le tableur ouvre directement"><i class="ti ti-table-export"></i>Extraire</button></span>
   </div>
   <div class="panel">
     <div class="ph"><span class="pt" id="pt">Base packaging</span></div>
@@ -266,6 +295,15 @@ td.vd,.vd{color:var(--tx3)}
 </div>
 
 <div class="ov" id="ov"></div>
+<div class="ov" id="ov-x"></div>
+<div class="dlg" id="dlg-x" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="dh"><b>Colonnes à extraire</b>
+    <button class="btn ic" id="x-fermer" aria-label="Fermer"><i class="ti ti-x"></i></button></div>
+  <div class="db" id="x-corps"></div>
+  <div class="df"><span class="cnt" id="x-info"></span>
+    <button class="btn" id="x-tout">Tout / rien</button>
+    <button class="btn btn-nav" id="x-go"><i class="ti ti-download"></i>Télécharger</button></div>
+</div>
 <div id="impr" aria-hidden="true"></div>
 <aside class="fiche" id="fiche" aria-hidden="true">
   <div class="fh">
@@ -1513,6 +1551,180 @@ function stockRef(p){
   const couv = (total!=null&&conso>0) ? Math.round(total/conso) : null;
   return {ag, z, total, conso, recu, nInv, dernier, four, couv};
 }
+/* ---------- extraction tableur ---------- */
+/* Un fichier que le tableur ouvre sans rien demander : separateur
+   point-virgule, virgule decimale, BOM UTF-8. C'est ce qu'attend Excel
+   en francais. On exporte ce qui est affiche, filtres et tri compris. */
+const csvVal = v => {
+  if(v==null||v==='') return '';
+  if(typeof v==='number') return String(v).replace('.',',');
+  let t=String(v);
+  if(/^\d{4}-\d{2}-\d{2}$/.test(t)) t=dateFR(t);
+  return /[";\r\n]/.test(t) ? '"'+t.replace(/"/g,'""')+'"' : t;
+};
+function telecharger(nom, texte){
+  const b=new Blob(['\ufeff'+texte], {type:'text/csv;charset=utf-8;'});
+  const u=URL.createObjectURL(b), a=document.createElement('a');
+  a.href=u; a.download=nom; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(u); a.remove(); }, 0);
+}
+
+/* La liste n'affiche que six colonnes ; l'extraction, elle, emporte
+   tout ce que l'app sait de la reference. */
+const COLS_TABLEUR = [
+  ['ref',   'Référence',            'Identification', r=>intituleValue(r)||r.nom],
+  ['inp',   'Intitulé Inpulse',     'Identification', r=>r.identification.intitule_inpulse],
+  ['sku',   'SKU fournisseur',      'Identification', r=>r.identification.sku_fournisseur],
+  ['four',  'Fournisseur',          'Identification', r=>r.inpulse.fournisseur],
+  ['stat',  'Statut',               'Identification', r=>statutDe(r)],
+  ['stato', 'Origine du statut',    'Identification', r=>statutSource(r).d],
+  ['des',   'Design',               'Identification', r=>r.app&&r.app.marquage],
+
+  ['cond',  'Conditionnement HA',   'Achat', r=>conditionnementHA(r)],
+  ['tar',   'Tarif unitaire',       'Achat', r=>tarifUnitaire(r)],
+  ['utar',  'Unité du tarif',       'Achat', r=>uniteTarif(r)],
+  ['prix',  'Prix HT Inpulse',      'Achat', r=>r.inpulse.prix_ht],
+
+  ['lon',   'Longueur (cm)',        'Fiche technique', r=>num(getPath(r,'dimensions.longueur_cm'))],
+  ['lar',   'Largeur (cm)',         'Fiche technique', r=>num(getPath(r,'dimensions.largeur_cm'))],
+  ['hau',   'Hauteur (cm)',         'Fiche technique', r=>num(getPath(r,'dimensions.hauteur_cm'))],
+  ['mat',   'Matière',              'Fiche technique', r=>getPath(r,'matiere.matiere')],
+  ['gra',   'Grammage (g/m²)',      'Fiche technique', r=>num(getPath(r,'matiere.grammage_g_m2'))],
+  ['perso', 'Personnalisé TFB',     'Fiche technique', r=>{const v=getPath(r,'matiere.personnalise_tfb');
+                                                           return v==null?'':(v?'oui':'non');}],
+
+  ['wref',  'Réf. Wellembal',          'Chez le fournisseur', r=>r._welk],
+  ['wdes',  'Désignation Wellembal',   'Chez le fournisseur', r=>r._wel&&r._wel.designation],
+  ['wfam',  'Famille Wellembal',       'Chez le fournisseur', r=>r._wel&&r._wel.famille],
+  ['wdim',  'Dimensions au référentiel','Chez le fournisseur', r=>r._wel&&r._wel.dimensions_texte],
+  ['wcond', 'Conditionnement Wellembal','Chez le fournisseur', r=>r._wel&&r._wel.conditionnement],
+  ['wpoi',  'Poids du colis (kg)',     'Chez le fournisseur', r=>r._wel&&r._wel.poids_colis_kg],
+  ['wprx',  'Prix HT par colis',       'Chez le fournisseur', r=>r._wel&&r._wel.prix_colis],
+  ['wstk',  'Stock Wellembal (colis)', 'Chez le fournisseur', r=>r._wel&&r._wel.stock],
+  ['wenc',  'En cours d’achat',        'Chez le fournisseur', r=>r._wel&&r._wel.en_cours],
+  ['wdel',  'Délai réappro (jours)',   'Chez le fournisseur', r=>r._wel&&r._wel.delai_reappro],
+  ['wcs6',  'Sorties 6 mois (colis)',  'Chez le fournisseur', r=>r._wel&&r._wel.conso6],
+  ['wobs',  'Remarque fournisseur',    'Chez le fournisseur', r=>r._wel&&r._wel.observations],
+
+  ['dpho',  'Photos',   'Documents', r=>documentsDe(r,'photos').length],
+  ['dbat',  'BAT',      'Documents', r=>documentsDe(r,'bat').length],
+  ['dgab',  'Gabarits', 'Documents', r=>documentsDe(r,'gabarit').length]
+];
+
+/* Les colonnes proposees au choix, selon la feuille ouverte. */
+function colonnesTableur(){
+  if(PAGE!=='stock')
+    return COLS_TABLEUR.map(c=>({k:c[0], lb:c[1], gr:c[2], v:c[3]}));
+  const cols=SCOLS||colonnesStock();
+  return cols.map(c=>({
+    k:c.k,
+    lb:c.bq ? c.bq.nom : (c.k==='wel' ? 'Chez Wellembal (colis)' : c.lb),
+    gr:c.bq ? 'Boutiques' : (c.k==='ref' ? 'Référence'
+       : c.k==='wel' ? 'Chez le fournisseur' : 'Totaux et dates'),
+    v:c.t
+  }));
+}
+
+/* Le choix de colonnes se retient d'une fois sur l'autre. */
+const CLE_EXP = p => 'infopack.export.'+p;
+function choixRetenu(cles){
+  try{
+    const b=localStorage.getItem(CLE_EXP(PAGE));
+    if(b){ const l=JSON.parse(b).filter(k=>cles.indexOf(k)>=0); if(l.length) return l; }
+  }catch(e){}
+  return cles.slice();
+}
+function retenirChoix(l){ try{ localStorage.setItem(CLE_EXP(PAGE), JSON.stringify(l)); }catch(e){} }
+
+function exporterTableur(choisies){
+  const jour=todayISO();
+  const toutes=colonnesTableur();
+  const cols=toutes.filter(c=>!choisies||choisies.indexOf(c.k)>=0);
+  if(!cols.length) return;
+
+  let nom, source;
+  if(PAGE==='stock'){
+    nom='stock-'+ZONE.normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+         .replace(/[^A-Za-z0-9]+/g,'-').toLowerCase()+'-'+jour+'.csv';
+    source=SLIGNES;
+  }else{
+    nom='packagings-'+jour+'.csv';
+    source=ROWS;
+  }
+  const lignes=[cols.map(c=>csvVal(c.lb)).join(';')].concat(
+    source.map(o=>cols.map(c=>{
+      let v; try{ v=c.v(o); }catch(e){ v=''; }
+      return csvVal(v===false?'':v);
+    }).join(';')));
+  if(lignes.length<2) return;
+  telecharger(nom, lignes.join('\r\n'));
+}
+
+/* ---------- choisir les colonnes avant d'extraire ---------- */
+function ouvrirExport(){
+  const cols=colonnesTableur();
+  if(!cols.length) return;
+  const cles=cols.map(c=>c.k);
+  let choix=new Set(choixRetenu(cles));
+
+  const groupes=[];
+  cols.forEach(c=>{
+    let g=groupes.find(g=>g.t===c.gr);
+    if(!g){ g={t:c.gr, c:[]}; groupes.push(g); }
+    g.c.push(c);
+  });
+
+  const corps=document.getElementById('x-corps');
+  corps.innerHTML = groupes.map(g=>
+    '<div class="xg"><div class="xgt"><b>'+esc(g.t)+'<\/b>'
+    + '<button class="lien" data-groupe="'+esc(g.t)+'">tout / rien<\/button><\/div>'
+    + '<div class="xl">'+g.c.map(c=>
+        '<label class="xc"><input type="checkbox" data-col="'+esc(c.k)+'"'
+        + (choix.has(c.k)?' checked':'')+'><span>'+esc(c.lb)+'<\/span><\/label>').join('')
+    + '<\/div><\/div>').join('');
+
+  const info=document.getElementById('x-info');
+  const nb = PAGE==='stock' ? SLIGNES.length : ROWS.length;
+  const maj=()=>{
+    choix=new Set([...corps.querySelectorAll('input[data-col]:checked')]
+      .map(e=>e.dataset.col));
+    info.textContent = nb+' ligne'+(nb>1?'s':'')+' · '+choix.size+' colonne'
+      +(choix.size>1?'s':'');
+    document.getElementById('x-go').disabled = !choix.size;
+  };
+  corps.querySelectorAll('input[data-col]').forEach(e=>e.onchange=maj);
+  corps.querySelectorAll('[data-groupe]').forEach(b=>b.onclick=()=>{
+    const g=groupes.find(g=>g.t===b.dataset.groupe);
+    const tout=g.c.every(c=>choix.has(c.k));
+    g.c.forEach(c=>{
+      const e=corps.querySelector('input[data-col="'+c.k+'"]');
+      if(e) e.checked=!tout;
+    });
+    maj();
+  });
+  maj();
+
+  document.getElementById('x-tout').onclick=()=>{
+    const tout=choix.size===cles.length;
+    corps.querySelectorAll('input[data-col]').forEach(e=>e.checked=!tout);
+    maj();
+  };
+  document.getElementById('x-go').onclick=()=>{
+    const l=[...choix];
+    retenirChoix(l);
+    exporterTableur(l);
+    fermerExport();
+  };
+  document.getElementById('dlg-x').classList.add('on');
+  document.getElementById('ov-x').classList.add('on');
+  document.getElementById('dlg-x').setAttribute('aria-hidden','false');
+}
+function fermerExport(){
+  document.getElementById('dlg-x').classList.remove('on');
+  document.getElementById('ov-x').classList.remove('on');
+  document.getElementById('dlg-x').setAttribute('aria-hidden','true');
+}
+
 /* ---------- feuille Stock ---------- */
 /* Source : l'inventaire de debut de mois saisi dans Inpulse par chaque
    boutique — celui qui porte stockConvention « start » —, limite aux
@@ -1522,7 +1734,7 @@ function stockRef(p){
    Une colonne par boutique : a l'echelle d'une zone le tableau reste
    lisible, et c'est la question posee — combien il reste, et chez qui. */
 let PAGE='pack';
-let SROWS=[];
+let SROWS=[], SLIGNES=[], SCOLS=null;
 let ZONE='Paris boutique';          // zone affichee en colonnes
 let RELEVEES=true;                  // n'afficher que les references inventoriees
 let sSortK='total', sSortD=-1;
@@ -1640,7 +1852,7 @@ function renderStock(){
     }).join('')+'<\/tr>'
   ;
 
-  SROWS=lignes.map(o=>o.p);
+  SROWS=lignes.map(o=>o.p); SLIGNES=lignes; SCOLS=COLS_S;
   document.getElementById('tb').innerHTML = lignes.length
     ? lignes.map(o=>'<tr data-id="'+esc(o.p.id)+'"'+(current&&current.id===o.p.id?' class="sel"':'')
         +' title="Ouvrir la fiche">'
@@ -2023,6 +2235,9 @@ function brancher(){
   document.getElementById('f-prev').onclick=()=>voisine(-1);
   document.getElementById('f-next').onclick=()=>voisine(1);
   document.getElementById('q').oninput=e=>{ Q=e.target.value; PAGE==='stock'?renderStock():render(); };
+  document.getElementById('exp').onclick=ouvrirExport;
+  document.getElementById('x-fermer').onclick=fermerExport;
+  document.getElementById('ov-x').onclick=fermerExport;
   document.getElementById('ov').onclick=fermer;
   document.addEventListener('keydown',e=>{
     const champ=/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName||'');
