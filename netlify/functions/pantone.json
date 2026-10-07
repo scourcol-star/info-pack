@@ -1,0 +1,42 @@
+{
+  "source": "BAT et fichiers de design du Drive PACKAGING V2",
+  "lu_le": "2026-10-07",
+  "note": "Couleurs relevées dans la couche texte des PDF. Les fichiers sans couche texte ne peuvent pas être lus automatiquement.",
+  "fichiers": {
+    "1PC2Z0BDFvfhj43AfoiPjLigv5ABG9lmS": {
+      "couleurs": ["PANTONE 477 C", "PANTONE 481 C"],
+      "vernis": true,
+      "releve": "BOITE 8X BMC TFB DESIGN+GABARIT.pdf, daté du 21/04/2023"
+    },
+    "1QZwkbDZvKNu8WX0JgqsC9-eXsX-krRmc": {
+      "couleurs": ["PANTONE 439 C", "PANTONE Warm Grey 1 C"],
+      "vernis": true,
+      "releve": "BOITE 4X BMC TFB 160x50x50.pdf"
+    },
+    "1c2poW62I7FplAubi62Gf9M-Wsi7PMgOe": {
+      "couleurs": ["PANTONE 439 C", "PANTONE Warm Grey 1 C"],
+      "vernis": true,
+      "releve": "BOITE ÉCLAIR TFB 160x50x50.pdf"
+    },
+    "1NLzlHpNs5-zVKxzSGmaV2K9qw2t6IX6x": {
+      "couleurs": ["PANTONE 439 C", "PANTONE Warm Gray 1 C"],
+      "vernis": false,
+      "releve": "BOITE x1 PATISSERIE DESIGN ET GABRIT.pdf, daté du 16/10/2023"
+    },
+    "1VJZ_zKM0u48dLU7R7z-7UOwIkCi70pAC": {
+      "couleurs": ["PANTONE 476 C", "PANTONE 475 C à 10 %"],
+      "vernis": false,
+      "releve": "BOITE x1 PATISSERIE (NOUVEAU).pdf, BAT usine du 03/10/2025"
+    },
+    "16EKGlycnTu6J_bscdI6DB-QYF1WrZY90": {
+      "couleurs": ["Noir", "Quadri CMJN"],
+      "vernis": false,
+      "releve": "SAC CABAS TFB 26X17X29 GABARIT+DESIGN.pdf, daté du 28/05/2025"
+    },
+    "1Z_L0ZYun7g4-2oGHPZjFuQD9d1GLMV6i": {
+      "couleurs": ["Noir, en repiquage"],
+      "vernis": false,
+      "releve": "SAC A GALETTE TFB X ISIGNY GABARIT.pdf, BAT Prime du 08/07/2024"
+    }
+  }
+}
