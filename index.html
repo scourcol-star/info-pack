@@ -107,6 +107,11 @@ table{border-collapse:collapse;width:100%}
 .xc input{flex:none;accent-color:var(--nav);width:14px;height:14px;cursor:pointer}
 .xc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .xc:hover span{color:var(--amb)}
+
+/* couleurs d'impression relevees dans les BAT */
+.pant{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:2px}
+.pa{font-size:var(--t1);font-weight:600;padding:3px 10px;border-radius:999px;
+  background:var(--sur2);border:1px solid var(--bor);color:var(--tx);white-space:nowrap}
 .tw{overflow-x:auto}
 th{text-align:left;padding:8px 14px;font-size:var(--t0);font-weight:600;text-transform:uppercase;
   letter-spacing:.06em;color:var(--tx3);border-bottom:1px solid var(--bor);white-space:nowrap;
@@ -725,7 +730,25 @@ const fmt  = n => (n==null||isNaN(n))?'—':(Math.round(n*100)/100).toLocaleStri
 let DRIVE={pret:false, fichiers:[], par:{}, message:''};
 
 const liensManuels = (r,k) => { const v=getPath(r,'documents.'+k); return Array.isArray(v)?v:[]; };
-const fichiersDrive = (r,k) => (DRIVE.par[r.id]||[]).filter(f=>f.k===k);
+/* Un meme fichier peut etre a la fois le BAT et le gabarit : « SACHET
+   BAGUETTE TFB DESIGN+GABARIT.pdf » est les deux. Le classement du
+   script ne retient qu'une categorie, on le refait donc ici, ou les
+   regles metier ont leur place, et on autorise les deux. */
+const MOTS_DOC = {
+  bat:     /BONATIRER|\bBAT\b|BATUSINE|DESIGN|GRAPHIQUE|MAQUETTE/,
+  gabarit: /GABARIT|GABRIT|DIELINE|DECOUPE|PLAN/,
+  photos:  /PHOTO|VISUEL|PACKSHOT|MISEENSITUATION/
+};
+function estDe(f,k){
+  const n=code(f.nom+' '+((f.chemin||[]).join(' ')));
+  const image=/^image\//.test(f.mime||'') || estImage(f.nom||'');
+  if(k==='photos') return image || MOTS_DOC.photos.test(n);
+  if(image) return false;
+  if(MOTS_DOC[k].test(n)) return true;
+  /* un document qui ne dit rien de lui-meme reste un gabarit */
+  return k==='gabarit' && !MOTS_DOC.bat.test(n) && !MOTS_DOC.gabarit.test(n);
+}
+const fichiersDrive = (r,k) => (DRIVE.par[r.id]||[]).filter(f=>estDe(f,k));
 
 /* Rattacher les fichiers du Drive aux references. On n'impose aucune
    arborescence : un fichier revient a une reference si son nom, ou le
@@ -864,6 +887,47 @@ async function chargerDrive(frais){
     DRIVE.pret=true; indexerDrive();
     render(); if(current) ouvrir(current.id);
   }catch(e){ DRIVE.message=e.message; }
+}
+
+/* ---------- couleurs d'impression ---------- */
+/* Les Pantone sont ecrits dans les BAT. On les a releves une fois dans
+   la couche texte des PDF, fichier par fichier ; les BAT sans couche
+   texte ne peuvent pas etre lus et restent vides. */
+let PANTONE=null;
+async function chargerPantone(){
+  if(typeof EMBEDDED_PAN!=='undefined'){ PANTONE=EMBEDDED_PAN; if(current) ouvrir(current.id); return; }
+  try{
+    const r=await fetch('data/pantone.json',{cache:'no-store'});
+    if(!r.ok) return;
+    PANTONE=await r.json();
+    if(current) ouvrir(current.id);
+  }catch(e){}
+}
+/* Les couleurs de la reference : celles relevees dans ses BAT. */
+function couleursDe(r){
+  if(!PANTONE||!PANTONE.fichiers||!r) return [];
+  const vus=new Set(), out=[];
+  DOCUMENTS.forEach(d=>{
+    if(d.k==='photos') return;
+    documentsDe(r,d.k).forEach(f=>{
+      const c=PANTONE.fichiers[f.id]; if(!c) return;
+      (c.couleurs||[]).forEach(x=>{ if(!vus.has(x)){ vus.add(x); out.push(x); } });
+      if(c.vernis && !vus.has('Vernis')){ vus.add('Vernis'); out.push('Vernis'); }
+    });
+  });
+  return out;
+}
+function sourceCouleurs(r){
+  if(!PANTONE||!PANTONE.fichiers||!r) return '';
+  const l=[];
+  DOCUMENTS.forEach(d=>{
+    if(d.k==='photos') return;
+    documentsDe(r,d.k).forEach(f=>{
+      const c=PANTONE.fichiers[f.id];
+      if(c&&c.releve&&l.indexOf(c.releve)<0) l.push(c.releve);
+    });
+  });
+  return l.join(' · ');
 }
 
 /* ---------- referentiel Wellembal ---------- */
@@ -1592,6 +1656,7 @@ const COLS_TABLEUR = [
   ['gra',   'Grammage (g/m²)',      'Fiche technique', r=>num(getPath(r,'matiere.grammage_g_m2'))],
   ['perso', 'Personnalisé TFB',     'Fiche technique', r=>{const v=getPath(r,'matiere.personnalise_tfb');
                                                            return v==null?'':(v?'oui':'non');}],
+  ['pant',  'Couleurs d’impression','Fiche technique', r=>couleursDe(r).join(' + ')],
 
   ['wref',  'Réf. Wellembal',          'Chez le fournisseur', r=>r._welk],
   ['wdes',  'Désignation Wellembal',   'Chez le fournisseur', r=>r._wel&&r._wel.designation],
@@ -2036,6 +2101,9 @@ function ouvrir(id){
     + champ('Grammage', saisieNombre(r.id,'matiere.grammage_g_m2',getPath(r,'matiere.grammage_g_m2'),'g/m²'))
     + (r._wel ? champ('Dimensions au référentiel',
         '<div class="fv">'+esc(r._wel.dimensions_texte||'—')+'<\/div>', 1) : '')
+    + (couleursDe(r).length ? champ('Couleurs d’impression',
+        '<div class="pant">'+couleursDe(r).map(c=>'<span class="pa">'+esc(c)+'<\/span>').join('')+'<\/div>'
+        + '<div class="regle">Relevé dans '+esc(sourceCouleurs(r))+'<\/div>', 1) : '')
     + champ('Personnalisé TFB', saisieOuiNon(r.id,'matiere.personnalise_tfb',getPath(r,'matiere.personnalise_tfb')))
     + '<\/div><\/div>'
 
@@ -2189,6 +2257,7 @@ function fichePDF(r){
     + lignePDF('Grammage', getPath(r,'matiere.grammage_g_m2')==null?'' :
                fmt(getPath(r,'matiere.grammage_g_m2'))+' g/m²')
     + lignePDF('Personnalisé TFB', perso==null?'' : (perso?'oui':'non'))
+    + lignePDF('Couleurs d’impression', couleursDe(r).join(' + '), 1)
     + '<\/div>'
 
     + '<h2>Documents<\/h2><div class="pdl">'+docs+'<\/div>'
@@ -2223,6 +2292,7 @@ async function load(){
   chargerWellembal();
   syncInpulse();
   chargerDrive();
+  chargerPantone();
   loadOrders();
   loadInventories();
 }
