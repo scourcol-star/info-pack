@@ -357,7 +357,25 @@ const MARQUAGES = ['TFB','Neutre','Co-branding'];
 const CORRESPONDANCES = [
   { dossier:'SACHET VIENNOISERIE T1', reference:'SAC CROISSANT T1 TFB 14X8X22CM' },
   { dossier:'SACHET VIENNOISERIE T2', reference:'SAC CROISSANT T2 TFB 18X8X31CM' },
-  { dossier:'SAC BOITE GRAND CAKE',   reference:'SAC GRANDS GATEAUX' }
+  { dossier:'SAC BOITE GRAND CAKE',   reference:'SAC GRANDS GATEAUX' },
+
+  /* Gobelets et couvercles : le diametre tranche, pas le nom.
+     10 CL = 4 OZ = D62 | 25 CL = 8 OZ = D80 | 35 CL = 12 OZ = D90
+     Les gobelets transparents (14 et 16 OZ) sont en D98, d'ou le
+     couvercle plat a croisillon, seul couvercle D98 du referentiel. */
+  { dossier:'COUVERCLE GOBLET 10CL',            reference:'COUVERCLE GOBELET 4OZ BLANC' },
+  { dossier:'COVERCLE GOBLET 25CL',             reference:'COUVERCLE GOBELET 8OZ BLANC' },
+  { dossier:'COUVERCLE GOBLET 25CL TRANSPARENT',reference:'COUVERCLE PLAT AVEC CROISILLON POUR GOBELET RPET' },
+  { dossier:'GOBLET 35 CL NEUTRE',              reference:'GOBELET 35CL NEUTRE' },
+  { dossier:'PORTE GOBLET',                     reference:'PLATEAU PORTE GOBELETS 4/2 GOBELETS' },
+
+  /* 25 cl = 250 ml : c'est le volume qui departage les trois bouteilles. */
+  { dossier:'BOUTEILLE PET 25 CL +BOUCHON NOIR',reference:'BOUTEILLE OVALE 250 ML AVEC BOUCHON NOIR PREVISSE' },
+
+  /* Un dossier peut porter deux references : le bol et son couvercle. */
+  { dossier:'BAGUE BOWL 900ML',                 reference:'BAGUE TFB BOWL 900ML' },
+  { dossier:'BOWL 900 ML + COUVERCLE TRANSPARENT',
+    reference:['BOWL 900 ML KRAFT D183','BOL 900 ML KRAFT D183','COUVERCLE BOL 900-1300 ML RPET'] }
 ];
 
 /* Unité à laquelle se rapporte le tarif unitaire.
@@ -795,11 +813,17 @@ function indexerDrive(){
   /* Les correspondances ecrites a la main passent avant tout le reste. */
   const manuelles=[];
   (typeof CORRESPONDANCES!=='undefined'?CORRESPONDANCES:[]).forEach(c=>{
-    const cible=code(c.reference); if(!cible) return;
-    const o = cles.find(o=>o.cs.indexOf(cible)>=0)
-           || cles.find(o=>o.cs.some(x=>x.indexOf(cible)>=0));
-    if(o) manuelles.push({d:code(c.dossier), r:o.r});
+    /* Un dossier peut porter plusieurs references : le bol et son couvercle. */
+    const refs=[].concat(c.reference||[]).map(code).filter(Boolean);
+    const trouvees=refs.map(cible =>
+        (cles.find(o=>o.cs.indexOf(cible)>=0)
+      || cles.find(o=>o.cs.some(x=>x.indexOf(cible)>=0)) || {}).r
+    ).filter(Boolean);
+    if(trouvees.length) manuelles.push({d:code(c.dossier), rs:trouvees});
   });
+  /* Le libelle le plus long gagne : COUVERCLE GOBLET 25CL TRANSPARENT
+     doit passer avant COUVERCLE GOBLET 25CL, qui en est un prefixe. */
+  manuelles.sort((a,b)=>b.d.length-a.d.length);
 
   /* Un abrege court ne vaut que s'il ne designe qu'une seule reference. */
   const compte={};
@@ -816,7 +840,7 @@ function indexerDrive(){
 
     /* 0. une correspondance validee a la main */
     const mm=manuelles.find(x=>x.d && (foin.indexOf(x.d)>=0 || bouts.some(b=>b.indexOf(x.d)>=0)));
-    if(mm){ (DRIVE.par[mm.r.id]||(DRIVE.par[mm.r.id]=[])).push(f); return; }
+    if(mm){ mm.rs.forEach(r=>(DRIVE.par[r.id]||(DRIVE.par[r.id]=[])).push(f)); return; }
 
     /* 1. le nom porte la reference, ou l'abrege : rapprochement sur */
     let gagnant=null, score=0;
