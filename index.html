@@ -206,13 +206,25 @@ td.vd,.vd{color:var(--tx3)}
 .dzh b{font-size:var(--t2);font-weight:600}
 .dzh .aide{font-size:var(--t1);color:var(--tx3);min-width:0}
 .dzh .n{margin-left:auto;font-size:var(--t0);color:var(--tx3);font-variant-numeric:tabular-nums}
-.vign{display:flex;gap:9px;flex-wrap:wrap}
-.vg{width:112px;height:112px;border-radius:var(--rs);border:1px solid var(--bor);background:var(--sur);
-  overflow:hidden;display:grid;place-items:center;position:relative;text-decoration:none;color:var(--tx3)}
-.vg img{width:100%;height:100%;object-fit:cover;display:block}
-.vg i{font-size:20px}
-.vg .nm{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.93);font-size:9.5px;
-  padding:2px 3px;text-align:center;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vign{display:flex;gap:11px;flex-wrap:wrap}
+/* Une vignette, son nom, le bouton de telechargement, puis le lien Drive. */
+.vg{width:132px;display:flex;flex-direction:column;gap:3px;color:var(--tx3)}
+.vgi{width:132px;height:112px;border-radius:var(--rs);border:1px solid var(--bor);
+  background:var(--sur);overflow:hidden;display:grid;place-items:center;
+  text-decoration:none;color:var(--tx3)}
+.vgi img{width:100%;height:100%;object-fit:cover;display:block}
+.vgi i{font-size:20px}
+.vg .nm{font-size:9.5px;color:var(--tx2);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;padding:0 1px}
+.vgt{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;
+  font:inherit;font-size:var(--t0);font-weight:600;color:var(--tx2);cursor:pointer;
+  background:var(--sur2);border:1px solid var(--bor);border-radius:var(--rs);padding:4px 6px}
+.vgt:hover{background:var(--navbg);border-color:#d6dee6;color:var(--nav)}
+.vgt:disabled{opacity:.55;cursor:default}
+.vgt i{font-size:12px}
+.vgl{font-size:var(--t0);color:var(--tx3);text-decoration:none;text-align:center;
+  padding:1px 0}
+.vgl:hover{color:var(--nav);text-decoration:underline}
 .dzv{font-size:var(--t1);color:var(--tx3);padding:5px 0 8px}
 .dzw{display:flex;gap:7px;align-items:flex-start;font-size:var(--t1);color:var(--tx2);
   background:var(--navbg);border:1px solid #d6dee6;border-radius:var(--rs);padding:9px 11px;margin-bottom:10px}
@@ -885,13 +897,133 @@ function documentsDe(r,k){
   return fichiersDrive(r,k).concat(
     liensManuels(r,k).map(u=>({nom:nomDeLien(u), url:u, vignette:null, manuel:true})));
 }
-const estImage = u => /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(u||'');
+/* Les photos du Drive sortent d'un iPhone : .HEIC et .HEIF. Le navigateur
+   ne sait pas les decoder, mais la vignette passe par /api/image, et
+   Google la rend en JPEG. Il faut donc les reconnaitre comme images. */
+const estImage = u => /\.(png|jpe?g|webp|gif|avif|heic|heif)(\?|$)/i.test(u||'');
 /* Le script renvoie l'identifiant du fichier ; la vignette passe par
    notre propre fonction, parce qu'une adresse Drive directe exige une
    session Google que la page n'a pas. Un lien colle a la main garde
    son adresse telle quelle. */
 const vignetteURL = x => /^https?:/i.test(x.vignette||'')
   ? x.vignette : '/api/image?id='+encodeURIComponent(x.vignette);
+
+/* ---------- les photos restent sur le poste ---------- */
+/* Un identifiant Drive designe toujours le meme fichier : une vignette
+   une fois rapatriee n'a aucune raison d'etre redemandee. On la range
+   dans IndexedDB, qui survit a la fermeture du navigateur et n'a pas
+   la limite de cinq megaoctets du stockage local. Au chargement suivant
+   les photos s'affichent sans reseau. La purge suit le Drive : ce qui
+   en a disparu quitte le cache, ce qui vient d'y entrer est rapatrie. */
+
+const PH_BASE='infopack-photos', PH_MAG='vignettes';
+let phPret=null;
+const phSrc = (id,grand) => '/api/image?id='+encodeURIComponent(id)+(grand?'&t=grand':'');
+
+function phOuvrir(){
+  if(phPret) return phPret;
+  phPret = new Promise(res=>{
+    let d; try{ d=indexedDB.open(PH_BASE,1); }catch(e){ return res(null); }
+    d.onupgradeneeded=()=>{ const b=d.result;
+      if(!b.objectStoreNames.contains(PH_MAG)) b.createObjectStore(PH_MAG); };
+    d.onsuccess=()=>res(d.result);
+    d.onerror=()=>res(null);
+    d.onblocked=()=>res(null);
+  });
+  return phPret;
+}
+function phTx(mode,fn){
+  return phOuvrir().then(b=>{
+    if(!b) return null;
+    return new Promise(res=>{
+      let tx; try{ tx=b.transaction(PH_MAG,mode); }catch(e){ return res(null); }
+      let sortie=null;
+      const r=fn(tx.objectStore(PH_MAG));
+      if(r) r.onsuccess=()=>{ sortie=r.result; };
+      tx.oncomplete=()=>res(sortie);
+      tx.onerror=tx.onabort=()=>res(null);
+    });
+  }).catch(()=>null);
+}
+const phLire   = id      => phTx('readonly',  s=>s.get(id));
+const phEcrire = (id,v)  => phTx('readwrite', s=>{ s.put(v,id); return null; });
+const phCles   = ()      => phTx('readonly',  s=>s.getAllKeys());
+const phOter   = id      => phTx('readwrite', s=>{ s.delete(id); return null; });
+
+/* Une adresse temporaire par vignette, reutilisee tant que la page vit. */
+const PH_URL=new Map();
+
+async function phBlob(id,grand){
+  const cle = grand ? id+'@1600' : id;
+  let b = await phLire(cle);
+  if(b && b.size) return b;
+  const r = await fetch(phSrc(id,grand), {cache:'force-cache'});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  b = await r.blob();
+  if(b && b.size) phEcrire(cle,b);
+  return b;
+}
+
+async function phAfficher(img){
+  const id=img.getAttribute('data-vig'); if(!id) return;
+  if(PH_URL.has(id)){ img.src=PH_URL.get(id); return; }
+  try{
+    const b=await phBlob(id,false);
+    const u=URL.createObjectURL(b); PH_URL.set(id,u); img.src=u;
+  }catch(e){
+    img.src=phSrc(id,false);        /* a defaut, le reseau direct */
+  }
+}
+/* Appelee apres chaque rendu : les images pas encore servies le sont. */
+function phHydrater(zone){
+  (zone||document).querySelectorAll('img[data-vig]').forEach(i=>{
+    if(i.getAttribute('data-vu')) return;
+    i.setAttribute('data-vu','1'); phAfficher(i);
+  });
+}
+/* Le cache suit le Drive, il ne gonfle pas indefiniment. */
+async function phPurger(){
+  const vivants=new Set();
+  DRIVE.fichiers.forEach(f=>{ if(f.vignette){ vivants.add(f.vignette);
+                                              vivants.add(f.vignette+'@1600'); } });
+  const cles=await phCles();
+  if(!cles || !cles.length) return;
+  let otees=0;
+  cles.forEach(k=>{
+    if(vivants.has(k)) return;
+    phOter(k); otees++;
+    const u=PH_URL.get(k);
+    if(u){ URL.revokeObjectURL(u); PH_URL.delete(k); }
+  });
+  if(otees) console.info('Cache photos : '+otees+' vignette(s) retiree(s).');
+}
+
+/* Le bouton Telecharger rend la photo en 1600 px, nommee comme le
+   fichier du Drive. Elle passe par le meme cache : un second
+   telechargement ne redemande rien au reseau. */
+async function phTelecharger(bouton){
+  const id=bouton.getAttribute('data-tel'), nom=bouton.getAttribute('data-nom')||'photo';
+  if(!id) return;
+  const avant=bouton.textContent;
+  bouton.textContent='…'; bouton.disabled=true;
+  try{
+    const b=await phBlob(id,true);
+    const u=URL.createObjectURL(b), a=document.createElement('a');
+    a.href=u; a.download=nom.replace(/\.(heic|heif)$/i,'.jpg');
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(u); a.remove(); },0);
+  }catch(e){
+    window.open(phSrc(id,true),'_blank','noopener');
+  }finally{
+    bouton.textContent=avant; bouton.disabled=false;
+  }
+}
+
+/* La balise d'une vignette : servie par le cache quand c'est un
+   identifiant Drive, telle quelle quand c'est un lien colle a la main. */
+const baliseVignette = x => /^https?:/i.test(x.vignette||'')
+  ? '<img loading="lazy" src="'+esc(x.vignette)+'" alt="">'
+  : '<img loading="lazy" data-vig="'+esc(x.vignette)+'" alt="">';
 function nomDeLien(u){
   try{ const p=new URL(u).pathname.split('/').filter(Boolean); return decodeURIComponent(p[p.length-1]||u); }
   catch(e){ return u; }
@@ -910,6 +1042,7 @@ async function chargerDrive(frais){
     DRIVE.racine='https://drive.google.com/drive/folders/'+(d.parent||'');
     DRIVE.pret=true; indexerDrive();
     render(); if(current) ouvrir(current.id);
+    phPurger();            /* le cache des photos suit le Drive */
   }catch(e){ DRIVE.message=e.message; }
 }
 
@@ -2086,11 +2219,19 @@ function blocDocuments(r){
     const f=documentsDe(r,d.k);
     const vign = f.length
       ? '<div class="vign">'+f.map(x=>
-          '<a class="vg" href="'+esc(x.url)+'" target="_blank" rel="noopener" title="'+esc(x.nom)+'">'
-          + (x.vignette ? '<img loading="lazy" src="'+esc(vignetteURL(x))+'" alt="">'
+          '<div class="vg" title="'+esc(x.nom)+'">'
+          + '<a class="vgi" href="'+esc(x.url)+'" target="_blank" rel="noopener">'
+          + (x.vignette ? baliseVignette(x)
              : estImage(x.url) ? '<img loading="lazy" src="'+esc(x.url)+'" alt="">'
              : '<i class="ti ti-file"><\/i>')
-          + '<span class="nm">'+esc(x.nom)+'<\/span><\/a>').join('')+'<\/div>'
+          + '<\/a>'
+          + '<span class="nm">'+esc(x.nom)+'<\/span>'
+          + (x.vignette && !/^https?:/i.test(x.vignette)
+             ? '<button class="vgt" data-tel="'+esc(x.vignette)+'" data-nom="'+esc(x.nom)+'">'
+               + '<i class="ti ti-download"><\/i>Télécharger<\/button>' : '')
+          + '<a class="vgl" href="'+esc(x.url)+'" target="_blank" rel="noopener">'
+          + 'Ouvrir dans le Drive<\/a>'
+          + '<\/div>').join('')+'<\/div>'
       : '<div class="dzv">Aucun document. Dépose-le dans le Drive packaging, '
         + 'il se rattachera tout seul.<\/div>';
     return '<div class="dz"><div class="dzh"><b>'+esc(d.lb)+'<\/b>'
@@ -2177,6 +2318,9 @@ function ouvrir(id){
     + 'Exporter cette fiche en PDF<\/button>';
 
   brancherFiche(); majPosition();
+  phHydrater(document.getElementById('f-b'));
+  document.getElementById('f-b').querySelectorAll('.vgt').forEach(
+    b => b.onclick = e => { e.preventDefault(); phTelecharger(b); });
   document.getElementById('f-pdf').onclick=exporterPDF;
   document.getElementById('fiche').classList.add('on');
   document.getElementById('fiche').setAttribute('aria-hidden','false');
