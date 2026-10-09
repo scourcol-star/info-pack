@@ -21,7 +21,7 @@
 
 let CACHE = null;                 // documents : { t, corps }
 let CACHE_W = null;               // referentiel : { t, corps }
-const DUREE = 10 * 60 * 1000;
+const DUREE = 5 * 60 * 1000;
 const DUREE_W = 30 * 60 * 1000;
 
 /* Adresse du script, avec le mot de passe et d'eventuels parametres. */
@@ -38,18 +38,23 @@ function cible(extra) {
    page. On passe donc par le script, qui a les droits, et qui renvoie
    l'image en base64. On la redonne ici en vraies donnees binaires. */
 async function image(req) {
-  const id = new URL(req.url).searchParams.get('id');
+  const q = new URL(req.url).searchParams;
+  const id = q.get('id');
+  /* t=grand : la version 1600 px, pour le bouton Telecharger. */
+  const t = q.get('t') === 'grand' ? 'grand' : '';
   if (!id) return new Response('id manquant', { status: 400 });
   if (!process.env.APPS_SCRIPT_URL) return new Response('non configure', { status: 501 });
   try {
-    const r = await fetch(cible({ img: id }), { redirect: 'follow' });
+    const r = await fetch(cible(t ? { img: id, t } : { img: id }), { redirect: 'follow' });
     const d = await r.json();
     if (!d || !d.b64) throw new Error(d && d.error || 'vignette absente');
     return new Response(Buffer.from(d.b64, 'base64'), {
       status: 200,
       headers: {
         'Content-Type': d.mime || 'image/png',
-        'Cache-Control': 'public, max-age=86400'
+        /* Un identifiant Drive ne change jamais de contenu : on peut
+           garder la vignette un an, le navigateur ne redemandera pas. */
+        'Cache-Control': 'public, max-age=31536000, immutable'
       }
     });
   } catch (e) {
