@@ -19,6 +19,35 @@
    solliciter Apps Script à chaque ouverture de l'app.
    ============================================================ */
 
+/* Rapidite (19/10/2026) : une vignette n'est demandee qu'UNE fois au
+   Drive. Elle est ensuite rangee dans Netlify Blobs (store « vignettes »)
+   et gardee par le CDN de Netlify (cache durable) : servie en quelques
+   millisecondes, a tout le monde, sur tous les postes. La liste des
+   fichiers est gardee par le CDN elle aussi : elle part tout de suite
+   et se rafraichit en arriere-plan. */
+import { getStore } from "@netlify/blobs";
+
+/* Un identifiant Drive designe toujours le meme fichier : la vignette se
+   garde un an, dans le navigateur comme dans le CDN. Netlify-Vary dit au
+   CDN que id et t font partie de l'adresse a garder. */
+const ENTETES_IMAGE = {
+  'Cache-Control': 'public, max-age=31536000, immutable',
+  'Netlify-CDN-Cache-Control': 'public, max-age=31536000, immutable, durable',
+  'Netlify-Vary': 'query=id|t'
+};
+/* La liste : servie par le CDN pendant 30 s, puis encore servie (et
+   rafraichie en arriere-plan) pendant une semaine. ?frais=1 passe outre. */
+const ENTETES_LISTE = {
+  'Cache-Control': 'public, max-age=0, must-revalidate',
+  'Netlify-CDN-Cache-Control': 'public, max-age=30, stale-while-revalidate=604800, durable',
+  'Netlify-Vary': 'query=frais'
+};
+const SANS_CACHE = { 'Cache-Control': 'no-store', 'Netlify-CDN-Cache-Control': 'no-store' };
+
+function magasin() {
+  try { return getStore('vignettes'); } catch (e) { return null; }
+}
+
 let CACHE = null;                 // documents : { t, corps }
 let CACHE_W = null;               // referentiel : { t, corps }
 const DUREE = 5 * 60 * 1000;
@@ -42,23 +71,41 @@ async function image(req) {
   const id = q.get('id');
   /* t=grand : la version 1600 px, pour le bouton Telecharger. */
   const t = q.get('t') === 'grand' ? 'grand' : '';
-  if (!id) return new Response('id manquant', { status: 400 });
-  if (!process.env.APPS_SCRIPT_URL) return new Response('non configure', { status: 501 });
+  if (!id || !/^[A-Za-z0-9_-]{10,80}$/.test(id))
+    return new Response('id manquant', { status: 400, headers: SANS_CACHE });
+  const cle = id + (t ? '@1600' : '');
+  const store = magasin();
+
+  /* 1. deja rapatriee une fois : servie depuis Netlify Blobs */
+  if (store) {
+    try {
+      const vu = await store.getWithMetadata(cle, { type: 'arrayBuffer' });
+      if (vu && vu.data && vu.data.byteLength)
+        return new Response(vu.data, { status: 200, headers: { ...ENTETES_IMAGE,
+          'Content-Type': (vu.metadata && vu.metadata.mime) || 'image/jpeg',
+          'X-Vignette': 'blobs' } });
+    } catch (e) { /* le magasin ne repond pas : on passe par le Drive */ }
+  }
+
+  /* 2. premiere demande : le script lit le Drive, on garde le resultat */
+  if (!process.env.APPS_SCRIPT_URL) return new Response('non configure', { status: 501, headers: SANS_CACHE });
   try {
     const r = await fetch(cible(t ? { img: id, t } : { img: id }), { redirect: 'follow' });
     const d = await r.json();
     if (!d || !d.b64) throw new Error(d && d.error || 'vignette absente');
-    return new Response(Buffer.from(d.b64, 'base64'), {
-      status: 200,
-      headers: {
-        'Content-Type': d.mime || 'image/png',
-        /* Un identifiant Drive ne change jamais de contenu : on peut
-           garder la vignette un an, le navigateur ne redemandera pas. */
-        'Cache-Control': 'public, max-age=31536000, immutable'
-      }
-    });
+    const octets = Buffer.from(d.b64, 'base64');
+    const mime = d.mime || 'image/png';
+    if (store) {
+      try {
+        await store.set(cle, octets.buffer.slice(octets.byteOffset, octets.byteOffset + octets.byteLength),
+                        { metadata: { mime } });
+      } catch (e) { /* tant pis : elle sera redemandee la prochaine fois */ }
+    }
+    return new Response(octets, { status: 200, headers: { ...ENTETES_IMAGE,
+      'Content-Type': mime, 'X-Vignette': 'drive' } });
   } catch (e) {
-    return new Response('', { status: 404 });
+    /* un echec ne se garde surtout pas en cache */
+    return new Response('', { status: 404, headers: SANS_CACHE });
   }
 }
 
@@ -98,21 +145,23 @@ export default async (req) => {
   const chemin = new URL(req.url).pathname;
   if (chemin === '/api/image') return image(req);
   if (chemin === '/api/wellembal') return wellembal(req);
-  const sortie = (o, code = 200) =>
+  const sortie = (o, code = 200, h = {}) =>
     new Response(JSON.stringify(o), {
       status: code,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json', ...h }
     });
 
   const url = process.env.APPS_SCRIPT_URL;
   if (!url)
-    return sortie({ error: 'Drive non configuré — il manque APPS_SCRIPT_URL' }, 501);
+    return sortie({ error: 'Drive non configuré — il manque APPS_SCRIPT_URL' }, 501, SANS_CACHE);
 
   /* ?frais=1 force la relecture, sans attendre la fin du cache */
   const frais = new URL(req.url).searchParams.get('frais') === '1';
+  const entetes = frais ? SANS_CACHE : ENTETES_LISTE;
   if (!frais && CACHE && Date.now() - CACHE.t < DUREE)
-    return sortie({ ...CACHE.corps, cache: true });
+    return sortie({ ...CACHE.corps, cache: true }, 200, entetes);
 
+  const store = magasin();
   try {
     const r = await fetch(cible(), { redirect: 'follow' });
     if (!r.ok) throw new Error('Apps Script a répondu HTTP ' + r.status);
@@ -129,10 +178,19 @@ export default async (req) => {
     if (d.error) throw new Error(d.error);
 
     CACHE = { t: Date.now(), corps: { fichiers: d.fichiers || [], parent: d.parent,
-                                      genere: d.genere } };
-    return sortie(CACHE.corps);
+                                      genere: d.genere || new Date().toISOString() } };
+    /* la derniere liste lue reste disponible si Apps Script tombe */
+    if (store) { try { await store.setJSON('liste-drive', CACHE.corps); } catch (e) {} }
+    return sortie(CACHE.corps, 200, entetes);
   } catch (e) {
-    return sortie({ error: 'Drive injoignable — ' + e.message }, 502);
+    if (store) {
+      try {
+        const vieille = await store.get('liste-drive', { type: 'json' });
+        if (vieille && vieille.fichiers)
+          return sortie({ ...vieille, ancienne: true, avertissement: e.message }, 200, SANS_CACHE);
+      } catch (e2) {}
+    }
+    return sortie({ error: 'Drive injoignable — ' + e.message }, 502, SANS_CACHE);
   }
 };
 
