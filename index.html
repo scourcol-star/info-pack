@@ -109,6 +109,19 @@ table{border-collapse:collapse;width:100%}
 .xc:hover span{color:var(--amb)}
 
 /* couleurs d'impression relevees dans les BAT */
+/* Couleurs d'impression : une ligne par BAT, le plus recent en tete. */
+.bats{border:1px solid var(--bor);border-radius:var(--rs);overflow:hidden;margin-bottom:8px}
+.bat{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:9px 12px;background:var(--sur)}
+.bat+.bat{border-top:1px solid var(--bor)}
+.bat.ancien{background:var(--sur3)}
+.bat.ancien .bat-c{color:var(--tx2);font-weight:500}
+.bat-c{font-size:var(--t2);font-weight:600;color:var(--tx);line-height:1.45}
+.bat-c .bsep{color:var(--tx3);font-weight:400;padding:0 6px}
+.bat-t{align-self:start;font-size:var(--t0);font-weight:600;letter-spacing:.3px;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;background:var(--navbg);color:var(--nav);white-space:nowrap}
+.bat.ancien .bat-t{background:transparent;color:var(--tx3);border:1px solid var(--bor)}
+.bat-s{grid-column:1 / -1;font-size:var(--t1);color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bat-vide{font-size:var(--t1);color:var(--tx3);padding:2px 0 8px}
 .pant{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:2px}
 .pa{font-size:var(--t1);font-weight:600;padding:3px 10px;border-radius:999px;
   background:var(--sur2);border:1px solid var(--bor);color:var(--tx);white-space:nowrap}
@@ -1376,6 +1389,34 @@ function sourceCouleurs(r){
   });
   return l.join(' · ');
 }
+/* Le releve d'un BAT : « FICHIER.pdf, BAT usine du 03/10/2025 » devient
+   le fichier, la mention et la date (pour trier du plus recent au plus ancien). */
+function lireReleve(t){
+  const s=String(t||''), i=s.search(/\.pdf\b/i);
+  const fichier = i>=0 ? s.slice(0,i+4).trim() : s.split(',')[0].trim();
+  const reste = (i>=0 ? s.slice(i+4) : s.slice(fichier.length)).replace(/^[\s,]+/,'').trim();
+  const m=/(\d{2})\/(\d{2})\/(\d{4})/.exec(reste);
+  return {fichier, mention:reste, cle: m ? m[3]+m[2]+m[1] : ''};
+}
+function blocCouleurs(r){
+  const manuel=String(getPath(r,'design.couleurs.pantone')||'').trim();
+  const bats=parBAT(r).map(b=>Object.assign({couleurs:b.couleurs}, lireReleve(b.releve)))
+    .sort((a,b)=>(b.cle||'').localeCompare(a.cle||''));
+  const lignes = bats.map((b,i)=>{
+    const ancien = i>0 || !!manuel;
+    const etiquette = manuel ? 'remplacé' : (i===0 ? (bats.length>1 ? 'le plus récent' : 'BAT') : 'ancien');
+    const mention = b.mention ? b.mention.charAt(0).toUpperCase()+b.mention.slice(1) : '';
+    return '<div class="bat'+(ancien?' ancien':'')+'">'
+      + '<div class="bat-c">'+b.couleurs.map(esc).join('<span class="bsep">·<\/span>')+'<\/div>'
+      + '<span class="bat-t">'+esc(etiquette)+'<\/span>'
+      + '<div class="bat-s" title="'+esc(b.fichier)+'">'+esc(mention ? mention+' · '+b.fichier : b.fichier)+'<\/div>'
+      + '<\/div>';
+  }).join('');
+  return (lignes ? '<div class="bats">'+lignes+'<\/div>'
+                 : '<div class="bat-vide">Aucun BAT lisible pour cette référence : relève les couleurs sur le bon à tirer.<\/div>')
+    + saisieTexte(r.id,'design.couleurs.pantone',manuel,
+        lignes ? 'Saisie manuelle, si les couleurs ont changé depuis le BAT' : 'PANTONE 000 C, quadri, noir…');
+}
 /* Les couleurs BAT par BAT : quand un dossier garde l'ancien et le nouveau
    BAT, on les montre separement plutot que de melanger les deux. */
 function parBAT(r){
@@ -2603,13 +2644,7 @@ function ouvrir(id){
     + champ('Grammage', saisieNombre(r.id,'matiere.grammage_g_m2',getPath(r,'matiere.grammage_g_m2'),'g/m²'))
     + (r._wel ? champ('Dimensions au référentiel',
         '<div class="fv">'+esc(r._wel.dimensions_texte||'—')+'<\/div>', 1) : '')
-    + champ('Couleurs d’impression',
-        saisieTexte(r.id,'design.couleurs.pantone',getPath(r,'design.couleurs.pantone'),
-          pantonesDe(r).length ? pantonesDe(r).join(' + ') : 'PANTONE 000 C, quadri, noir…')
-        + (pantonesDe(r).length
-            ? parBAT(r).map(b=>'<div class="pant">'+b.couleurs.map(c=>'<span class="pa">'+esc(c)+'<\/span>').join('')+'<\/div>'
-                + '<div class="regle">Relevé dans '+esc(b.releve)+'<\/div>').join('')
-            : '<div class="regle">Aucun BAT lisible pour cette référence, à relever sur le bon à tirer<\/div>'), 1)
+    + champ('Couleurs d’impression', blocCouleurs(r), 1)
     + champ('Vernis', saisieOuiNon(r.id,'design.couleurs.vernis', vernisDe(r)))
     + champ('Personnalisé TFB', saisieOuiNon(r.id,'matiere.personnalise_tfb',getPath(r,'matiere.personnalise_tfb')))
     + '<\/div><\/div>'
