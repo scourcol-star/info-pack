@@ -133,6 +133,16 @@ tbody tr.sel td{background:var(--navbg)}
 tbody tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--nav)}
 tbody tr:last-child td{border-bottom:none}
 .ref{font-weight:600;letter-spacing:-.1px}
+/* La photo de la reference, directement dans la liste et en tete de fiche. */
+.refc{display:flex;align-items:center;gap:10px}
+.rth{flex:0 0 38px;width:38px;height:38px;border-radius:6px;overflow:hidden;display:grid;place-items:center;
+  background:var(--sur2);border:1px solid var(--bor);color:var(--tx3);font-size:14px}
+.rth img{width:100%;height:100%;object-fit:cover;display:block}
+.hero{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+.hero a{flex:0 0 auto;width:180px;height:150px;border-radius:var(--rs);overflow:hidden;
+  border:1px solid var(--bor);background:var(--sur);display:grid;place-items:center;color:var(--tx3)}
+.hero a img{width:100%;height:100%;object-fit:cover;display:block}
+.hero.vide{font-size:var(--t1);color:var(--tx3);display:block}
 .tm{color:var(--tx2)}
 .mono{font-variant-numeric:tabular-nums}
 .docs{display:flex;gap:3px}
@@ -365,24 +375,51 @@ const MARQUAGES = ['TFB','Neutre','Co-branding'];
    pour que l'app les rapproche seule, on l'ecrit ici. A gauche un
    morceau du nom du dossier Drive, a droite l'intitule Inpulse ou le
    SKU. Ces correspondances passent avant toute autre regle.
-   Validees avec Alice, 5 octobre 2026. */
+   Validees avec Alice, 5 octobre 2026, completees le 19 octobre. */
 const CORRESPONDANCES = [
+  /* Mise a jour du 19 octobre 2026 : Inpulse porte desormais plusieurs
+     fiches pour un meme produit (une par libelle ou par format). Un
+     dossier Drive alimente donc toutes les fiches qu'il concerne, et
+     non plus une seule. A droite, le libelle Inpulse exact. */
   { dossier:'SACHET VIENNOISERIE T1', reference:'SAC CROISSANT T1 TFB 14X8X22CM' },
   { dossier:'SACHET VIENNOISERIE T2', reference:'SAC CROISSANT T2 TFB 18X8X31CM' },
+  /* T3 : 20x7x34 au Drive, 19x8x33 dans Inpulse. Seul sachet T3 du
+     referentiel, rattache en attendant confirmation d'Alice. */
+  { dossier:'SACHET VIENNOISERIE T3', reference:'SAC CROISSANT T3 TFB 19X8X33CM' },
   { dossier:'SAC BOITE GRAND CAKE',   reference:'SAC GRANDS GATEAUX' },
+  { dossier:'SAC CABAS TFB 26X17X29',
+    reference:['SAC CABAS TFB 26X17X29CM','SAC CABAS TFB 260x170x290MM'] },
+  { dossier:'BOITE 1X ECLAIR',
+    reference:['BOÎTE 1X ECLAIR TFB','BOITE 1X ÉCLAIR 160x50x50 MM'] },
+  { dossier:'BOITE 6X PATISSERIE NEUTRE',
+    reference:['BOITE 6X PATISSERIE NEUTRE','BOITE 6X PATISSERIE NEUTRE 250x250x80',
+               'BOITE 6X PATISSERIE NEUTRE  250x250x80MM'] },
+  { dossier:'ROULEAU PAPIER ALIMENTAIRE TFB',
+    reference:['ROULEAU PAPIER ALIMENTAIRE TFB','ROULEAU PAIN PAPIER ALIMENTAIRE TFB'] },
+  /* la photo du dossier s'appelle PAPIER SANDWICH INGRAISSABLE */
+  { dossier:'PAPIER INGRAISSABLE TFB',  reference:'PAPIER SANDWICH INGRAISSABLE TFB' },
 
   /* Gobelets et couvercles : le diametre tranche, pas le nom.
      10 CL = 4 OZ = D62 | 25 CL = 8 OZ = D80 | 35 CL = 12 OZ = D90
      Les gobelets transparents (14 et 16 OZ) sont en D98, d'ou le
      couvercle plat a croisillon, seul couvercle D98 du referentiel. */
-  { dossier:'COUVERCLE GOBLET 10CL',            reference:'COUVERCLE GOBELET 4OZ BLANC' },
-  { dossier:'COVERCLE GOBLET 25CL',             reference:'COUVERCLE GOBELET 8OZ BLANC' },
-  { dossier:'COUVERCLE GOBLET 25CL TRANSPARENT',reference:'COUVERCLE PLAT AVEC CROISILLON POUR GOBELET RPET' },
+  { dossier:'COUVERCLE GOBLET 10CL',
+    reference:['COUVERCLE GOBELET 4OZ BLANC','COUVERCLE GOBELET 10CL'] },
+  { dossier:'COVERCLE GOBLET 25CL',
+    reference:['COUVERCLE GOBELET 8OZ BLANC','COUVERCLE GOBELET 25CL'] },
+  { dossier:'COUVERCLE GOBLET 25CL TRANSPARENT',
+    reference:'COUVERCLE PLAT AVEC CROISILLON POUR GOBELET RPET' },
   { dossier:'GOBLET 35 CL NEUTRE',              reference:'GOBELET 35CL NEUTRE' },
-  { dossier:'PORTE GOBLET',                     reference:'PLATEAU PORTE GOBELETS 4/2 GOBELETS' },
+  { dossier:'PORTE GOBLET',
+    reference:['PLATEAU PORTE GOBELETS 4/2 GOBELETS','PORTE GOBELET'] },
+  /* L'ancien design du 25 cl va a la version la plus ancienne, et a elle
+     seule : ancien:true l'exclut des autres versions, et exclut cette
+     version des photos du design actuel. */
+  { dossier:'GOBLET 25CL TFB (ANCIEN)', reference:'GOBELET 25CL TFB 1/2024', ancien:true },
 
   /* 25 cl = 250 ml : c'est le volume qui departage les trois bouteilles. */
-  { dossier:'BOUTEILLE PET 25 CL +BOUCHON NOIR',reference:'BOUTEILLE OVALE 250 ML AVEC BOUCHON NOIR PREVISSE' },
+  { dossier:'BOUTEILLE PET 25 CL +BOUCHON NOIR',
+    reference:['BOUTEILLE OVALE 250 ML AVEC BOUCHON NOIR PREVISSE','BOUTEILLE PET 25CL + BOUCHON NOIR'] },
 
   /* Un dossier peut porter deux references : le bol et son couvercle. */
   { dossier:'BAGUE BOWL 900ML',                 reference:'BAGUE TFB BOWL 900ML' },
@@ -455,6 +492,154 @@ const STOCK = {
   confort_jours: 45                 // au-dessus, la couverture est confortable
 };
 
+</script>
+<script>
+/* Couleurs d'impression relevees sur les BAT du Drive PACKAGING V2, le 19/10/2026.
+   Embarquees ici pour que index.html suffise : chargerPantone() les prend
+   avant d'aller chercher data/pantone.json. Cle = identifiant du fichier Drive. */
+const EMBEDDED_PAN = {
+ "source": "BAT et fichiers de design du Drive PACKAGING V2",
+ "lu_le": "2026-10-19",
+ "note": "Couleurs relevées sur les BAT du Drive PACKAGING V2 : dans la couche texte du PDF quand elle existe, sinon lues sur le rendu de la page. Un BAT sans légende de couleurs, ou trop lourd pour être ouvert (sachets viennoiserie T2 et T3, sacs pain tranché, gobelets 10 et 25 cl TFB, sac à galette), reste vide.",
+ "exclus": {
+  "1CwDwWG6uJGdPF9EW9TKRcnn7vwFuf-8_": "BAGUE GABARIT.pdf est le BAT d'un bol salade 900 ml, pas de la bague"
+ },
+ "fichiers": {
+  "1PC2Z0BDFvfhj43AfoiPjLigv5ABG9lmS": {
+   "couleurs": [
+    "PANTONE 477 C",
+    "PANTONE 481 C"
+   ],
+   "vernis": true,
+   "releve": "BOITE 8X BMC TFB DESIGN+GABARIT.pdf, daté du 21/04/2023"
+  },
+  "1QZwkbDZvKNu8WX0JgqsC9-eXsX-krRmc": {
+   "couleurs": [
+    "PANTONE 439 C",
+    "PANTONE Warm Grey 1 C"
+   ],
+   "vernis": true,
+   "releve": "BOITE 4X BMC TFB 160x50x50.pdf"
+  },
+  "1c2poW62I7FplAubi62Gf9M-Wsi7PMgOe": {
+   "couleurs": [
+    "PANTONE 439 C",
+    "PANTONE Warm Grey 1 C"
+   ],
+   "vernis": true,
+   "releve": "BOITE ÉCLAIR TFB 160x50x50.pdf"
+  },
+  "1NLzlHpNs5-zVKxzSGmaV2K9qw2t6IX6x": {
+   "couleurs": [
+    "PANTONE 439 C",
+    "PANTONE Warm Gray 1 C"
+   ],
+   "vernis": false,
+   "releve": "BOITE x1 PATISSERIE DESIGN ET GABRIT.pdf, daté du 16/10/2023"
+  },
+  "1VJZ_zKM0u48dLU7R7z-7UOwIkCi70pAC": {
+   "couleurs": [
+    "PANTONE 476 C",
+    "PANTONE 475 C à 10 %"
+   ],
+   "vernis": false,
+   "releve": "BOITE x1 PATISSERIE (NOUVEAU).pdf, BAT usine du 03/10/2025"
+  },
+  "16EKGlycnTu6J_bscdI6DB-QYF1WrZY90": {
+   "couleurs": [
+    "Noir",
+    "Quadri CMJN"
+   ],
+   "vernis": false,
+   "releve": "SAC CABAS TFB 26X17X29 GABARIT+DESIGN.pdf, daté du 28/05/2025"
+  },
+  "1Z_L0ZYun7g4-2oGHPZjFuQD9d1GLMV6i": {
+   "couleurs": [
+    "Noir, en repiquage"
+   ],
+   "vernis": false,
+   "releve": "SAC A GALETTE TFB X ISIGNY GABARIT.pdf, BAT Prime du 08/07/2024"
+  },
+  "1-Fyh4fM3PXoKawYTFz5XebYa7e4bRwMm": {
+   "couleurs": [
+    "PANTONE 439 C"
+   ],
+   "releve": "SAC BOITE GRAND GATEAU GABARIT+ DESIGN.pdf, fichier du 16/10/2023"
+  },
+  "1wEVaemO2gyBNtDUffPcfH0G6Iz7--Bfk": {
+   "couleurs": [
+    "PANTONE 439 C"
+   ],
+   "releve": "SERVIETTES GABARIT.pdf, 1re maquette du 18/09/2023"
+  },
+  "1uV_CG9jnxTQ4f74idUJifPepgok1CMbY": {
+   "couleurs": [
+    "Quadri CMJN"
+   ],
+   "releve": "ROULEAU ÉTIQUETTE CAKE 45X45MM VANILLE CHARBON DESIGN+GABARIT.pdf, 18/11/2025",
+   "vernis": true
+  },
+  "1knbonC0ow19JhvAS861SPyfDjpjYi5gM": {
+   "couleurs": [
+    "Quadri CMJN"
+   ],
+   "releve": "ROULEAU ÉTIQUETTE CAKE 45X45MM VANILLE CARAMEL MACADAMIA DESIGN+GABARIT.pdf, 18/11/2025",
+   "vernis": true
+  },
+  "1ac5jStBJCNkV7kXBIs1rOOE3yjsZm89q": {
+   "couleurs": [
+    "Quadri CMJN"
+   ],
+   "releve": "ROULEAU ÉTIQUETTE CAKE 45X45MM PRALINÉ DESIGN+GABARIT.pdf, 18/11/2025",
+   "vernis": true
+  },
+  "1vS_R_qkE5bUlLwIoMYa3h1LgncX0UVCE": {
+   "couleurs": [
+    "Quadri CMJN"
+   ],
+   "releve": "ROULEAU ÉTIQUETTE CAKE 45X45MM MARBRÉ DESIGN+GABARIT.pdf, 18/11/2025",
+   "vernis": true
+  },
+  "17MnEKy4t-78R5340wuDkoIc8dvjzM8xK": {
+   "couleurs": [
+    "Blanc",
+    "PANTONE 4695 C",
+    "PANTONE 478 C",
+    "PANTONE 724 C",
+    "PANTONE 7527 C"
+   ],
+   "releve": "GALETTE TFB 2024 DESIGN+GABARIT.pdf, 02/10/2024 (modifie le 29/10/2024)",
+   "vernis": true
+  },
+  "1Y3R-jqkA5XXoZfi2pJR2VyO7j9GaSTsi": {
+   "couleurs": [
+    "PANTONE 5777 C",
+    "Dorure or"
+   ],
+   "releve": "STICKER PANETTONE PISTACHE TFB 100X100MM GABARIT+DESIGN.pdf, BAT usine du 18/08/2025"
+  },
+  "1ScksD2q7LZgC1Fd7Um-vqaA-J8t2y5LW": {
+   "couleurs": [
+    "PANTONE 476 C"
+   ],
+   "releve": "BOITE CAKE GRAPHIQUE.pdf, BAT 250904 (04/09/2025)",
+   "vernis": true
+  },
+  "1Lqy5gKQwnxER9Ud7l3xAQv-moRU5ZR_i": {
+   "couleurs": [
+    "PANTONE Black U",
+    "Quadri CMJN"
+   ],
+   "releve": "GOBLET 35CL NEUTRE GABARIT.pdf, BAT Wellembal 'GOBELET 12OZ' (date du cartouche non remplie)"
+  },
+  "1YQFTwXil6m44GIhYzaiujOE-CL9axE0t": {
+   "couleurs": [
+    "PANTONE 504 U"
+   ],
+   "releve": "SACHET BAGUETTE TFB DESIGN+GABARIT.pdf, BAT Wellembal du 20/03/2023"
+  }
+ }
+};
 </script>
 <script>
 /* --- app.js, en ligne --- */
@@ -769,9 +954,12 @@ const MOTS_DOC = {
   gabarit: /GABARIT|GABRIT|DIELINE|DECOUPE|PLAN/,
   photos:  /PHOTO|VISUEL|PACKSHOT|MISEENSITUATION/
 };
+/* Tout ce qui est range dans un sous-dossier IMAGE est une photo, quel
+   que soit son format : les etiquettes de cake n'y ont qu'un PDF. */
+const dansImage = f => (f.chemin||[]).slice(1).some(c=>/^IMAGES?$/.test(code(c)));
 function estDe(f,k){
   const n=code(f.nom+' '+((f.chemin||[]).join(' ')));
-  const image=/^image\//.test(f.mime||'') || estImage(f.nom||'');
+  const image=/^image\//.test(f.mime||'') || estImage(f.nom||'') || dansImage(f);
   if(k==='photos') return image || MOTS_DOC.photos.test(n);
   if(image) return false;
   if(MOTS_DOC[k].test(n)) return true;
@@ -807,6 +995,13 @@ function dice(a,A,b,B){
 const RESSEMBLANCE = 0.70;   // en dessous, ce n'est pas le meme produit
 const ECART        = 0.09;   // ecart minimum avec la deuxieme candidate
 
+/* La famille d'une reference : son libelle Inpulse sans la version du
+   design (12/2025, 1/2024) ni le suffixe V2. Les versions d'un meme
+   produit partagent les fichiers du dossier Drive de ce produit. */
+const famille = r => code(String((r.identification&&r.identification.intitule_inpulse)||'')
+  .replace(/(?:^|[\s(\-])\d{1,2}\s*\/\s*20\d{2}(?![\d])/g,' ')
+  .replace(/(^|\s)V\d{1,2}(?=\s|$)/gi,' '));
+
 function indexerDrive(){
   DRIVE.par={};
   if(!DB||!DRIVE.fichiers.length) return;
@@ -822,16 +1017,19 @@ function indexerDrive(){
     return {r, cs, pp:cs.map(paires)};
   });
 
-  /* Les correspondances ecrites a la main passent avant tout le reste. */
+  /* Les correspondances ecrites a la main passent avant tout le reste.
+     Le libelle exact d'abord, puis un libelle qui le contient. */
   const manuelles=[];
+  const anciennes=new Set();      // versions reservees a un ancien design
   (typeof CORRESPONDANCES!=='undefined'?CORRESPONDANCES:[]).forEach(c=>{
-    /* Un dossier peut porter plusieurs references : le bol et son couvercle. */
     const refs=[].concat(c.reference||[]).map(code).filter(Boolean);
     const trouvees=refs.map(cible =>
-        (cles.find(o=>o.cs.indexOf(cible)>=0)
+        (cles.find(o=>code(o.r.identification&&o.r.identification.intitule_inpulse)===cible)
+      || cles.find(o=>o.cs.indexOf(cible)>=0)
       || cles.find(o=>o.cs.some(x=>x.indexOf(cible)>=0)) || {}).r
     ).filter(Boolean);
-    if(trouvees.length) manuelles.push({d:code(c.dossier), rs:trouvees});
+    if(c.ancien) trouvees.forEach(r=>anciennes.add(r));
+    if(trouvees.length) manuelles.push({d:code(c.dossier), rs:trouvees, ancien:!!c.ancien});
   });
   /* Le libelle le plus long gagne : COUVERCLE GOBLET 25CL TRANSPARENT
      doit passer avant COUVERCLE GOBLET 25CL, qui en est un prefixe. */
@@ -845,14 +1043,32 @@ function indexerDrive(){
     return compte[b]===1;
   };
 
+  /* Les fiches d'une meme famille, hors versions reservees a l'ancien design. */
+  const fam={};
+  DB.packagings.forEach(r=>{ const k=famille(r); if(k) (fam[k]=fam[k]||[]).push(r); });
+
+  const rattacher = (f,rs,ancien) => {
+    const cibles=new Set(rs);
+    if(!ancien) rs.forEach(r=>(fam[famille(r)]||[]).forEach(x=>{
+      if(!anciennes.has(x)) cibles.add(x); }));
+    cibles.forEach(r=>{
+      const l=DRIVE.par[r.id]||(DRIVE.par[r.id]=[]);
+      if(l.indexOf(f)<0) l.push(f);
+    });
+  };
+
   DRIVE.fichiers.forEach(f=>{
     const bruts=(f.chemin||[]).concat([String(f.nom||'').replace(/\.[a-z0-9]{1,5}$/i,'')]);
     const bouts=bruts.map(code).filter(c=>c.length>=5);
     const foin=code((f.chemin||[]).join(' ')+' '+f.nom);
+    const dos=code((f.chemin||[])[0]||'');
+    const ancien=/ANCIEN|\bOLD\b/i.test((f.chemin||[])[0]||'');
 
-    /* 0. une correspondance validee a la main */
-    const mm=manuelles.find(x=>x.d && (foin.indexOf(x.d)>=0 || bouts.some(b=>b.indexOf(x.d)>=0)));
-    if(mm){ mm.rs.forEach(r=>(DRIVE.par[r.id]||(DRIVE.par[r.id]=[])).push(f)); return; }
+    /* 0. une correspondance validee a la main : le dossier exact, sinon
+          un dossier ou un nom qui la contient */
+    const mm=manuelles.find(x=>x.d && dos===x.d)
+          || manuelles.find(x=>x.d && (foin.indexOf(x.d)>=0 || bouts.some(b=>b.indexOf(x.d)>=0)));
+    if(mm){ rattacher(f, mm.rs, mm.ancien||ancien); return; }
 
     /* 1. le nom porte la reference, ou l'abrege : rapprochement sur */
     let gagnant=null, score=0;
@@ -864,21 +1080,24 @@ function indexerDrive(){
         if(b.length>=5 && c.indexOf(b)>=0 && b.length>n && unique(b)) n=b.length; });
       if(n>score){ score=n; gagnant=o.r; }
     }));
-    if(gagnant){ (DRIVE.par[gagnant.id]||(DRIVE.par[gagnant.id]=[])).push(f); return; }
+    if(gagnant){ rattacher(f, [gagnant], ancien); return; }
 
     /* 2. sinon, la ressemblance, a condition qu'elle soit nette */
+    /* L'ecart se mesure avec la meilleure candidate d'une AUTRE famille :
+       deux versions du meme produit se ressemblent forcement. */
     const bp=bouts.map(paires);
-    let m1=0, r1=null, m2=0;
-    cles.forEach(o=>{
+    const notes=cles.map(o=>{
       let m=0;
       for(let i=0;i<bouts.length;i++)
         for(let j=0;j<o.cs.length;j++){
           const d=dice(bouts[i],bp[i],o.cs[j],o.pp[j]); if(d>m) m=d;
         }
-      if(m>m1){ m2=m1; m1=m; r1=o.r; } else if(m>m2) m2=m;
-    });
-    if(r1 && m1>=RESSEMBLANCE && m1-m2>=ECART)
-      (DRIVE.par[r1.id]||(DRIVE.par[r1.id]=[])).push(f);
+      return {r:o.r, m};
+    }).sort((a,b)=>b.m-a.m);
+    const r1=notes.length?notes[0].r:null, m1=notes.length?notes[0].m:0;
+    const autre=notes.find(x=>famille(x.r)!==famille(r1));
+    const m2=autre?autre.m:0;
+    if(r1 && m1>=RESSEMBLANCE && m1-m2>=ECART) rattacher(f, [r1], ancien);
   });
 }
 
@@ -1024,6 +1243,25 @@ async function phTelecharger(bouton){
 const baliseVignette = x => /^https?:/i.test(x.vignette||'')
   ? '<img loading="lazy" src="'+esc(x.vignette)+'" alt="">'
   : '<img loading="lazy" data-vig="'+esc(x.vignette)+'" alt="">';
+/* Les photos d'une reference : les images d'abord, puis les PDF du
+   sous-dossier IMAGE (etiquettes), qui ont aussi une vignette. */
+function photosDe(r){
+  const l=documentsDe(r,'photos').filter(x=>x.vignette||estImage(x.url));
+  const img=x=>/^image\//.test(x.mime||'')||estImage(x.nom||x.url||'');
+  return l.filter(img).concat(l.filter(x=>!img(x)));
+}
+const baliseImage = x => x.vignette ? baliseVignette(x)
+  : '<img loading="lazy" src="'+esc(x.url)+'" alt="">';
+function vignetteListe(r){
+  const x=photosDe(r)[0];
+  return '<span class="rth">'+(x?baliseImage(x):'<i class="ti ti-camera-off"><\/i>')+'<\/span>';
+}
+function heroPhotos(r){
+  const l=photosDe(r);
+  if(!l.length) return '<div class="hero vide"><i class="ti ti-camera-off"><\/i> Aucune photo dans le Drive pour cette r\u00e9f\u00e9rence.<\/div>';
+  return '<div class="hero">'+l.slice(0,6).map(x=>'<a href="'+esc(x.url)+'" target="_blank" rel="noopener" title="'
+    +esc(x.nom)+'">'+baliseImage(x)+'<\/a>').join('')+'<\/div>';
+}
 function nomDeLien(u){
   try{ const p=new URL(u).pathname.split('/').filter(Boolean); return decodeURIComponent(p[p.length-1]||u); }
   catch(e){ return u; }
@@ -1085,6 +1323,22 @@ function sourceCouleurs(r){
     });
   });
   return l.join(' · ');
+}
+/* Les couleurs BAT par BAT : quand un dossier garde l'ancien et le nouveau
+   BAT, on les montre separement plutot que de melanger les deux. */
+function parBAT(r){
+  if(!PANTONE||!PANTONE.fichiers||!r) return [];
+  const vus=new Set(), out=[];
+  DOCUMENTS.forEach(d=>{
+    if(d.k==='photos') return;
+    documentsDe(r,d.k).forEach(f=>{
+      const c=PANTONE.fichiers[f.id]; if(!c||vus.has(f.id)) return;
+      vus.add(f.id);
+      const cs=(c.couleurs||[]).filter(x=>x!=='Vernis');
+      if(cs.length) out.push({couleurs:cs, releve:c.releve||f.nom});
+    });
+  });
+  return out;
 }
 /* Les Pantone seuls : couleursDe y ajoute Vernis, qui a son propre champ. */
 const pantonesDe = r => couleursDe(r).filter(c=>c!=='Vernis');
@@ -1408,7 +1662,7 @@ const tarifUnitaire = r => {
 const COLS=[
  {k:'ref',  lb:'Référence',       filtre:1,
   t:p=>intituleValue(p)||p.nom,
-  c:p=>'<td class="ref">'+esc(intituleValue(p)||p.nom)+'<\/td>'},
+  c:p=>'<td class="ref"><div class="refc">'+vignetteListe(p)+'<span>'+esc(intituleValue(p)||p.nom)+'<\/span><\/div><\/td>'},
  {k:'four', lb:'Fournisseur',     filtre:1,
   t:p=>p.inpulse.fournisseur||'',
   c:p=>'<td class="tm">'+esc(p.inpulse.fournisseur||'—')+'<\/td>'},
@@ -1524,6 +1778,7 @@ function renderCorps(){
   tb.innerHTML=ROWS.map(p=>'<tr data-id="'+esc(p.id)+'"'+(current&&current.id===p.id?' class="sel"':'')
     +' title="Ouvrir la fiche">'+COLS.map(c=>c.c(p)).join('')+'<\/tr>').join('');
   tb.querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>ouvrir(el.dataset.id));
+  phHydrater(tb);
 }
 
 /* Conserve pour la synchronisation Inpulse, qui l'appelle apres avoir
@@ -2260,7 +2515,8 @@ function ouvrir(id){
              : '. Aucune version dans le libellé Inpulse — corrige à la main si tu la connais.');
 
   document.getElementById('f-b').innerHTML =
-    '<div class="blc"><div class="blt">Depuis Inpulse<\/div><div class="gr">'
+    heroPhotos(r)
+    + '<div class="blc"><div class="blt">Depuis Inpulse<\/div><div class="gr">'
     + champ('Intitulé complet',
         (manuel ? saisieTexte(r.id,'identification.intitule_complet',getPath(r,'identification.intitule_complet'))
                 : '<div class="fv">'+esc(intituleValue(r)||'—')+'<\/div>')
@@ -2299,8 +2555,8 @@ function ouvrir(id){
         saisieTexte(r.id,'design.couleurs.pantone',getPath(r,'design.couleurs.pantone'),
           pantonesDe(r).length ? pantonesDe(r).join(' + ') : 'PANTONE 000 C, quadri, noir…')
         + (pantonesDe(r).length
-            ? '<div class="pant">'+pantonesDe(r).map(c=>'<span class="pa">'+esc(c)+'<\/span>').join('')+'<\/div>'
-              + '<div class="regle">Relevé dans '+esc(sourceCouleurs(r))+'<\/div>'
+            ? parBAT(r).map(b=>'<div class="pant">'+b.couleurs.map(c=>'<span class="pa">'+esc(c)+'<\/span>').join('')+'<\/div>'
+                + '<div class="regle">Relevé dans '+esc(b.releve)+'<\/div>').join('')
             : '<div class="regle">Aucun BAT lisible pour cette référence, à relever sur le bon à tirer<\/div>'), 1)
     + champ('Vernis', saisieOuiNon(r.id,'design.couleurs.vernis', vernisDe(r)))
     + champ('Personnalisé TFB', saisieOuiNon(r.id,'matiere.personnalise_tfb',getPath(r,'matiere.personnalise_tfb')))
