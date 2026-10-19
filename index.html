@@ -435,9 +435,23 @@ const CORRESPONDANCES = [
     reference:['BOUTEILLE OVALE 250 ML AVEC BOUCHON NOIR PREVISSE','BOUTEILLE PET 25CL + BOUCHON NOIR'] },
 
   /* Un dossier peut porter deux references : le bol et son couvercle. */
+  /* Le PDF de ce dossier est en realite l'ancien BAT du gobelet 8 oz ;
+     rattache a la boite luxe a la demande d'Alice, le 19/10/2026. */
+  { dossier:'BOITE PREMIUM (COMMANDE B2B)', reference:'BOITE LUXE TFB 650x420x110 MM' },
+
   { dossier:'BAGUE BOWL 900ML',                 reference:'BAGUE TFB BOWL 900ML' },
   { dossier:'BOWL 900 ML + COUVERCLE TRANSPARENT',
     reference:['BOWL 900 ML KRAFT D183','BOL 900 ML KRAFT D183','COUVERCLE BOL 900-1300 ML RPET'] }
+];
+
+/* Dossiers du Drive volontairement laisses de cote : produits absents
+   d'Inpulse, que l'app ne doit ni rattacher ni compter comme non
+   rattaches. Decide avec Alice le 19/10/2026. Le nom exact du dossier. */
+const DOSSIERS_IGNORES = [
+  'STICKER BMC',
+  'BOITE TABLETTES+ PATE À TARTINER',
+  'STICKER PANNETONE PISTACHE TFB 100X100MM',
+  'GOBLET 25CL TRANSPARENT'
 ];
 
 /* Unité à laquelle se rapporte le tarif unitaire.
@@ -1070,7 +1084,9 @@ function indexerDrive(){
     });
   };
 
+  const ignores=new Set((typeof DOSSIERS_IGNORES!=='undefined'?DOSSIERS_IGNORES:[]).map(code));
   DRIVE.fichiers.forEach(f=>{
+    if(ignores.has(code((f.chemin||[])[0]||''))) return;
     const bruts=(f.chemin||[]).concat([String(f.nom||'').replace(/\.[a-z0-9]{1,5}$/i,'')]);
     const bouts=bruts.map(code).filter(c=>c.length>=5);
     const foin=code((f.chemin||[]).join(' ')+' '+f.nom);
@@ -1117,7 +1133,8 @@ function indexerDrive(){
 /* les fichiers du Drive qu'aucune reference ne reclame */
 function orphelinsDrive(){
   if(!DRIVE.pret) return [];
-  const pris=new Set();
+  const ignores=new Set((typeof DOSSIERS_IGNORES!=='undefined'?DOSSIERS_IGNORES:[]).map(code));
+  const pris=new Set(DRIVE.fichiers.filter(f=>ignores.has(code((f.chemin||[])[0]||''))));
   Object.keys(DRIVE.par).forEach(id=>DRIVE.par[id].forEach(f=>pris.add(f)));
   return DRIVE.fichiers.filter(f=>!pris.has(f));
 }
