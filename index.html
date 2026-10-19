@@ -1172,8 +1172,17 @@ const phOter   = id      => phTx('readwrite', s=>{ s.delete(id); return null; })
 /* Une adresse temporaire par vignette, reutilisee tant que la page vit. */
 const PH_URL=new Map();
 
-async function phBlob(id,grand){
+/* Une seule demande a la fois par vignette : la liste, la fiche et le
+   prechargement peuvent la reclamer en meme temps. */
+const PH_ENCOURS=new Map();
+function phBlob(id,grand){
   const cle = grand ? id+'@1600' : id;
+  if(PH_ENCOURS.has(cle)) return PH_ENCOURS.get(cle);
+  const p = phBlobLire(id,grand,cle).finally(()=>PH_ENCOURS.delete(cle));
+  PH_ENCOURS.set(cle,p);
+  return p;
+}
+async function phBlobLire(id,grand,cle){
   let b = await phLire(cle);
   if(b && b.size) return b;
   const r = await fetch(phSrc(id,grand), {cache:'force-cache'});
@@ -1267,6 +1276,25 @@ function nomDeLien(u){
   catch(e){ return u; }
 }
 
+/* La liste du Drive est gardee sur le poste : a l'ouverture, l'app
+   l'affiche tout de suite (photos comprises, elles sont dans IndexedDB),
+   puis la rafraichit en arriere-plan. */
+const DRIVE_LS='infopack-drive-v1';
+function appliquerDrive(d){
+  DRIVE.fichiers=d.fichiers||[];
+  DRIVE.genere=d.genere||'';
+  DRIVE.racine='https://drive.google.com/drive/folders/'+(d.parent||'');
+  DRIVE.pret=true; indexerDrive();
+  render(); if(current) ouvrir(current.id);
+}
+function driveDepuisPoste(){
+  try{
+    const d=JSON.parse(localStorage.getItem(DRIVE_LS)||'null');
+    if(d && d.fichiers && d.fichiers.length){ appliquerDrive(d); return true; }
+  }catch(e){}
+  return false;
+}
+
 /* frais=1 : on redemande au Drive sans attendre la fin du cache de la
    fonction. C'est ce que fait le bouton Synchroniser, pour qu'une photo
    deposee a l'instant apparaisse tout de suite. */
@@ -1276,12 +1304,36 @@ async function chargerDrive(frais){
     if(r.status===501){ DRIVE.message=(await r.json().catch(()=>({}))).error||'Drive non configuré'; return; }
     if(!r.ok) throw new Error('HTTP '+r.status);
     const d=await r.json();
-    DRIVE.fichiers=d.fichiers||[];
-    DRIVE.racine='https://drive.google.com/drive/folders/'+(d.parent||'');
-    DRIVE.pret=true; indexerDrive();
-    render(); if(current) ouvrir(current.id);
+    /* une liste plus ancienne que celle deja affichee ne la remplace pas */
+    if(!frais && DRIVE.genere && d.genere && d.genere<DRIVE.genere) return;
+    appliquerDrive(d);
+    try{ localStorage.setItem(DRIVE_LS, JSON.stringify({fichiers:d.fichiers||[], parent:d.parent, genere:d.genere||''})); }catch(e){}
     phPurger();            /* le cache des photos suit le Drive */
+    prechargerVignettes(); /* et se remplit d'avance */
   }catch(e){ DRIVE.message=e.message; }
+}
+
+/* Toutes les vignettes sont rapatriees d'avance, en arriere-plan, trois
+   a la fois : les photos d'abord, puis les BAT et gabarits. Une fois sur
+   le poste, ouvrir une fiche ne demande plus rien au reseau. */
+let prechargement=null;
+function prechargerVignettes(){
+  if(prechargement) return prechargement;
+  const ids=[], vus=new Set();
+  const ajoute=f=>{ if(f.vignette && !/^https?:/i.test(f.vignette) && !vus.has(f.vignette)){ vus.add(f.vignette); ids.push(f.vignette); } };
+  DRIVE.fichiers.filter(f=>estDe(f,'photos')).forEach(ajoute);
+  DRIVE.fichiers.forEach(ajoute);
+  let i=0;
+  const suivant=async()=>{
+    while(i<ids.length){
+      const id=ids[i++];
+      try{ await phBlob(id,false); }catch(e){}
+    }
+  };
+  prechargement=new Promise(res=>setTimeout(res,1200))
+    .then(()=>Promise.all([suivant(),suivant(),suivant()]))
+    .finally(()=>{ prechargement=null; });
+  return prechargement;
 }
 
 /* ---------- couleurs d'impression ---------- */
@@ -2747,7 +2799,7 @@ async function load(){
   DB=doc;
   await loadOverrides();
   brancher();
-  render();
+  if(!driveDepuisPoste()) render();
   chargerWellembal();
   syncInpulse();
   chargerDrive();
